@@ -35,7 +35,7 @@ func main() {
 	// Start cron jobs
 	// "*/5 * * * * *" means every 5 seconds
 	// "-" means only run once
-	go StartCheckCertificateValidityCronJob("")
+	go StartCheckCertificateValidityCronJob("-")
 
 	app := fiber.New(fiber.Config{
 		EnablePrintRoutes:     false,
@@ -56,7 +56,7 @@ func main() {
 
 	// Or extend your config for customization
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "http://localhost:8000,http://127.0.0.1:8000",
+		AllowOrigins: "http://localhost:8000,http://localhost:5173,http://127.0.0.1:8000",
 		AllowHeaders: "Origin, Content-Type, Accept",
 	}))
 

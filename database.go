@@ -27,7 +27,12 @@ func NewSQLiteDB(filepath string) *SQLiteDB {
 	// Create the domains table if it doesn't exist
 	_, err = db.Exec(`
 		CREATE TABLE IF NOT EXISTS domains 
-		(name TEXT PRIMARY KEY, certificate_expiry TIMESTAMP)`)
+		(
+		    name TEXT PRIMARY KEY, 
+			certificate_expiry TIMESTAMP,
+			status TEXT,
+			issuer TEXT
+		)`)
 	if err != nil {
 		log.Fatalf("Cannot create domains table: %v", err)
 	}
@@ -37,12 +42,13 @@ func NewSQLiteDB(filepath string) *SQLiteDB {
 
 func (db *SQLiteDB) AddDomain(domain string) error {
 	// Assuming `db.conn` is your database connection
-	_, err := db.conn.Exec("INSERT INTO domains (name) VALUES (?)", domain)
+	_, err := db.conn.Exec("INSERT INTO domains (name,status) VALUES (?,?)", domain, StatusPending)
 	return err
 }
 
 func (db *SQLiteDB) GetDomains() ([]Domain, error) {
-	rows, err := db.conn.Query("SELECT name, certificate_expiry FROM domains")
+	rows, err := db.conn.Query(
+		"SELECT name, certificate_expiry, status, issuer FROM domains")
 	if err != nil {
 		return nil, err
 	}
@@ -51,7 +57,11 @@ func (db *SQLiteDB) GetDomains() ([]Domain, error) {
 	var domains []Domain
 	for rows.Next() {
 		var domain Domain
-		if err := rows.Scan(&domain.Name, &domain.CertificateExpiry); err != nil {
+		if err := rows.Scan(&domain.Name,
+			&domain.CertificateExpiry,
+			&domain.Status,
+			&domain.Issuer,
+		); err != nil {
 			return nil, err
 		}
 		domains = append(domains, domain)
@@ -61,7 +71,16 @@ func (db *SQLiteDB) GetDomains() ([]Domain, error) {
 }
 
 func (db *SQLiteDB) UpdateDomain(domain Domain) error {
-	_, err := db.conn.Exec("UPDATE domains SET certificate_expiry = ? WHERE name = ?", domain.CertificateExpiry, domain.Name)
+	_, err := db.conn.Exec(
+		`UPDATE domains 
+				SET certificate_expiry = ?, 
+				status = ?,
+				issuer = ? 
+               	WHERE name = ?`,
+		domain.CertificateExpiry,
+		domain.Status,
+		domain.Issuer,
+		domain.Name)
 	return err
 }
 

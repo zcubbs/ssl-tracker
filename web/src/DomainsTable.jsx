@@ -8,9 +8,10 @@ import {
 import {
     useQuery,
 } from '@tanstack/react-query'
+import {Badge, Loader, Table} from '@mantine/core';
 
 function DomainsTable() {
-    const { isLoading, error, data } = useQuery({
+    const {isLoading, error, data} = useQuery({
         queryKey: ['repoData'],
         queryFn: () =>
             fetch('http://localhost:8000/api/domains').then(
@@ -24,8 +25,45 @@ function DomainsTable() {
         columnHelper.accessor('name', {
             header: () => 'Domain Name',
         }),
-        columnHelper.accessor('certificate_expiry', {
+        columnHelper.accessor('status', {
+            header: () => 'Status',
+            cell: (props) => {
+                if (props.getValue() === 'expired') {
+                    return (
+                        <Badge color="red">{props.getValue()}</Badge>
+                    )
+                }
+
+                if (props.getValue() === 'valid') {
+                    return (
+                        <Badge color="green">{props.getValue()}</Badge>
+                    )
+                }
+
+                return (
+                    <Badge color="gray">{props.getValue()}</Badge>
+                )
+            }
+        }),
+        columnHelper.accessor('issuer', {
+            header: () => 'Issuer',
+            cell: (props) => {
+                return (
+                    <div>
+                        {props.getValue().String}
+                    </div>
+                )
+            }
+        }),
+        columnHelper.accessor('until', {
             header: () => 'Certificate Expiry',
+            cell: (props) => {
+                return (
+                    <div>
+                        {props.getValue()}
+                    </div>
+                )
+            }
         })
     ];
 
@@ -38,13 +76,13 @@ function DomainsTable() {
         // etc.
     });
 
-    if (isLoading) return 'Loading...'
+    if (isLoading) return <Loader/>
 
     if (error) return 'An error has occurred: ' + error.message
 
     return (
         <div className="p-2">
-            <table>
+            <Table>
                 <thead>
                 {table.getHeaderGroups().map(headerGroup => (
                     <tr key={headerGroup.id}>
@@ -72,7 +110,7 @@ function DomainsTable() {
                     </tr>
                 ))}
                 </tbody>
-            </table>
+            </Table>
         </div>
     );
 }

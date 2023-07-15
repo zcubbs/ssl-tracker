@@ -1,0 +1,57 @@
+version: '3'
+
+tasks:
+  bootstrap:
+    desc: Install all necessary tools and CLI dependencies
+    cmds:
+      - go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+      - go install github.com/kyleconroy/sqlc/cmd/sqlc@latest
+      - go install github.com/securego/gosec/v2/cmd/gosec@latest
+      - go install go.uber.org/mock/mockgen@latest
+      - go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+      - task: bootstrap:{{OS}}
+
+  bootstrap:darwin:
+    desc: Install all necessary tools and CLI dependencies for MacOS
+    cmds:
+      - brew install buildpacks/tap/pack
+
+  bootstrap:windows:
+    desc: Install all necessary tools and CLI dependencies for Windows
+    cmds:
+      - scoop install pack
+
+  go:deps:
+    desc: Install Go dependencies
+    cmds:
+      - go mod tidy
+      - go mod download
+
+  node:deps:
+    desc: Install Node.js dependencies
+    cmds:
+      - cd web && npm install
+
+  react:build:
+    desc: Build React application
+    deps: [node:deps]
+    cmds:
+      - cd web && npm run build
+
+  go:build:
+    desc: Build Go application
+    deps: [go:deps, react:build]
+    cmds:
+      - go build -o ./bin/server ./...
+
+  image:build:
+    desc: Build Docker image
+    deps: [go:build]
+    cmds:
+      - pack build tlz --builder gcr.io/buildpacks/builder:v1 --buildpack paketo-buildpacks/go
+      - pack sbom download tlz
+
+  start:
+    desc: Start the application
+    cmds:
+      - ./bin/server

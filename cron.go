@@ -45,6 +45,11 @@ func checkCertificateValidity() {
 		status, err := CheckCertificate(domain.Name)
 		if err != nil {
 			log.Printf("Cannot check certificate of %s: %v", domain.Name, err)
+			domain.CertificateExpiry.Valid = false
+			domain.Status = StatusUnknown
+			if err := db.UpdateDomain(domain); err != nil {
+				log.Printf("Cannot update domain: %v", err)
+			}
 			continue
 		}
 
@@ -53,6 +58,9 @@ func checkCertificateValidity() {
 		// Update the domain in the database
 		domain.CertificateExpiry.Time = status.ValidTo
 		domain.CertificateExpiry.Valid = true
+		domain.Status = StatusValid
+		domain.Issuer.String = status.Issuer
+		domain.Issuer.Valid = true
 		if err := db.UpdateDomain(domain); err != nil {
 			log.Printf("Cannot update domain: %v", err)
 		}

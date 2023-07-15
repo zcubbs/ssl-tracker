@@ -1,7 +1,7 @@
 import React from 'react';
 import axios from 'axios';
-import {Button, TextInput} from '@mantine/core';
-import { useForm } from '@mantine/form';
+import {Button, Flex, TextInput} from '@mantine/core';
+import {useForm} from '@mantine/form';
 
 axios.defaults.baseURL = 'http://localhost:8000/api';
 
@@ -18,13 +18,22 @@ function AddDomainForm() {
     });
 
     return (
+
         <form onSubmit={form.onSubmit((values) => addDomain(values))}>
-            <TextInput
-                label="Domain name"
-                placeholder="Enter a domain to track"
-                {...form.getInputProps('name')}
-            />
-            <Button type="submit">Track Domain</Button>
+            <Flex
+                mih={50}
+                gap="md"
+                justify="flex-start"
+                align="flex-start"
+                direction="row"
+                wrap="wrap"
+            >
+                <TextInput
+                    placeholder="Enter a domain to track"
+                    {...form.getInputProps('name')}
+                />
+                <Button type="submit">Track Domain</Button>
+            </Flex>
         </form>
     );
 }

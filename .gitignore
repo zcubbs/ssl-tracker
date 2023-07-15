@@ -30,3 +30,5 @@ gen
 go.work
 
 database.sqlite
+!/bin/
+/bin/server

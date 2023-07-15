@@ -39,6 +39,18 @@ func getDomains(c *fiber.Ctx) error {
 		})
 	}
 
+	domainWrappers := make([]DomainWrapper, len(domains))
+	for i, domain := range domains {
+		u := "-"
+		if domain.CertificateExpiry.Valid {
+			u = TimeUntil(domain.CertificateExpiry.Time)
+		}
+		domainWrappers[i] = DomainWrapper{
+			Domain: domain,
+			Until:  u,
+		}
+	}
+
 	// Respond with the domains
-	return c.JSON(domains)
+	return c.JSON(domainWrappers)
 }
