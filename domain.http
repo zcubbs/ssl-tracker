@@ -1,0 +1,8 @@
+# curl -X POST -H "Content-Type: application/json" -d '{"name":"example.com"}' http://localhost:3000/domains
+POST http://localhost:3000/domains
+Content-Type: application/json
+
+{"name":"example.com"}
+
+###
+
