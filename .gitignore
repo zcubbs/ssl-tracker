@@ -32,3 +32,6 @@ go.work
 database.sqlite
 !/bin/
 /bin/server
+
+/layers/
+/bin/

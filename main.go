@@ -2,40 +2,38 @@ package main
 
 import (
 	"embed"
+	"fmt"
+	"github.com/charmbracelet/log"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
-	"log"
+	"github.com/zcubbs/tlz/db/migrations"
+	db "github.com/zcubbs/tlz/db/sqlc"
+	"github.com/zcubbs/tlz/handler"
+	"github.com/zcubbs/tlz/pkg/tls"
+	"github.com/zcubbs/tlz/util"
 	"net/http"
 )
-
-var db Database
-
-type Config struct {
-	DatabaseType string `json:"database_type"`
-}
 
 //go:embed web/dist/*
 var f embed.FS
 
 func main() {
-	// Load the configuration
-	config := Config{
-		DatabaseType: "sqlite",
-	}
-	// Initialize the correct database based on configuration
-	if config.DatabaseType == "sqlite" {
-		db = NewSQLiteDB("./database.sqlite")
-	} else if config.DatabaseType == "postgres" {
-		db = &PostgresDB{}
-	}
+	// Bootstrap configuration
+	cfg := util.Bootstrap()
+
+	// Connect to database
+	db.Connect(cfg.Database)
+
+	// Migrate database
+	migrations.Migrate(cfg.Database)
 
 	// Start cron jobs
 	// "*/5 * * * * *" means every 5 seconds
 	// "-" means only run once
-	go StartCheckCertificateValidityCronJob("-")
+	go tls.StartCheckCertificateValidityCronJob("*/5 * * * * *")
 
 	app := fiber.New(fiber.Config{
 		EnablePrintRoutes:     false,
@@ -60,8 +58,8 @@ func main() {
 		AllowHeaders: "Origin, Content-Type, Accept",
 	}))
 
-	app.Post("/api/domains", addDomain)
-	app.Get("/api/domains", getDomains)
+	app.Post("/api/domains", handler.AddDomain)
+	app.Get("/api/domains", handler.GetDomains)
 
 	// Serve the frontend
 	app.Use("/", filesystem.New(filesystem.Config{
@@ -69,5 +67,6 @@ func main() {
 		PathPrefix: "web/dist",
 	}))
 
-	log.Fatal(app.Listen(":8000"))
+	log.Infof("Starting HTTP server on port %d", cfg.HttpServer.Port)
+	log.Fatal(app.Listen(fmt.Sprintf(":%d", cfg.HttpServer.Port)))
 }

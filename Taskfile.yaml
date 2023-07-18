@@ -34,19 +34,19 @@ tasks:
 
   react:build:
     desc: Build React application
-    deps: [node:deps]
+    deps: [ node:deps ]
     cmds:
       - cd web && npm run build
 
   go:build:
     desc: Build Go application
-    deps: [go:deps, react:build]
+    deps: [ go:deps, react:build ]
     cmds:
       - go build -o ./bin/server ./...
 
   image:build:
     desc: Build Docker image
-    deps: [go:build]
+    deps: [ go:build ]
     cmds:
       - pack build tlz --builder gcr.io/buildpacks/builder:v1 --buildpack paketo-buildpacks/go
       - pack sbom download tlz
@@ -55,3 +55,23 @@ tasks:
     desc: Start the application
     cmds:
       - ./bin/server
+
+  mock:
+    desc: Generate mocks
+    cmds:
+      - cmd: mockgen -destination db/mock/store.go github.com/zcubbs/tlz/db/sqlc Store
+
+  sqlc:
+    desc: Generate SQLC code
+    cmds:
+      - task: sqlc-{{OS}}
+
+  sqlc-windows:
+    desc: Generate SQLC code for Windows
+    cmds:
+      - cmd: docker run --rm -v "${PWD}:/src" -w /src kjconroy/sqlc generate
+
+  sqlc-darwin:
+    desc: Generate SQLC code for MacOS
+    cmds:
+      - cmd: sqlc generate
