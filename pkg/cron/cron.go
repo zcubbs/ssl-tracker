@@ -1,4 +1,4 @@
-package tls
+package cron
 
 import (
 	"context"
@@ -6,18 +6,18 @@ import (
 	"github.com/robfig/cron/v3"
 )
 
-func StartCheckCertificateValidityCronJob(cronPattern string, task func(ctx context.Context)) {
+func StartCronJob(cronPattern string, task func(ctx context.Context)) {
 	ctx := context.Background()
 
 	if cronPattern == "" {
-		log.Info("No cron pattern provided, not starting cron job")
+		log.Info("no cron pattern provided, not starting cron job")
 		return
 	}
 
 	if cronPattern == "-" {
-		log.Info("Checking certificate validity once")
+		log.Info("running cron job once")
 		task(ctx)
-		log.Info("Done checking certificate validity")
+		log.Info("cron job finished")
 		return
 	}
 
@@ -26,9 +26,9 @@ func StartCheckCertificateValidityCronJob(cronPattern string, task func(ctx cont
 		task(ctx)
 	})
 	if err != nil {
-		log.Fatalf("Cannot create cron job: %v", err)
+		log.Fatalf("cannot create cron job: %v", err)
 	}
 
-	log.Info("Starting cron job")
+	log.Info("starting cron job")
 	c.Start()
 }

@@ -4,10 +4,15 @@ type Config struct {
 	Debug      bool             `mapstructure:"debug"`
 	HttpServer HttpServerConfig `mapstructure:"http_server"`
 	Database   DatabaseConfig   `mapstructure:"database"`
+	Cron       CronConfig       `mapstructure:"cron"`
 }
 
 type HttpServerConfig struct {
-	Port int `mapstructure:"port"`
+	Port              int    `mapstructure:"port"`
+	AllowOrigins      string `mapstructure:"allow_origins"`
+	AllowHeaders      string `mapstructure:"allow_headers"`
+	TZ                string `mapstructure:"tz"`
+	EnablePrintRoutes bool   `mapstructure:"enable_print_routes"`
 }
 
 type DatabaseConfig struct {
@@ -31,4 +36,13 @@ type PostgresConfig struct {
 type SqliteConfig struct {
 	Enabled bool   `mapstructure:"enabled" json:"enabled"`
 	DbName  string `mapstructure:"db_name" json:"db_name"`
+}
+
+type CronConfig struct {
+	CheckCertificateValidity `mapstructure:"check_certificate_validity"`
+}
+
+type CheckCertificateValidity struct {
+	Enabled     bool   `mapstructure:"enabled"`
+	CronPattern string `mapstructure:"cron_pattern"`
 }

@@ -12,7 +12,7 @@ import (
 	"github.com/zcubbs/tlz/db/migrations"
 	db "github.com/zcubbs/tlz/db/sqlc"
 	"github.com/zcubbs/tlz/handler"
-	"github.com/zcubbs/tlz/pkg/tls"
+	"github.com/zcubbs/tlz/pkg/cron"
 	"github.com/zcubbs/tlz/task"
 	"github.com/zcubbs/tlz/util"
 	"net/http"
@@ -32,15 +32,10 @@ func main() {
 	migrations.Migrate(cfg.Database)
 
 	// Start cron jobs
-	// "*/5 * * * * *" means every 5 seconds
-	// "-" means only run once
-	go tls.StartCheckCertificateValidityCronJob(
-		"*/10 * * * * *",
-		task.CheckCertificateValidity,
-	)
+	startCronJobs(cfg.Cron)
 
 	app := fiber.New(fiber.Config{
-		EnablePrintRoutes:     false,
+		EnablePrintRoutes:     cfg.HttpServer.EnablePrintRoutes,
 		DisableStartupMessage: true,
 	})
 
@@ -50,16 +45,14 @@ func main() {
 	// Logging Request ID
 	app.Use(requestid.New())
 	app.Use(logger.New(logger.Config{
-		// For more options, see the Config section
-		//Format:     "[ip=${ip}]:${port} pid=${pid} ${locals:requestid} ${status} - ${method} ${path}​\n",
 		TimeFormat: "02-Jan-2006 15:04:05",
-		TimeZone:   "UTC",
+		TimeZone:   cfg.HttpServer.TZ,
 	}))
 
 	// Or extend your config for customization
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "http://localhost:8000,http://localhost:5173,http://127.0.0.1:5173,http://127.0.0.1:8000",
-		AllowHeaders: "Origin, Content-Type, Accept",
+		AllowOrigins: cfg.HttpServer.AllowOrigins,
+		AllowHeaders: cfg.HttpServer.AllowHeaders,
 	}))
 
 	app.Post("/api/domains", handler.AddDomain)
@@ -71,6 +64,15 @@ func main() {
 		PathPrefix: "web/dist",
 	}))
 
-	log.Infof("Starting HTTP server on port %d", cfg.HttpServer.Port)
+	log.Info("starting HTTP server", "port", cfg.HttpServer.Port)
 	log.Fatal(app.Listen(fmt.Sprintf(":%d", cfg.HttpServer.Port)))
+}
+
+func startCronJobs(cfg util.CronConfig) {
+	if cfg.CheckCertificateValidity.Enabled {
+		go cron.StartCronJob(
+			cfg.CheckCertificateValidity.CronPattern,
+			task.CheckCertificateValidity,
+		)
+	}
 }
