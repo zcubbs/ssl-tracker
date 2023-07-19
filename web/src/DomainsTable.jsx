@@ -1,4 +1,3 @@
-import React from 'react';
 import {
     useReactTable,
     getCoreRowModel,
@@ -11,8 +10,10 @@ import {
 import {Badge, Loader, Table} from '@mantine/core';
 
 function DomainsTable() {
-    const {isLoading, error, data} = useQuery({
-        queryKey: ['repoData'],
+    const {isLoading, error, data, refetch} = useQuery({
+        queryKey: ['domains'],
+      refetchIntervalInBackground: true,
+      refetchInterval: 10000,
         queryFn: () =>
             fetch('http://localhost:8000/api/domains').then(
                 (res) => res.json(),
@@ -50,7 +51,7 @@ function DomainsTable() {
             cell: (props) => {
                 return (
                     <div>
-                        {props.getValue().String}
+                        {props.getValue()}
                     </div>
                 )
             }

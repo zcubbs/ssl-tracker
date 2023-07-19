@@ -2,10 +2,10 @@ package handler
 
 import (
 	"database/sql"
+	"github.com/charmbracelet/log"
 	"github.com/gofiber/fiber/v2"
 	db "github.com/zcubbs/tlz/db/sqlc"
 	"github.com/zcubbs/tlz/util"
-	"log"
 	"time"
 )
 
@@ -28,16 +28,17 @@ type DomainWrapper struct {
 }
 
 func AddDomain(c *fiber.Ctx) error {
-	log.Println(c.Body())
+	log.Info(c.Body())
 	// Parse the request body
 	var domain db.Domain
 	if err := c.BodyParser(&domain); err != nil {
+		log.Error("Cannot parse JSON", "error", err)
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Cannot parse JSON",
 		})
 	}
 
-	log.Println("Adding domain: ", domain.Name)
+	log.Info("Adding domain", "name", domain.Name)
 
 	// Add the domain to the database
 	if _, err := db.Store.InsertDomain(c.Context(), db.InsertDomainParams{
@@ -47,6 +48,7 @@ func AddDomain(c *fiber.Ctx) error {
 			Valid:  true,
 		},
 	}); err != nil {
+		log.Error("Cannot add domain", "error", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Cannot add domain",
 		})
@@ -61,7 +63,7 @@ func GetDomains(c *fiber.Ctx) error {
 	// Get the domains from the database
 	domains, err := db.Store.GetDomains(c.Context())
 	if err != nil {
-		log.Println(err)
+		log.Error("Cannot get domains", "error", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Cannot get domains",
 		})

@@ -1,14 +1,9 @@
-import React from 'react';
 import axios from 'axios';
 import {Button, Flex, TextInput} from '@mantine/core';
 import {useForm} from '@mantine/form';
+import {QueryClient, useQueryClient} from "@tanstack/react-query";
 
 axios.defaults.baseURL = 'http://localhost:8000/api';
-
-async function addDomain(data) {
-    console.log(data);
-    await axios.post('/domains', data);
-}
 
 function AddDomainForm() {
     const form = useForm({
@@ -16,6 +11,18 @@ function AddDomainForm() {
             name: '',
         }
     });
+  const queryClient = useQueryClient();
+
+  const addDomain = async (data) => {
+    console.log(data);
+    await axios.post('/domains', data).catch((err) => {
+      console.log(err);
+    }).then((res) => {
+      console.log(res);
+      form.reset();
+      queryClient.refetchQueries(["domains"], { active: true })
+    });
+  }
 
     return (
 
