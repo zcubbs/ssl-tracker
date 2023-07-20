@@ -22,6 +22,14 @@ var (
 		"database.sqlite.db_name":                      DefaultDbName,
 		"cron.check_certificate_validity.enabled":      true,
 		"cron.check_certificate_validity.cron_pattern": "*/10 * * * * *",
+		"cron.send_mail_notification.enabled":          true,
+		"cron.send_mail_notification.cron_pattern":     "*/10 * * * * *",
+		"notification.mail.smtp.enabled":               true,
+		"notification.mail.smtp.host":                  "localhost",
+		"notification.mail.smtp.port":                  1025,
+		"notification.mail.smtp.username":              "",
+		"notification.mail.smtp.password":              "",
+		"notification.mail.smtp.from":                  "no-reply@tlz",
 	}
 
 	allowedEnvVarKeys = []string{
@@ -43,5 +51,13 @@ var (
 		"database.sqlite.db_name",
 		"cron.check_certificate_validity.enabled",
 		"cron.check_certificate_validity.cron_pattern",
+		"cron.send_mail_notification.enabled",
+		"cron.send_mail_notification.cron_pattern",
+		"notification.mail.smtp.enabled",
+		"notification.mail.smtp.host",
+		"notification.mail.smtp.port",
+		"notification.mail.smtp.username",
+		"notification.mail.smtp.password",
+		"notification.mail.smtp.from",
 	}
 )

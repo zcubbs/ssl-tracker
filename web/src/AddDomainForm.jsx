@@ -9,6 +9,10 @@ function AddDomainForm() {
     const form = useForm({
         initialValues: {
             name: '',
+        },
+
+        validate: {
+            name: (value) => value.trim().length > 0 ? null : 'Domain name is required',
         }
     });
   const queryClient = useQueryClient();

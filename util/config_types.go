@@ -1,10 +1,11 @@
 package util
 
 type Config struct {
-	Debug      bool             `mapstructure:"debug"`
-	HttpServer HttpServerConfig `mapstructure:"http_server"`
-	Database   DatabaseConfig   `mapstructure:"database"`
-	Cron       CronConfig       `mapstructure:"cron"`
+	Debug        bool               `mapstructure:"debug"`
+	HttpServer   HttpServerConfig   `mapstructure:"http_server"`
+	Database     DatabaseConfig     `mapstructure:"database"`
+	Cron         CronConfig         `mapstructure:"cron"`
+	Notification NotificationConfig `mapstructure:"notification"`
 }
 
 type HttpServerConfig struct {
@@ -40,9 +41,32 @@ type SqliteConfig struct {
 
 type CronConfig struct {
 	CheckCertificateValidity `mapstructure:"check_certificate_validity"`
+	SendMailNotification     `mapstructure:"send_mail_notification"`
 }
 
 type CheckCertificateValidity struct {
 	Enabled     bool   `mapstructure:"enabled"`
 	CronPattern string `mapstructure:"cron_pattern"`
+}
+
+type SendMailNotification struct {
+	Enabled     bool   `mapstructure:"enabled"`
+	CronPattern string `mapstructure:"cron_pattern"`
+}
+
+type NotificationConfig struct {
+	Mail MailConfig `mapstructure:"mail"`
+}
+
+type MailConfig struct {
+	Smtp SmtpConfig `mapstructure:"smtp"`
+}
+
+type SmtpConfig struct {
+	Enabled  bool   `mapstructure:"enabled"`
+	Host     string `mapstructure:"host"`
+	Port     int    `mapstructure:"port"`
+	Username string `mapstructure:"username"`
+	Password string `mapstructure:"password"`
+	From     string `mapstructure:"from"`
 }

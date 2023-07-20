@@ -13,6 +13,7 @@ import (
 	db "github.com/zcubbs/tlz/db/sqlc"
 	"github.com/zcubbs/tlz/handler"
 	"github.com/zcubbs/tlz/pkg/cron"
+	"github.com/zcubbs/tlz/pkg/mail"
 	"github.com/zcubbs/tlz/task"
 	"github.com/zcubbs/tlz/util"
 	"net/http"
@@ -33,6 +34,9 @@ func main() {
 
 	// Start cron jobs
 	startCronJobs(cfg.Cron)
+
+	// Initialize mailer
+	mail.Initialize(cfg.Notification.Mail)
 
 	app := fiber.New(fiber.Config{
 		EnablePrintRoutes:     cfg.HttpServer.EnablePrintRoutes,
@@ -73,6 +77,13 @@ func startCronJobs(cfg util.CronConfig) {
 		go cron.StartCronJob(
 			cfg.CheckCertificateValidity.CronPattern,
 			task.CheckCertificateValidity,
+		)
+	}
+
+	if cfg.SendMailNotification.Enabled {
+		go cron.StartCronJob(
+			cfg.SendMailNotification.CronPattern,
+			task.SendMailNotification,
 		)
 	}
 }

@@ -31,13 +31,18 @@ function DomainsTable() {
             cell: (props) => {
                 if (props.getValue() === 'expired') {
                     return (
-                        <Badge color="red">{props.getValue()}</Badge>
+                        <Badge variant="filled" color="red">{props.getValue()}</Badge>
+                    )
+                }
+                if (props.getValue() === 'expiring') {
+                    return (
+                        <Badge variant="filled" color="orange">{props.getValue()}</Badge>
                     )
                 }
 
                 if (props.getValue() === 'valid') {
                     return (
-                        <Badge color="green">{props.getValue()}</Badge>
+                        <Badge variant="filled" color="green">{props.getValue()}</Badge>
                     )
                 }
 

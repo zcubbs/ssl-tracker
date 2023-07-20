@@ -75,3 +75,18 @@ tasks:
     desc: Generate SQLC code for MacOS
     cmds:
       - cmd: sqlc generate
+
+  mig:gen:
+    desc: "Generate migration. Usage: task mig:gen -- <migration_name>"
+    cmds:
+      - cmd: migrate create -ext sql -dir db/migrations -seq {{.CLI_ARGS}}
+
+  mailhog:up:
+    desc: Start MailHog
+    cmds:
+      - docker run --name mailhog -d -p 1025:1025 -p 8025:8025 mailhog/mailhog
+
+  mailhog:down:
+    desc: Stop MailHog
+    cmds:
+      - docker stop mailhog

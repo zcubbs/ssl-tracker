@@ -6,6 +6,7 @@ package db
 
 import (
 	"database/sql"
+	"time"
 )
 
 type Domain struct {
@@ -13,4 +14,12 @@ type Domain struct {
 	CertificateExpiry sql.NullTime   `json:"certificate_expiry"`
 	Status            sql.NullString `json:"status"`
 	Issuer            sql.NullString `json:"issuer"`
+}
+
+type Notification struct {
+	ID        int64     `json:"id"`
+	Message   string    `json:"message"`
+	SendTo    string    `json:"send_to"`
+	Channel   string    `json:"channel"`
+	CreatedAt time.Time `json:"created_at"`
 }
