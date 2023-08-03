@@ -24,6 +24,19 @@ represents a set of times, normally as a schedule to execute some routine. The f
 > You can choose to run a job only once by passing "-" as the cron pattern.
 > Exemple: `TLZ_CRON_CHECK_CERTIFICATE_VALIDITY_CRON_PATTERN=-`
 
+## Database Support
+
+This application supports both **PostgreSQL** and **SQLite** databases, adapting to various use cases and deployment scenarios.
+
+### PostgreSQL
+
+PostgreSQL is a powerful, open-source object-relational database system. To configure the application for PostgreSQL, set `database.postgres.enabled` to `true` and provide the necessary connection details.
+
+### SQLite
+
+SQLite is a self-contained, serverless, zero-configuration SQL database engine, ideal for simpler setup requirements. To configure the application for SQLite, set `database.sqlite.enabled` to `true` and provide the necessary connection details.
+
+
 ## Configuration
 
 ### Environment Variables Configuration Documentation
