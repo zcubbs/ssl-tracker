@@ -28,34 +28,34 @@ represents a set of times, normally as a schedule to execute some routine. The f
 
 ### Environment Variables Configuration Documentation
 
-| Environment Variable                           | Description                                 | Default Value                                                                             |
-|------------------------------------------------|---------------------------------------------|-------------------------------------------------------------------------------------------|
-| `DEBUG`                                        | Application debug mode                      | `false`                                                                                   |
-| `HTTP_SERVER_PORT`                             | HTTP server port                            | `8000`                                                                                    |
-| `HTTP_SERVER_ALLOW_ORIGINS`                    | Allowed origins for CORS                    | `http://localhost:8000,http://localhost:5173,http://127.0.0.1:5173,http://127.0.0.1:8000` |
-| `HTTP_SERVER_ALLOW_HEADERS`                    | Allowed headers for CORS                    | `Origin, Content-Type, Accept`                                                            |
-| `HTTP_SERVER_TZ`                               | Time zone for the HTTP server               | `UTC`                                                                                     |
-| `HTTP_SERVER_ENABLE_PRINT_ROUTES`              | Enable route printing                       | `false`                                                                                   |
-| `DATABASE_POSTGRES_ENABLED`                    | Enable Postgres database                    | `false`                                                                                   |
-| `DATABASE_POSTGRES_HOST`                       | Postgres host                               | `""`                                                                                      |
-| `DATABASE_POSTGRES_PORT`                       | Postgres port                               | `""`                                                                                      |
-| `DATABASE_POSTGRES_USERNAME`                   | Postgres username                           | `""`                                                                                      |
-| `DATABASE_POSTGRES_PASSWORD`                   | Postgres password                           | `""`                                                                                      |
-| `DATABASE_POSTGRES_DATABASE`                   | Postgres database name                      | `""`                                                                                      |
-| `DATABASE_POSTGRES_SSL_MODE`                   | SSL mode for Postgres                       | `""`                                                                                      |
-| `DATABASE_POSTGRES_VERBOSE`                    | Verbose mode for Postgres                   | `""`                                                                                      |
-| `DATABASE_SQLITE_ENABLED`                      | Enable SQLite database                      | `true`                                                                                    |
-| `DATABASE_SQLITE_DB_NAME`                      | SQLite database name                        | `"DefaultDbName"`                                                                         |
-| `CRON_CHECK_CERTIFICATE_VALIDITY_ENABLED`      | Enable certificate validity check cron job  | `true`                                                                                    |
-| `CRON_CHECK_CERTIFICATE_VALIDITY_CRON_PATTERN` | Cron pattern for certificate validity check | `"*/10 * * * * *"`                                                                        |
-| `CRON_SEND_MAIL_NOTIFICATION_ENABLED`          | Enable mail notification cron job           | `true`                                                                                    |
-| `CRON_SEND_MAIL_NOTIFICATION_CRON_PATTERN`     | Cron pattern for mail notification          | `"*/10 * * * * *"`                                                                        |
-| `NOTIFICATION_MAIL_SMTP_ENABLED`               | Enable SMTP for mail notification           | `true`                                                                                    |
-| `NOTIFICATION_MAIL_SMTP_HOST`                  | SMTP host for mail notification             | `"localhost"`                                                                             |
-| `NOTIFICATION_MAIL_SMTP_PORT`                  | SMTP port for mail notification             | `1025`                                                                                    |
-| `NOTIFICATION_MAIL_SMTP_USERNAME`              | SMTP username for mail notification         | `""`                                                                                      |
-| `NOTIFICATION_MAIL_SMTP_PASSWORD`              | SMTP password for mail notification         | `""`                                                                                      |
-| `NOTIFICATION_MAIL_SMTP_FROM`                  | SMTP from address for mail notification     | `"no-reply@tlz"`                                                                          |
+| Environment Variable                           | Description                                 | Default Value                  |
+|------------------------------------------------|---------------------------------------------|--------------------------------|
+| `DEBUG`                                        | Application debug mode                      | `false`                        |
+| `HTTP_SERVER_PORT`                             | HTTP server port                            | `8000`                         |
+| `HTTP_SERVER_ALLOW_ORIGINS`                    | Allowed origins for CORS                    | `*`                            |
+| `HTTP_SERVER_ALLOW_HEADERS`                    | Allowed headers for CORS                    | `Origin, Content-Type, Accept` |
+| `HTTP_SERVER_TZ`                               | Time zone for the HTTP server               | `UTC`                          |
+| `HTTP_SERVER_ENABLE_PRINT_ROUTES`              | Enable route printing                       | `false`                        |
+| `DATABASE_POSTGRES_ENABLED`                    | Enable Postgres database                    | `false`                        |
+| `DATABASE_POSTGRES_HOST`                       | Postgres host                               | `""`                           |
+| `DATABASE_POSTGRES_PORT`                       | Postgres port                               | `""`                           |
+| `DATABASE_POSTGRES_USERNAME`                   | Postgres username                           | `""`                           |
+| `DATABASE_POSTGRES_PASSWORD`                   | Postgres password                           | `""`                           |
+| `DATABASE_POSTGRES_DATABASE`                   | Postgres database name                      | `""`                           |
+| `DATABASE_POSTGRES_SSL_MODE`                   | SSL mode for Postgres                       | `""`                           |
+| `DATABASE_POSTGRES_VERBOSE`                    | Verbose mode for Postgres                   | `""`                           |
+| `DATABASE_SQLITE_ENABLED`                      | Enable SQLite database                      | `true`                         |
+| `DATABASE_SQLITE_DB_NAME`                      | SQLite database name                        | `"DefaultDbName"`              |
+| `CRON_CHECK_CERTIFICATE_VALIDITY_ENABLED`      | Enable certificate validity check cron job  | `true`                         |
+| `CRON_CHECK_CERTIFICATE_VALIDITY_CRON_PATTERN` | Cron pattern for certificate validity check | `"*/10 * * * * *"`             |
+| `CRON_SEND_MAIL_NOTIFICATION_ENABLED`          | Enable mail notification cron job           | `true`                         |
+| `CRON_SEND_MAIL_NOTIFICATION_CRON_PATTERN`     | Cron pattern for mail notification          | `"*/10 * * * * *"`             |
+| `NOTIFICATION_MAIL_SMTP_ENABLED`               | Enable SMTP for mail notification           | `true`                         |
+| `NOTIFICATION_MAIL_SMTP_HOST`                  | SMTP host for mail notification             | `"localhost"`                  |
+| `NOTIFICATION_MAIL_SMTP_PORT`                  | SMTP port for mail notification             | `1025`                         |
+| `NOTIFICATION_MAIL_SMTP_USERNAME`              | SMTP username for mail notification         | `""`                           |
+| `NOTIFICATION_MAIL_SMTP_PASSWORD`              | SMTP password for mail notification         | `""`                           |
+| `NOTIFICATION_MAIL_SMTP_FROM`                  | SMTP from address for mail notification     | `"no-reply@tlz"`               |
 
 ### YAML Configuration Documentation
 
