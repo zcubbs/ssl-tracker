@@ -7,11 +7,11 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
-	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
 	"github.com/zcubbs/tlz/db/migrations"
 	db "github.com/zcubbs/tlz/db/sqlc"
 	"github.com/zcubbs/tlz/handler"
+	"github.com/zcubbs/tlz/pkg/charmlogfiber"
 	"github.com/zcubbs/tlz/pkg/cron"
 	"github.com/zcubbs/tlz/pkg/mail"
 	"github.com/zcubbs/tlz/task"
@@ -25,6 +25,9 @@ var f embed.FS
 func main() {
 	// Bootstrap configuration
 	cfg := util.Bootstrap()
+
+	// Initialize logger
+	//logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{}))
 
 	// Connect to database
 	db.Connect(cfg.Database)
@@ -48,10 +51,7 @@ func main() {
 	app.Use(requestid.New())
 	// Logging Request ID
 	app.Use(requestid.New())
-	app.Use(logger.New(logger.Config{
-		TimeFormat: "02-Jan-2006 15:04:05",
-		TimeZone:   cfg.HttpServer.TZ,
-	}))
+	app.Use(charmlogfiber.New(log.Default()))
 
 	// Or extend your config for customization
 	app.Use(cors.New(cors.Config{
