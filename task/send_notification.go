@@ -48,9 +48,9 @@ func SendMailNotification(ctx context.Context) {
 func sendEmail(notification db.Notification) error {
 	to := strings.Split(notification.SendTo, ",")
 	err := mail.Sender.SendMail(mail.Mail{
-		From: "test",
-		To:   to,
-		Body: notification.Message,
+		Subject: notification.Subject,
+		To:      to,
+		Body:    notification.Message,
 	})
 	if err != nil {
 		return err

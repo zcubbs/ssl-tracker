@@ -1,11 +1,14 @@
 version: '3'
 
+env:
+  GOOS: "{{OS}}"
+
 tasks:
   bootstrap:
     desc: Install all necessary tools and CLI dependencies
     cmds:
       - go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
-      - go install github.com/kyleconroy/sqlc/cmd/sqlc@latest
+      - go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
       - go install github.com/securego/gosec/v2/cmd/gosec@latest
       - go install go.uber.org/mock/mockgen@latest
       - go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
@@ -20,6 +23,13 @@ tasks:
     desc: Install all necessary tools and CLI dependencies for Windows
     cmds:
       - scoop install pack
+
+  bootstrap:linux:
+    desc: Install all necessary tools and CLI dependencies for Linux
+    cmds:
+      - sudo add-apt-repository ppa:cncf-buildpacks/pack-cli
+      - sudo apt-get update
+      - sudo apt-get install pack-cli
 
   go:deps:
     desc: Install Go dependencies
@@ -76,6 +86,11 @@ tasks:
     cmds:
       - cmd: sqlc generate
 
+  sqlc-linux:
+    desc: Generate SQLC code for Linux
+    cmds:
+      - cmd: sqlc generate
+
   mig:gen:
     desc: "Generate migration. Usage: task mig:gen -- <migration_name>"
     cmds:
@@ -84,7 +99,7 @@ tasks:
   mailhog:up:
     desc: Start MailHog
     cmds:
-      - docker run --name mailhog -d -p 1025:1025 -p 8025:8025 mailhog/mailhog
+      - docker run --rm --name mailhog -d -p 1025:1025 -p 8025:8025 mailhog/mailhog
 
   mailhog:down:
     desc: Stop MailHog

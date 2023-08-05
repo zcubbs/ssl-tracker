@@ -17,7 +17,8 @@ type Domain struct {
 }
 
 type Notification struct {
-	ID        int64     `json:"id"`
+	ID        int32     `json:"id"`
+	Subject   string    `json:"subject"`
 	Message   string    `json:"message"`
 	SendTo    string    `json:"send_to"`
 	Channel   string    `json:"channel"`

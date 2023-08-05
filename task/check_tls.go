@@ -8,7 +8,7 @@ import (
 	db "github.com/zcubbs/tlz/db/sqlc"
 	"github.com/zcubbs/tlz/handler"
 	"github.com/zcubbs/tlz/pkg/tls"
-	"html/template"
+	"text/template"
 	"time"
 )
 
@@ -90,6 +90,7 @@ func checkNeedsNotification(ctx context.Context, domain db.Domain, newStatus han
 		}
 
 		if _, err := db.Store.InsertNotification(ctx, db.InsertNotificationParams{
+			Subject: "Domain " + domain.Name + " is now " + (string)(newStatus),
 			Message: body,
 			SendTo:  "tlz.test@yopmail.com",
 			Channel: (string)(NotificationChannelEmail),
@@ -113,7 +114,7 @@ func buildNotificationMessage(domain db.Domain, newStatus handler.Status) (strin
 		PhrasedStatus string
 	}{
 		Name:          domain.Name,
-		PhrasedStatus: "is " + (string)(newStatus),
+		PhrasedStatus: "is now <b>" + (string)(newStatus) + "</b>, was <b>" + domain.Status.String + "</b>.",
 	})
 	if err != nil {
 		return "", err

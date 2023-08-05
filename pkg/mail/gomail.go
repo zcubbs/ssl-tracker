@@ -14,7 +14,7 @@ func (g GoMail) SendMail(mail Mail) error {
 	m := gomail.NewMessage()
 	m.SetHeader("From", g.From)
 	m.SetHeader("To", "tlz.test@yopmail.com")
-	m.SetHeader("Subject", "Certificate Expiry Notification")
+	m.SetHeader("Subject", "[TLZ] Certificate Status - "+mail.Subject)
 	m.SetBody("text/html", mail.Body)
 
 	d := gomail.NewDialer(

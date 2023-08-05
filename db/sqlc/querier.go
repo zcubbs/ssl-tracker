@@ -10,10 +10,10 @@ import (
 
 type Querier interface {
 	DeleteDomain(ctx context.Context, name string) error
-	DeleteNotification(ctx context.Context, id int64) error
+	DeleteNotification(ctx context.Context, id int32) error
 	GetDomain(ctx context.Context, name string) (Domain, error)
 	GetDomains(ctx context.Context) ([]Domain, error)
-	GetNotification(ctx context.Context, id int64) (Notification, error)
+	GetNotification(ctx context.Context, id int32) (Notification, error)
 	GetNotifications(ctx context.Context) ([]Notification, error)
 	GetNotificationsByChannel(ctx context.Context, channel string) ([]Notification, error)
 	InsertDomain(ctx context.Context, arg InsertDomainParams) (Domain, error)

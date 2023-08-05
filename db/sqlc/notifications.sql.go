@@ -13,20 +13,21 @@ const deleteNotification = `-- name: DeleteNotification :exec
 DELETE FROM notifications WHERE id = $1
 `
 
-func (q *Queries) DeleteNotification(ctx context.Context, id int64) error {
+func (q *Queries) DeleteNotification(ctx context.Context, id int32) error {
 	_, err := q.db.ExecContext(ctx, deleteNotification, id)
 	return err
 }
 
 const getNotification = `-- name: GetNotification :one
-SELECT id, message, send_to, channel, created_at FROM notifications WHERE id = $1
+SELECT id, subject, message, send_to, channel, created_at FROM notifications WHERE id = $1
 `
 
-func (q *Queries) GetNotification(ctx context.Context, id int64) (Notification, error) {
+func (q *Queries) GetNotification(ctx context.Context, id int32) (Notification, error) {
 	row := q.db.QueryRowContext(ctx, getNotification, id)
 	var i Notification
 	err := row.Scan(
 		&i.ID,
+		&i.Subject,
 		&i.Message,
 		&i.SendTo,
 		&i.Channel,
@@ -36,7 +37,7 @@ func (q *Queries) GetNotification(ctx context.Context, id int64) (Notification, 
 }
 
 const getNotifications = `-- name: GetNotifications :many
-SELECT id, message, send_to, channel, created_at FROM notifications
+SELECT id, subject, message, send_to, channel, created_at FROM notifications
 `
 
 func (q *Queries) GetNotifications(ctx context.Context) ([]Notification, error) {
@@ -50,6 +51,7 @@ func (q *Queries) GetNotifications(ctx context.Context) ([]Notification, error) 
 		var i Notification
 		if err := rows.Scan(
 			&i.ID,
+			&i.Subject,
 			&i.Message,
 			&i.SendTo,
 			&i.Channel,
@@ -69,7 +71,7 @@ func (q *Queries) GetNotifications(ctx context.Context) ([]Notification, error) 
 }
 
 const getNotificationsByChannel = `-- name: GetNotificationsByChannel :many
-SELECT id, message, send_to, channel, created_at FROM notifications WHERE channel = $1
+SELECT id, subject, message, send_to, channel, created_at FROM notifications WHERE channel = $1
 `
 
 func (q *Queries) GetNotificationsByChannel(ctx context.Context, channel string) ([]Notification, error) {
@@ -83,6 +85,7 @@ func (q *Queries) GetNotificationsByChannel(ctx context.Context, channel string)
 		var i Notification
 		if err := rows.Scan(
 			&i.ID,
+			&i.Subject,
 			&i.Message,
 			&i.SendTo,
 			&i.Channel,
@@ -103,22 +106,29 @@ func (q *Queries) GetNotificationsByChannel(ctx context.Context, channel string)
 
 const insertNotification = `-- name: InsertNotification :one
 INSERT INTO notifications
-  (message, send_to, channel)
-VALUES ($1, $2, $3)
-RETURNING id, message, send_to, channel, created_at
+  (subject, message, send_to, channel)
+VALUES ($1, $2, $3, $4)
+RETURNING id, subject, message, send_to, channel, created_at
 `
 
 type InsertNotificationParams struct {
+	Subject string `json:"subject"`
 	Message string `json:"message"`
 	SendTo  string `json:"send_to"`
 	Channel string `json:"channel"`
 }
 
 func (q *Queries) InsertNotification(ctx context.Context, arg InsertNotificationParams) (Notification, error) {
-	row := q.db.QueryRowContext(ctx, insertNotification, arg.Message, arg.SendTo, arg.Channel)
+	row := q.db.QueryRowContext(ctx, insertNotification,
+		arg.Subject,
+		arg.Message,
+		arg.SendTo,
+		arg.Channel,
+	)
 	var i Notification
 	err := row.Scan(
 		&i.ID,
+		&i.Subject,
 		&i.Message,
 		&i.SendTo,
 		&i.Channel,
@@ -128,20 +138,22 @@ func (q *Queries) InsertNotification(ctx context.Context, arg InsertNotification
 }
 
 const updateNotification = `-- name: UpdateNotification :one
-UPDATE notifications SET message = $1, send_to = $2, channel = $3
-WHERE id = $4
-RETURNING id, message, send_to, channel, created_at
+UPDATE notifications SET subject = $1, message = $2, send_to = $3, channel = $4
+WHERE id = $5
+RETURNING id, subject, message, send_to, channel, created_at
 `
 
 type UpdateNotificationParams struct {
+	Subject string `json:"subject"`
 	Message string `json:"message"`
 	SendTo  string `json:"send_to"`
 	Channel string `json:"channel"`
-	ID      int64  `json:"id"`
+	ID      int32  `json:"id"`
 }
 
 func (q *Queries) UpdateNotification(ctx context.Context, arg UpdateNotificationParams) (Notification, error) {
 	row := q.db.QueryRowContext(ctx, updateNotification,
+		arg.Subject,
 		arg.Message,
 		arg.SendTo,
 		arg.Channel,
@@ -150,6 +162,7 @@ func (q *Queries) UpdateNotification(ctx context.Context, arg UpdateNotification
 	var i Notification
 	err := row.Scan(
 		&i.ID,
+		&i.Subject,
 		&i.Message,
 		&i.SendTo,
 		&i.Channel,
