@@ -1,5 +1,7 @@
 package util
 
+import "time"
+
 type Config struct {
 	Debug        bool               `mapstructure:"debug"`
 	HttpServer   HttpServerConfig   `mapstructure:"http_server"`
@@ -9,16 +11,34 @@ type Config struct {
 }
 
 type HttpServerConfig struct {
-	Port              int    `mapstructure:"port"`
-	AllowOrigins      string `mapstructure:"allow_origins"`
-	AllowHeaders      string `mapstructure:"allow_headers"`
-	TZ                string `mapstructure:"tz"`
-	EnablePrintRoutes bool   `mapstructure:"enable_print_routes"`
+	Port                int           `mapstructure:"port"`
+	AllowOrigins        string        `mapstructure:"allow_origins"`
+	AllowHeaders        string        `mapstructure:"allow_headers"`
+	TZ                  string        `mapstructure:"tz"`
+	EnablePrintRoutes   bool          `mapstructure:"enable_print_routes"`
+	TokenSymmetricKey   string        `mapstructure:"token_symmetric_key"`
+	AccessTokenDuration time.Duration `mapstructure:"access_token_duration"`
 }
+
+type DatabaseType string
+
+const (
+	Postgres DatabaseType = "postgres"
+	Sqlite   DatabaseType = "sqlite"
+)
 
 type DatabaseConfig struct {
 	Postgres PostgresConfig `mapstructure:"postgres" json:"postgres"`
 	Sqlite   SqliteConfig   `mapstructure:"sqlite" json:"sqlite"`
+}
+
+func (dc *DatabaseConfig) GetDatabaseType() DatabaseType {
+	if dc.Postgres.Enabled {
+		return Postgres
+	} else if dc.Sqlite.Enabled {
+		return Sqlite
+	}
+	return ""
 }
 
 type PostgresConfig struct {

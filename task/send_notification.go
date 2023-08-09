@@ -17,10 +17,10 @@ const (
 	NotificationChannelSms   NotificationChannel = "sms"
 )
 
-func SendMailNotification(ctx context.Context) {
+func (t *Task) SendMailNotification(ctx context.Context) {
 	var notifications []db.Notification
 
-	notifications, err := db.Store.GetNotificationsByChannel(ctx, (string)(NotificationChannelEmail))
+	notifications, err := t.store.GetNotificationsByChannel(ctx, (string)(NotificationChannelEmail))
 	if err != nil {
 		log.Error("cannot get notifications from db", "error", err)
 		return
@@ -29,12 +29,12 @@ func SendMailNotification(ctx context.Context) {
 	for _, notification := range notifications {
 		log.Info("sending notification", "notification", notification)
 
-		err = sendEmail(notification)
+		err = t.sendEmail(notification)
 		if err != nil {
 			log.Error("cannot send email notification", "error", err)
 		}
 
-		err = db.Store.DeleteNotification(ctx, notification.ID)
+		err = t.store.DeleteNotification(ctx, notification.ID)
 		if err != nil {
 			log.Error("cannot delete notification", "error", err)
 		}
@@ -45,7 +45,7 @@ func SendMailNotification(ctx context.Context) {
 	}
 }
 
-func sendEmail(notification db.Notification) error {
+func (t *Task) sendEmail(notification db.Notification) error {
 	to := strings.Split(notification.SendTo, ",")
 	err := mail.Sender.SendMail(mail.Mail{
 		Subject: notification.Subject,

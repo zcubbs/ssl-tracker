@@ -2,21 +2,14 @@ package main
 
 import (
 	"embed"
-	"fmt"
 	"github.com/charmbracelet/log"
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/filesystem"
-	"github.com/gofiber/fiber/v2/middleware/requestid"
+	"github.com/zcubbs/tlz/api"
 	"github.com/zcubbs/tlz/db/migrations"
 	db "github.com/zcubbs/tlz/db/sqlc"
-	"github.com/zcubbs/tlz/handler"
-	"github.com/zcubbs/tlz/pkg/charmlogfiber"
 	"github.com/zcubbs/tlz/pkg/cron"
 	"github.com/zcubbs/tlz/pkg/mail"
 	"github.com/zcubbs/tlz/task"
 	"github.com/zcubbs/tlz/util"
-	"net/http"
 )
 
 //go:embed web/dist/*
@@ -30,60 +23,50 @@ func main() {
 	//logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{}))
 
 	// Connect to database
-	db.Connect(cfg.Database)
+	conn, err := util.Connect(cfg.Database)
+	if err != nil {
+		log.Fatal("cannot connect to database", "error", err)
+	}
+
+	// Initialize store
+	store := db.NewStore(conn)
 
 	// Migrate database
-	migrations.Migrate(cfg.Database)
+	err = migrations.Migrate(store, cfg.Database.GetDatabaseType())
+	if err != nil {
+		log.Fatal("cannot migrate database", "error", err)
+	}
 
 	// Start cron jobs
-	startCronJobs(cfg.Cron)
+	startCronJobs(store, cfg.Cron)
 
 	// Initialize mailer
 	mail.Initialize(cfg.Notification.Mail)
 
-	app := fiber.New(fiber.Config{
-		EnablePrintRoutes:     cfg.HttpServer.EnablePrintRoutes,
-		DisableStartupMessage: true,
-	})
-
-	// Initialize default config
-	app.Use(cors.New())
-	app.Use(requestid.New())
-	// Logging Request ID
-	app.Use(requestid.New())
-	app.Use(charmlogfiber.New(log.Default()))
-
-	// Or extend your config for customization
-	app.Use(cors.New(cors.Config{
-		AllowOrigins: cfg.HttpServer.AllowOrigins,
-		AllowHeaders: cfg.HttpServer.AllowHeaders,
-	}))
-
-	app.Post("/api/domains", handler.AddDomain)
-	app.Get("/api/domains", handler.GetDomains)
-
-	// Serve the frontend
-	app.Use("/", filesystem.New(filesystem.Config{
-		Root:       http.FS(f),
-		PathPrefix: "web/dist",
-	}))
-
-	log.Info("starting HTTP server", "port", cfg.HttpServer.Port)
-	log.Fatal(app.Listen(fmt.Sprintf(":%d", cfg.HttpServer.Port)))
+	// Create Server
+	s, err := api.NewServer(store, f, cfg.HttpServer)
+	if err != nil {
+		log.Fatal("cannot create server", "error", err)
+	}
+	err = s.Start()
+	if err != nil {
+		log.Fatal("cannot start server", "error", err)
+	}
 }
 
-func startCronJobs(cfg util.CronConfig) {
+func startCronJobs(store *db.Store, cfg util.CronConfig) {
+	t := task.New(store)
 	if cfg.CheckCertificateValidity.Enabled {
 		go cron.StartCronJob(
 			cfg.CheckCertificateValidity.CronPattern,
-			task.CheckCertificateValidity,
+			t.CheckCertificateValidity,
 		)
 	}
 
 	if cfg.SendMailNotification.Enabled {
 		go cron.StartCronJob(
 			cfg.SendMailNotification.CronPattern,
-			task.SendMailNotification,
+			t.SendMailNotification,
 		)
 	}
 }

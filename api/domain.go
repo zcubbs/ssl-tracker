@@ -1,4 +1,4 @@
-package handler
+package api
 
 import (
 	"database/sql"
@@ -12,11 +12,11 @@ import (
 type Status string
 
 const (
-	StatusValid    Status = "valid"
-	StatusExpired  Status = "expired"
-	StatusUnknown  Status = "unknown"
-	StatusExpiring Status = "expiring"
 	StatusPending  Status = "pending"
+	StatusValid    Status = "valid"
+	StatusUnknown  Status = "unknown"
+	StatusExpired  Status = "expired"
+	StatusExpiring Status = "expiring"
 )
 
 type DomainWrapper struct {
@@ -27,7 +27,7 @@ type DomainWrapper struct {
 	Until             string    `json:"until"`
 }
 
-func AddDomain(c *fiber.Ctx) error {
+func (s *Server) AddDomain(c *fiber.Ctx) error {
 	log.Info(c.Body())
 	// Parse the request body
 	var domain db.Domain
@@ -41,7 +41,7 @@ func AddDomain(c *fiber.Ctx) error {
 	log.Info("Adding domain", "name", domain.Name)
 
 	// Add the domain to the database
-	if _, err := db.Store.InsertDomain(c.Context(), db.InsertDomainParams{
+	if _, err := s.store.InsertDomain(c.Context(), db.InsertDomainParams{
 		Name: domain.Name,
 		Status: sql.NullString{
 			String: (string)(StatusPending),
@@ -59,9 +59,9 @@ func AddDomain(c *fiber.Ctx) error {
 	})
 }
 
-func GetDomains(c *fiber.Ctx) error {
+func (s *Server) GetDomains(c *fiber.Ctx) error {
 	// Get the domains from the database
-	domains, err := db.Store.GetDomains(c.Context())
+	domains, err := s.store.GetDomains(c.Context())
 	if err != nil {
 		log.Error("Cannot get domains", "error", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{

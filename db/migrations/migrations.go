@@ -3,6 +3,8 @@ package migrations
 import (
 	"database/sql"
 	"embed"
+	"errors"
+	"fmt"
 	"github.com/charmbracelet/log"
 	"github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
@@ -18,31 +20,31 @@ import (
 //go:embed *.sql
 var migrations embed.FS
 
-func Migrate(dbCfg util.DatabaseConfig) {
-	if dbCfg.Sqlite.Enabled {
-		migrateSqlite(db.Store.GetConn())
-		return
+func Migrate(store *db.Store, databaseType util.DatabaseType) error {
+	if databaseType == util.Postgres {
+		return migrateSqlite(store.GetConn())
 	}
 
-	if dbCfg.Postgres.Enabled {
-		migratePostgres(db.Store.GetConn())
-		return
+	if databaseType == util.Sqlite {
+		return migratePostgres(store.GetConn())
 	}
+
+	return fmt.Errorf("unknown database type: %s", databaseType)
 }
 
-func migratePostgres(conn *sql.DB) {
+func migratePostgres(conn *sql.DB) error {
 	driver, err := postgres.WithInstance(conn, &postgres.Config{
 		DatabaseName:          "postgres",
 		SchemaName:            "public",
 		MultiStatementEnabled: true,
 	})
 	if err != nil {
-		log.Fatal(err, "failed to create postgres driver")
+		return fmt.Errorf("failed to create postgres driver: %w", err)
 	}
 
 	source, err := httpfs.New(http.FS(migrations), ".")
 	if err != nil {
-		log.Fatal(err, "failed to create migration source")
+		return fmt.Errorf("failed to create migration source: %w", err)
 	}
 
 	m, err := migrate.NewWithInstance(
@@ -52,25 +54,26 @@ func migratePostgres(conn *sql.DB) {
 		driver,
 	)
 	if err != nil {
-		log.Fatal(err, "failed to create migration")
+		return fmt.Errorf("failed to create migration: %w", err)
 	}
 	err = m.Up()
-	if err != nil && err != migrate.ErrNoChange {
-		log.Fatal(err, "failed to apply migration")
+	if err != nil && !errors.Is(err, migrate.ErrNoChange) {
+		return fmt.Errorf("failed to apply migration: %w", err)
 	}
 
 	log.Info("database migration completed")
+	return nil
 }
 
-func migrateSqlite(conn *sql.DB) {
+func migrateSqlite(conn *sql.DB) error {
 	instance, err := sqlite3.WithInstance(conn, &sqlite3.Config{})
 	if err != nil {
-		log.Fatal(err, "failed to create postgres driver")
+		return fmt.Errorf("failed to create postgres driver: %w", err)
 	}
 
 	source, err := httpfs.New(http.FS(migrations), ".")
 	if err != nil {
-		log.Fatal(err, "failed to create migration source")
+		return fmt.Errorf("failed to create migration source: %w", err)
 	}
 
 	m, err := migrate.NewWithInstance(
@@ -80,12 +83,13 @@ func migrateSqlite(conn *sql.DB) {
 		instance,
 	)
 	if err != nil {
-		log.Fatal(err, "failed to create migration")
+		return fmt.Errorf("failed to create migration: %w", err)
 	}
 	err = m.Up()
-	if err != nil && err != migrate.ErrNoChange {
-		log.Fatal(err, "failed to apply migration")
+	if err != nil && !errors.Is(err, migrate.ErrNoChange) {
+		return fmt.Errorf("failed to apply migration: %w", err)
 	}
 
 	log.Info("database migration completed")
+	return nil
 }
