@@ -1,0 +1,5 @@
+ALTER TABLE IF EXISTS "domains" DROP CONSTRAINT IF EXISTS "owner_name_key";
+
+ALTER TABLE IF EXISTS "domains" DROP CONSTRAINT IF EXISTS "domains_owner_fkey";
+
+DROP TABLE IF EXISTS "users";
