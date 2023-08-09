@@ -79,7 +79,7 @@ tasks:
   sqlc-windows:
     desc: Generate SQLC code for Windows
     cmds:
-      - cmd: docker run --rm -v "${PWD}:/src" -w /src kjconroy/sqlc generate
+      - cmd: docker run --rm -v "${PWD}:/src" -w /src sqlc/sqlc generate
 
   sqlc-darwin:
     desc: Generate SQLC code for MacOS
