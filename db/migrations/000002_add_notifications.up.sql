@@ -7,4 +7,4 @@ CREATE TABLE IF NOT EXISTS notifications (
     created_at  TIMESTAMP  NOT NULL DEFAULT current_timestamp
 );
 
-CREATE INDEX ON "notifications" ("channel");
+CREATE INDEX channel_idx ON "notifications" ("channel");

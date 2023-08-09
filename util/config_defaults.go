@@ -17,7 +17,7 @@ var (
 		"http_server.allow_headers":                    "Origin, Content-Type, Accept",
 		"http_server.tz":                               "UTC",
 		"http_server.enable_print_routes":              false,
-		"http_server.token_symmetric_key":              "1234",
+		"http_server.token_symmetric_key":              "12345678901234567890123456789012",
 		"http_server.access_token_duration":            "15m",
 		"database.postgres.enabled":                    false,
 		"database.sqlite.enabled":                      true,

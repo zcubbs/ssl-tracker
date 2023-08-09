@@ -21,11 +21,13 @@ import (
 var migrations embed.FS
 
 func Migrate(store *db.Store, databaseType util.DatabaseType) error {
-	if databaseType == util.Postgres {
+	if databaseType == util.Sqlite {
+		log.Info("SQLite database enabled")
 		return migrateSqlite(store.GetConn())
 	}
 
-	if databaseType == util.Sqlite {
+	if databaseType == util.Postgres {
+		log.Info("Postgres database enabled")
 		return migratePostgres(store.GetConn())
 	}
 

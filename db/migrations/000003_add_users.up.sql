@@ -7,7 +7,4 @@ CREATE TABLE "users" (
                        "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
-ALTER TABLE "domains" ADD FOREIGN KEY ("owner") REFERENCES "users" ("username");
-
--- CREATE UNIQUE INDEX ON "domains" ("owner", "name");
-ALTER TABLE "domains" ADD CONSTRAINT "owner_name_key" UNIQUE ("owner", "name");
+ALTER TABLE "domains" ADD COLUMN "owner" varchar NOT NULL REFERENCES "users" ("username");

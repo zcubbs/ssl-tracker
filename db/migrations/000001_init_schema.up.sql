@@ -4,8 +4,7 @@ CREATE TABLE IF NOT EXISTS domains
     certificate_expiry TIMESTAMP,
     status TEXT,
     issuer TEXT,
-    "owner" varchar NOT NULL,
     "created_at" timestamptz NOT NULL DEFAULT (now())
 );
 
-CREATE INDEX ON "domains" ("owner");
+CREATE UNIQUE INDEX owner_idx ON "domains" ("owner");

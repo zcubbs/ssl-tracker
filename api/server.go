@@ -62,6 +62,9 @@ func (s *Server) getDefaultFiberConfig(staticEmbed embed.FS, cfg util.HttpServer
 		AllowHeaders: cfg.AllowHeaders,
 	}))
 
+	app.Post("/api/users", s.createUser)
+	app.Post("/api/users/login", s.loginUser)
+
 	app.Post("/api/domains", s.AddDomain)
 	app.Get("/api/domains", s.GetDomains)
 

@@ -29,7 +29,12 @@ func (maker *PasetoMaker) CreateToken(username string, duration time.Duration) (
 		return "", err
 	}
 
-	return maker.paseto.Encrypt(maker.symmetricKey, payload, nil)
+	token, err := maker.paseto.Encrypt(maker.symmetricKey, payload, nil)
+	if err != nil {
+		return "", err
+	}
+
+	return token, nil
 }
 
 // VerifyToken checks if the token is valid or not.

@@ -1,6 +1,8 @@
 package util
 
-import "time"
+import (
+	"time"
+)
 
 type Config struct {
 	Debug        bool               `mapstructure:"debug"`
