@@ -16,24 +16,26 @@ import (
 )
 
 type Server struct {
-	store      *db.Store
-	app        *fiber.App
-	tokenMaker token.Maker
-	cfg        util.HttpServerConfig
+	store       *db.Store
+	app         *fiber.App
+	tokenMaker  token.Maker
+	cfg         util.HttpServerConfig
+	staticEmbed *embed.FS
 }
 
-func NewServer(store *db.Store, staticEmbed embed.FS, cfg util.HttpServerConfig) (*Server, error) {
+func NewServer(store *db.Store, staticEmbed *embed.FS, cfg util.HttpServerConfig) (*Server, error) {
 	tokenMaker, err := token.NewPasetoMaker(cfg.TokenSymmetricKey)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create new tokenMaker: %w", err)
 	}
 	s := &Server{
-		store:      store,
-		tokenMaker: tokenMaker,
-		cfg:        cfg,
+		store:       store,
+		tokenMaker:  tokenMaker,
+		cfg:         cfg,
+		staticEmbed: staticEmbed,
 	}
 
-	s.app = s.getDefaultFiberConfig(staticEmbed, cfg)
+	s.ApplyDefaultConfig()
 
 	return s, nil
 }
@@ -43,36 +45,49 @@ func (s *Server) Start() error {
 	return s.app.Listen(fmt.Sprintf(":%d", s.cfg.Port))
 }
 
-func (s *Server) getDefaultFiberConfig(staticEmbed embed.FS, cfg util.HttpServerConfig) *fiber.App {
+func (s *Server) ApplyDefaultConfig() {
 	app := fiber.New(fiber.Config{
-		EnablePrintRoutes:     cfg.EnablePrintRoutes,
+		EnablePrintRoutes:     s.cfg.EnablePrintRoutes,
 		DisableStartupMessage: true,
 	})
 
+	s.app = app
+	s.applyMiddleware()
+	s.addRoutes()
+	s.embedStatic()
+}
+
+func (s *Server) addRoutes() {
+	users := s.app.Group("/api/users")
+	users.Use(AuthMiddleware(s.tokenMaker))
+	users.Post("/login", s.loginUser)
+	users.Post("/", s.createUser)
+
+	domains := s.app.Group("/api/domains")
+	domains.Post("/", s.AddDomain)
+	domains.Get("/", s.GetDomains)
+}
+
+func (s *Server) applyMiddleware() {
 	// Initialize default config
-	app.Use(cors.New())
-	app.Use(requestid.New())
+	s.app.Use(cors.New())
+	s.app.Use(requestid.New())
 	// Logging Request ID
-	app.Use(requestid.New())
-	app.Use(charmlogfiber.New(log.Default()))
+	s.app.Use(requestid.New())
+	s.app.Use(charmlogfiber.New(log.Default()))
 
 	// Or extend your config for customization
-	app.Use(cors.New(cors.Config{
-		AllowOrigins: cfg.AllowOrigins,
-		AllowHeaders: cfg.AllowHeaders,
+	s.app.Use(cors.New(cors.Config{
+		AllowOrigins: s.cfg.AllowOrigins,
+		AllowHeaders: s.cfg.AllowHeaders,
 	}))
+}
 
-	app.Post("/api/users", s.createUser)
-	app.Post("/api/users/login", s.loginUser)
-
-	app.Post("/api/domains", s.AddDomain)
-	app.Get("/api/domains", s.GetDomains)
-
-	// Serve the frontend
-	app.Use("/", filesystem.New(filesystem.Config{
-		Root:       http.FS(staticEmbed),
-		PathPrefix: "web/dist",
-	}))
-
-	return app
+func (s *Server) embedStatic() {
+	if s.staticEmbed != nil {
+		s.app.Use("/", filesystem.New(filesystem.Config{
+			Root:       http.FS(s.staticEmbed),
+			PathPrefix: "web/dist",
+		}))
+	}
 }

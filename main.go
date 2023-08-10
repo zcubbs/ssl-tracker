@@ -44,10 +44,11 @@ func main() {
 	mail.Initialize(cfg.Notification.Mail)
 
 	// Create Server
-	s, err := api.NewServer(store, f, cfg.HttpServer)
+	s, err := api.NewServer(store, &f, cfg.HttpServer)
 	if err != nil {
 		log.Fatal("cannot create server", "error", err)
 	}
+
 	err = s.Start()
 	if err != nil {
 		log.Fatal("cannot start server", "error", err)
