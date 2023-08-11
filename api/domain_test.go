@@ -1,6 +1,7 @@
 package api
 
 import (
+	"bytes"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -68,7 +69,7 @@ func TestGetDomains(t *testing.T) {
 		},
 		{
 			name:       "InvalidDomainName",
-			domainName: "",
+			domainName: "invalid",
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
 					GetDomain(gomock.Any(), gomock.Any()).
@@ -97,6 +98,85 @@ func TestGetDomains(t *testing.T) {
 
 			pathWithParams := fmt.Sprintf("/api/domains/%s", tc.domainName)
 			eq := httptest.NewRequest(fiber.MethodGet, pathWithParams, nil)
+			resp, err := app.Test(eq, -1)
+			require.NoError(t, err)
+			tc.checkResponse(t, resp)
+		})
+	}
+}
+
+func TestCreateDomain(t *testing.T) {
+	domain := randomDomain()
+	domainRequest := CreateDomainRequest{
+		Name: domain.Name,
+	}
+
+	testCases := []struct {
+		name          string
+		request       CreateDomainRequest
+		buildStubs    func(store *mockdb.MockStore)
+		checkResponse func(t *testing.T, response *http.Response)
+	}{
+		{
+			name:    "OK",
+			request: domainRequest,
+			buildStubs: func(store *mockdb.MockStore) {
+				store.EXPECT().
+					InsertDomain(gomock.Any(), gomock.Eq(domainRequest.Name)).
+					Times(1).
+					Return(domain, nil)
+			},
+			checkResponse: func(t *testing.T, response *http.Response) {
+				require.Equal(t, http.StatusOK, response.StatusCode)
+				requireBodyMatchDomain(t, response.Body, domain)
+			},
+		},
+		{
+			name:    "InternalError",
+			request: domainRequest,
+			buildStubs: func(store *mockdb.MockStore) {
+				store.EXPECT().
+					InsertDomain(gomock.Any(), gomock.Eq(domainRequest.Name)).
+					Times(1).
+					Return(db.Domain{}, sql.ErrConnDone)
+			},
+			checkResponse: func(t *testing.T, response *http.Response) {
+				require.Equal(t, http.StatusInternalServerError, response.StatusCode)
+			},
+		},
+		{
+			name:    "InvalidDomainName",
+			request: CreateDomainRequest{Name: "invalid"},
+			buildStubs: func(store *mockdb.MockStore) {
+				store.EXPECT().
+					InsertDomain(gomock.Any(), gomock.Any()).
+					Times(0)
+			},
+			checkResponse: func(t *testing.T, response *http.Response) {
+				require.Equal(t, http.StatusBadRequest, response.StatusCode)
+			},
+		},
+	}
+
+	for i := range testCases {
+		tc := testCases[i]
+
+		t.Run(tc.name, func(t *testing.T) {
+			ctrl := gomock.NewController(t)
+			defer ctrl.Finish()
+
+			store := mockdb.NewMockStore(ctrl)
+			tc.buildStubs(store)
+
+			server := newTestServer(t, store)
+			app := fiber.New()
+			path := "/api/domains"
+			app.Post(path, server.CreateDomain)
+
+			body, err := json.Marshal(tc.request)
+			require.NoError(t, err)
+
+			eq := httptest.NewRequest(fiber.MethodPost, path, bytes.NewReader(body))
 			resp, err := app.Test(eq, -1)
 			require.NoError(t, err)
 			tc.checkResponse(t, resp)

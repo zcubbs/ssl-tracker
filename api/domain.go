@@ -3,6 +3,7 @@ package api
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"github.com/charmbracelet/log"
 	"github.com/gofiber/fiber/v2"
 	db "github.com/zcubbs/tlz/db/sqlc"
@@ -20,30 +21,46 @@ const (
 	StatusExpiring Status = "expiring"
 )
 
-type DomainWrapper struct {
-	Name              string    `json:"name"`
-	Status            Status    `json:"status"`
-	Issuer            string    `json:"issuer"`
-	CertificateExpiry time.Time `json:"certificate_expiry"`
-	Until             string    `json:"until"`
+type CreateDomainRequest struct {
+	Name string `json:"name"`
 }
 
-func (s *Server) AddDomain(c *fiber.Ctx) error {
-	log.Info(c.Body())
+func (s *Server) CreateDomain(c *fiber.Ctx) error {
+	c.Set("Content-Type", "application/json")
 	// Parse the request body
-	var domain db.Domain
-	if err := c.BodyParser(&domain); err != nil {
-		log.Error("Cannot parse JSON", "error", err)
+	var domainRequest CreateDomainRequest
+	if err := c.BodyParser(&domainRequest); err != nil {
+		log.Error("Cannot parse JSON",
+			"error", err,
+			"body", c.Body(),
+		)
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": "Cannot parse JSON",
 		})
 	}
 
-	log.Info("Adding domain", "name", domain.Name)
+	fmt.Println(domainRequest)
+
+	// Validate the request body
+	if !util.IsDomaineNameValid(domainRequest.Name) {
+		log.Error("Invalid domain name", "domain", domainRequest.Name)
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid domain name",
+		})
+	}
+
+	// Check if the domain already exists
+	_, err := s.store.GetDomain(c.Context(), domainRequest.Name)
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
+		log.Error("Cannot get domain", "error", err)
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Cannot get domain",
+		})
+	}
 
 	// Add the domain to the database
 	if _, err := s.store.InsertDomain(c.Context(), db.InsertDomainParams{
-		Name: domain.Name,
+		Name: domainRequest.Name,
 		Status: sql.NullString{
 			String: (string)(StatusPending),
 			Valid:  true,
@@ -60,6 +77,14 @@ func (s *Server) AddDomain(c *fiber.Ctx) error {
 	})
 }
 
+type GetDomainResponse struct {
+	Name              string    `json:"name"`
+	Status            Status    `json:"status"`
+	Issuer            string    `json:"issuer"`
+	CertificateExpiry time.Time `json:"certificate_expiry"`
+	Until             string    `json:"until"`
+}
+
 func (s *Server) GetDomains(c *fiber.Ctx) error {
 	// Get the domains from the database
 	domains, err := s.store.GetDomains(c.Context())
@@ -70,14 +95,14 @@ func (s *Server) GetDomains(c *fiber.Ctx) error {
 		})
 	}
 
-	domainWrappers := make([]DomainWrapper, len(domains))
+	domainResponse := make([]GetDomainResponse, len(domains))
 	for i, domain := range domains {
 		u := "-"
 		if domain.CertificateExpiry.Valid {
 			u = util.TimeUntil(domain.CertificateExpiry.Time)
 		}
 
-		domainWrappers[i] = DomainWrapper{
+		domainResponse[i] = GetDomainResponse{
 			Name:              domain.Name,
 			Status:            (Status)(domain.Status.String),
 			Issuer:            domain.Issuer.String,
@@ -87,7 +112,7 @@ func (s *Server) GetDomains(c *fiber.Ctx) error {
 	}
 
 	// Respond with the domains
-	return c.JSON(domainWrappers)
+	return c.JSON(domainResponse)
 }
 
 type getDomainRequestParams struct {
@@ -104,10 +129,13 @@ func (s *Server) GetDomain(c *fiber.Ctx) error {
 		})
 	}
 
-	if req.Name == "" {
-		log.Error("validation failed", "error", "domain name not provided")
+	if !util.IsDomaineNameValid(req.Name) {
+		log.Error("validation failed",
+			"error", "invalid domain name",
+			"domain", req.Name,
+		)
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Domain name not provided",
+			"error": "Invalid domain name",
 		})
 	}
 

@@ -64,7 +64,7 @@ func (s *Server) addRoutes() {
 	users.Post("/", s.createUser)
 
 	domains := s.app.Group("/api/domains")
-	domains.Post("/", s.AddDomain)
+	domains.Post("/", s.CreateDomain)
 	domains.Get("/", s.GetDomains)
 }
 
