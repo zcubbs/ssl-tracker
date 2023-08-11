@@ -16,14 +16,14 @@ import (
 )
 
 type Server struct {
-	store       *db.Store
+	store       db.Store
 	app         *fiber.App
 	tokenMaker  token.Maker
 	cfg         util.HttpServerConfig
 	staticEmbed *embed.FS
 }
 
-func NewServer(store *db.Store, staticEmbed *embed.FS, cfg util.HttpServerConfig) (*Server, error) {
+func NewServer(store db.Store, staticEmbed *embed.FS, cfg util.HttpServerConfig) (*Server, error) {
 	tokenMaker, err := token.NewPasetoMaker(cfg.TokenSymmetricKey)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create new tokenMaker: %w", err)

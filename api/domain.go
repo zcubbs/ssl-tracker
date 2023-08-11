@@ -2,6 +2,7 @@ package api
 
 import (
 	"database/sql"
+	"errors"
 	"github.com/charmbracelet/log"
 	"github.com/gofiber/fiber/v2"
 	db "github.com/zcubbs/tlz/db/sqlc"
@@ -87,4 +88,43 @@ func (s *Server) GetDomains(c *fiber.Ctx) error {
 
 	// Respond with the domains
 	return c.JSON(domainWrappers)
+}
+
+type getDomainRequestParams struct {
+	Name string `params:"name"`
+}
+
+func (s *Server) GetDomain(c *fiber.Ctx) error {
+	// Get the domain name from the URL
+	var req getDomainRequestParams
+	if err := c.ParamsParser(&req); err != nil {
+		log.Error("Cannot parse URL", "error", err)
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Cannot parse URL",
+		})
+	}
+
+	if req.Name == "" {
+		log.Error("validation failed", "error", "domain name not provided")
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": "Domain name not provided",
+		})
+	}
+
+	// Get the domain from the database
+	domain, err := s.store.GetDomain(c.Context(), req.Name)
+	if err != nil {
+		log.Error("Cannot get domain", "error", err)
+		if errors.Is(err, sql.ErrNoRows) {
+			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
+				"error": "Domain not found",
+			})
+		}
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "Cannot get domain",
+		})
+	}
+
+	// Respond with the domain
+	return c.JSON(domain)
 }

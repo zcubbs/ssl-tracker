@@ -12,7 +12,6 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/golang-migrate/migrate/v4/source/httpfs"
 	_ "github.com/mattes/migrate/source/file"
-	db "github.com/zcubbs/tlz/db/sqlc"
 	"github.com/zcubbs/tlz/util"
 	"net/http"
 )
@@ -20,15 +19,15 @@ import (
 //go:embed *.sql
 var migrations embed.FS
 
-func Migrate(store *db.Store, databaseType util.DatabaseType) error {
+func Migrate(conn *sql.DB, databaseType util.DatabaseType) error {
 	if databaseType == util.Sqlite {
 		log.Info("SQLite database enabled")
-		return migrateSqlite(store.GetConn())
+		return migrateSqlite(conn)
 	}
 
 	if databaseType == util.Postgres {
 		log.Info("Postgres database enabled")
-		return migratePostgres(store.GetConn())
+		return migratePostgres(conn)
 	}
 
 	return fmt.Errorf("unknown database type: %s", databaseType)

@@ -19,6 +19,7 @@ var (
 		"http_server.enable_print_routes":              false,
 		"http_server.token_symmetric_key":              "12345678901234567890123456789012",
 		"http_server.access_token_duration":            "15m",
+		"http_server.refresh_token_duration":           "24h",
 		"database.postgres.enabled":                    false,
 		"database.sqlite.enabled":                      true,
 		"database.sqlite.db_name":                      DefaultDbName,

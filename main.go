@@ -29,10 +29,10 @@ func main() {
 	}
 
 	// Initialize store
-	store := db.NewStore(conn)
+	store := db.NewSQLStore(conn)
 
 	// Migrate database
-	err = migrations.Migrate(store, cfg.Database.GetDatabaseType())
+	err = migrations.Migrate(conn, cfg.Database.GetDatabaseType())
 	if err != nil {
 		log.Fatal("cannot migrate database", "error", err)
 	}
@@ -55,7 +55,7 @@ func main() {
 	}
 }
 
-func startCronJobs(store *db.Store, cfg util.CronConfig) {
+func startCronJobs(store db.Store, cfg util.CronConfig) {
 	t := task.New(store)
 	if cfg.CheckCertificateValidity.Enabled {
 		go cron.StartCronJob(

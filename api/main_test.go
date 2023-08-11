@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func newTestServer(t *testing.T, store *db.Store) *Server {
+func newTestServer(t *testing.T, store db.Store) *Server {
 	config := util.HttpServerConfig{
 		TokenSymmetricKey:   util.RandomString(32),
 		AccessTokenDuration: time.Minute,

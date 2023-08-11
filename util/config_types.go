@@ -13,13 +13,14 @@ type Config struct {
 }
 
 type HttpServerConfig struct {
-	Port                int           `mapstructure:"port"`
-	AllowOrigins        string        `mapstructure:"allow_origins"`
-	AllowHeaders        string        `mapstructure:"allow_headers"`
-	TZ                  string        `mapstructure:"tz"`
-	EnablePrintRoutes   bool          `mapstructure:"enable_print_routes"`
-	TokenSymmetricKey   string        `mapstructure:"token_symmetric_key"`
-	AccessTokenDuration time.Duration `mapstructure:"access_token_duration"`
+	Port                 int           `mapstructure:"port"`
+	AllowOrigins         string        `mapstructure:"allow_origins"`
+	AllowHeaders         string        `mapstructure:"allow_headers"`
+	TZ                   string        `mapstructure:"tz"`
+	EnablePrintRoutes    bool          `mapstructure:"enable_print_routes"`
+	TokenSymmetricKey    string        `mapstructure:"token_symmetric_key"`
+	AccessTokenDuration  time.Duration `mapstructure:"access_token_duration"`
+	RefreshTokenDuration time.Duration `mapstructure:"refresh_token_duration"`
 }
 
 type DatabaseType string

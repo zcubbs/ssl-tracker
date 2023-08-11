@@ -4,18 +4,16 @@ import (
 	"database/sql"
 )
 
-type Store struct {
+type Store interface {
+	Querier
+}
+
+type SQLStore struct {
 	*Queries
-	db *sql.DB
 }
 
-func (s Store) GetConn() *sql.DB {
-	return s.db
-}
-
-func NewStore(db *sql.DB) *Store {
-	return &Store{
+func NewSQLStore(db *sql.DB) Store {
+	return &SQLStore{
 		Queries: New(db),
-		db:      db,
 	}
 }

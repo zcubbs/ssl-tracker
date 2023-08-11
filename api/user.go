@@ -121,7 +121,7 @@ func (s *Server) loginUser(c *fiber.Ctx) error {
 		})
 	}
 
-	accessToken, err := s.tokenMaker.CreateToken(
+	accessToken, accessPayload, err := s.tokenMaker.CreateToken(
 		user.Username,
 		s.cfg.AccessTokenDuration,
 	)
@@ -133,9 +133,42 @@ func (s *Server) loginUser(c *fiber.Ctx) error {
 		})
 	}
 
+	refreshToken, refreshPayload, err := s.tokenMaker.CreateToken(
+		user.Username,
+		s.cfg.RefreshTokenDuration,
+	)
+	if err != nil {
+		log.Error("failed to create refresh token", "error", err)
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": true,
+			"msg":   "could not create refresh token",
+		})
+	}
+
+	session, err := s.store.CreateSession(c.Context(), db.CreateSessionParams{
+		ID:           refreshPayload.ID,
+		Username:     user.Username,
+		RefreshToken: refreshToken,
+		UserAgent:    "",
+		ClientIp:     "",
+		IsBlocked:    false,
+		ExpiresAt:    refreshPayload.ExpiredAt,
+	})
+	if err != nil {
+		log.Error("failed to create session", "error", err)
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": true,
+			"msg":   "could not create user session",
+		})
+	}
+
 	rsp := loginUserResponse{
-		AccessToken: accessToken,
-		User:        newUserResponse(user),
+		SessionID:             session.ID,
+		AccessToken:           accessToken,
+		AccessTokenExpiresAt:  accessPayload.ExpiredAt,
+		RefreshToken:          refreshToken,
+		RefreshTokenExpiresAt: refreshPayload.ExpiredAt,
+		User:                  newUserResponse(user),
 	}
 
 	return c.Status(fiber.StatusOK).JSON(&rsp)
