@@ -1,10 +1,10 @@
 package main
 
 import (
+	"context"
 	"embed"
 	"github.com/charmbracelet/log"
 	"github.com/zcubbs/tlz/api"
-	"github.com/zcubbs/tlz/db/migrations"
 	db "github.com/zcubbs/tlz/db/sqlc"
 	"github.com/zcubbs/tlz/pkg/cron"
 	"github.com/zcubbs/tlz/pkg/mail"
@@ -22,20 +22,16 @@ func main() {
 	// Initialize logger
 	//logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{}))
 
+	ctx := context.Background()
 	// Connect to database
-	conn, err := util.Connect(cfg.Database)
+	conn, err := util.Connect(ctx, cfg.Database)
 	if err != nil {
 		log.Fatal("cannot connect to database", "error", err)
 	}
+	defer conn.Close(ctx)
 
 	// Initialize store
 	store := db.NewSQLStore(conn)
-
-	// Migrate database
-	err = migrations.Migrate(conn, cfg.Database.GetDatabaseType())
-	if err != nil {
-		log.Fatal("cannot migrate database", "error", err)
-	}
 
 	// Start cron jobs
 	startCronJobs(store, cfg.Cron)

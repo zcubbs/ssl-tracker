@@ -7,7 +7,9 @@ package db
 
 import (
 	"context"
-	"database/sql"
+
+	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const deleteDomain = `-- name: DeleteDomain :exec
@@ -15,35 +17,17 @@ DELETE FROM domains WHERE name = $1
 `
 
 func (q *Queries) DeleteDomain(ctx context.Context, name string) error {
-	_, err := q.db.ExecContext(ctx, deleteDomain, name)
+	_, err := q.db.Exec(ctx, deleteDomain, name)
 	return err
 }
 
-const getDomain = `-- name: GetDomain :one
-SELECT name, certificate_expiry, status, issuer, owner, created_at FROM domains WHERE name = $1
-`
-
-func (q *Queries) GetDomain(ctx context.Context, name string) (Domain, error) {
-	row := q.db.QueryRowContext(ctx, getDomain, name)
-	var i Domain
-	err := row.Scan(
-		&i.Name,
-		&i.CertificateExpiry,
-		&i.Status,
-		&i.Issuer,
-		&i.Owner,
-		&i.CreatedAt,
-	)
-	return i, err
-}
-
-const getDomains = `-- name: GetDomains :many
-SELECT name, certificate_expiry, status, issuer, owner, created_at FROM domains
+const getAllDomains = `-- name: GetAllDomains :many
+SELECT id, name, certificate_expiry, status, issuer, owner, created_at FROM domains
 ORDER BY name
 `
 
-func (q *Queries) GetDomains(ctx context.Context) ([]Domain, error) {
-	rows, err := q.db.QueryContext(ctx, getDomains)
+func (q *Queries) GetAllDomains(ctx context.Context) ([]Domain, error) {
+	rows, err := q.db.Query(ctx, getAllDomains)
 	if err != nil {
 		return nil, err
 	}
@@ -52,6 +36,7 @@ func (q *Queries) GetDomains(ctx context.Context) ([]Domain, error) {
 	for rows.Next() {
 		var i Domain
 		if err := rows.Scan(
+			&i.ID,
 			&i.Name,
 			&i.CertificateExpiry,
 			&i.Status,
@@ -63,8 +48,39 @@ func (q *Queries) GetDomains(ctx context.Context) ([]Domain, error) {
 		}
 		items = append(items, i)
 	}
-	if err := rows.Close(); err != nil {
+	if err := rows.Err(); err != nil {
 		return nil, err
+	}
+	return items, nil
+}
+
+const getAllDomainsByOwner = `-- name: GetAllDomainsByOwner :many
+SELECT id, name, certificate_expiry, status, issuer, owner, created_at FROM domains
+WHERE owner = $1
+ORDER BY name
+`
+
+func (q *Queries) GetAllDomainsByOwner(ctx context.Context, owner uuid.UUID) ([]Domain, error) {
+	rows, err := q.db.Query(ctx, getAllDomainsByOwner, owner)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	items := []Domain{}
+	for rows.Next() {
+		var i Domain
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.CertificateExpiry,
+			&i.Status,
+			&i.Issuer,
+			&i.Owner,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -72,22 +88,67 @@ func (q *Queries) GetDomains(ctx context.Context) ([]Domain, error) {
 	return items, nil
 }
 
+const getDomain = `-- name: GetDomain :one
+SELECT id, name, certificate_expiry, status, issuer, owner, created_at FROM domains WHERE name = $1
+`
+
+func (q *Queries) GetDomain(ctx context.Context, name string) (Domain, error) {
+	row := q.db.QueryRow(ctx, getDomain, name)
+	var i Domain
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.CertificateExpiry,
+		&i.Status,
+		&i.Issuer,
+		&i.Owner,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const getDomainByOwner = `-- name: GetDomainByOwner :one
+SELECT id, name, certificate_expiry, status, issuer, owner, created_at FROM domains
+WHERE owner = $1 AND name = $2
+`
+
+type GetDomainByOwnerParams struct {
+	Owner uuid.UUID `json:"owner"`
+	Name  string    `json:"name"`
+}
+
+func (q *Queries) GetDomainByOwner(ctx context.Context, arg GetDomainByOwnerParams) (Domain, error) {
+	row := q.db.QueryRow(ctx, getDomainByOwner, arg.Owner, arg.Name)
+	var i Domain
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.CertificateExpiry,
+		&i.Status,
+		&i.Issuer,
+		&i.Owner,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const insertDomain = `-- name: InsertDomain :one
 INSERT INTO domains
     (name,status)
 VALUES ($1,$2)
-RETURNING name, certificate_expiry, status, issuer, owner, created_at
+RETURNING id, name, certificate_expiry, status, issuer, owner, created_at
 `
 
 type InsertDomainParams struct {
-	Name   string         `json:"name"`
-	Status sql.NullString `json:"status"`
+	Name   string      `json:"name"`
+	Status pgtype.Text `json:"status"`
 }
 
 func (q *Queries) InsertDomain(ctx context.Context, arg InsertDomainParams) (Domain, error) {
-	row := q.db.QueryRowContext(ctx, insertDomain, arg.Name, arg.Status)
+	row := q.db.QueryRow(ctx, insertDomain, arg.Name, arg.Status)
 	var i Domain
 	err := row.Scan(
+		&i.ID,
 		&i.Name,
 		&i.CertificateExpiry,
 		&i.Status,
@@ -102,18 +163,18 @@ const updateDomain = `-- name: UpdateDomain :one
 UPDATE domains
 SET status = $1, certificate_expiry = $2, issuer = $3
 WHERE name = $4
-RETURNING name, certificate_expiry, status, issuer, owner, created_at
+RETURNING id, name, certificate_expiry, status, issuer, owner, created_at
 `
 
 type UpdateDomainParams struct {
-	Status            sql.NullString `json:"status"`
-	CertificateExpiry sql.NullTime   `json:"certificate_expiry"`
-	Issuer            sql.NullString `json:"issuer"`
-	Name              string         `json:"name"`
+	Status            pgtype.Text      `json:"status"`
+	CertificateExpiry pgtype.Timestamp `json:"certificate_expiry"`
+	Issuer            pgtype.Text      `json:"issuer"`
+	Name              string           `json:"name"`
 }
 
 func (q *Queries) UpdateDomain(ctx context.Context, arg UpdateDomainParams) (Domain, error) {
-	row := q.db.QueryRowContext(ctx, updateDomain,
+	row := q.db.QueryRow(ctx, updateDomain,
 		arg.Status,
 		arg.CertificateExpiry,
 		arg.Issuer,
@@ -121,6 +182,7 @@ func (q *Queries) UpdateDomain(ctx context.Context, arg UpdateDomainParams) (Dom
 	)
 	var i Domain
 	err := row.Scan(
+		&i.ID,
 		&i.Name,
 		&i.CertificateExpiry,
 		&i.Status,

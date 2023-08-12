@@ -3,6 +3,9 @@ version: '3'
 env:
   GOOS: "{{OS}}"
 
+vars:
+  TEST_DB_URL: "postgres://postgres:postgres@localhost:5432/tlz?sslmode=disable"
+
 tasks:
   bootstrap:
     desc: Install all necessary tools and CLI dependencies
@@ -91,11 +94,6 @@ tasks:
     cmds:
       - cmd: sqlc generate
 
-  mig:gen:
-    desc: "Generate migration. Usage: task mig:gen -- <migration_name>"
-    cmds:
-      - cmd: migrate create -ext sql -dir db/migrations -seq {{.CLI_ARGS}}
-
   mailhog:up:
     desc: Start MailHog
     cmds:
@@ -105,3 +103,49 @@ tasks:
     desc: Stop MailHog
     cmds:
       - docker stop mailhog
+
+  pg:
+    desc: Start Postgres
+    cmds:
+      - docker run --rm --name tlz-postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=tlz -p 5432:5432 -d postgres:14-alpine
+
+  pg:down:
+    desc: Stop Postgres
+    cmds:
+      - docker stop tlz-postgres
+
+  createdb:
+    desc: Create database
+    cmds:
+      - docker exec -it tlz-postgres createdb --username=postgres --owner=postgres tlz
+
+  dropdb:
+    desc: Drop database
+    cmds:
+      - docker exec -it tlz-postgres dropdb --username=postgres tlz
+
+  migrate:
+    desc: Run database migration
+    cmds:
+      - migrate -path db/migrations -database "{{.TEST_DB_URL}}" -verbose up
+
+  migrate:down:
+    desc: Rollback database migration
+    cmds:
+      - migrate -path db/migrations -database "{{.TEST_DB_URL}}" -verbose down
+
+  migrate:new:
+    desc: "Generate migration. Usage: task migrate:new -- <migration_name>"
+    cmds:
+      - cmd: migrate create -ext sql -dir db/migrations -seq {{.CLI_ARGS}}
+
+  network:
+    desc: Create Docker network
+    cmds:
+      - docker network create tlz
+
+  up:
+    desc: Start the application with all dependencies
+    deps: [ pg, createdb, migrate, mailhog:up, go:build ]
+    cmds:
+      - ./bin/server

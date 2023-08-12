@@ -31,15 +31,13 @@ const (
 )
 
 type DatabaseConfig struct {
-	Postgres PostgresConfig `mapstructure:"postgres" json:"postgres"`
-	Sqlite   SqliteConfig   `mapstructure:"sqlite" json:"sqlite"`
+	AutoMigration bool           `mapstructure:"auto_migration" json:"auto_migration"`
+	Postgres      PostgresConfig `mapstructure:"postgres" json:"postgres"`
 }
 
 func (dc *DatabaseConfig) GetDatabaseType() DatabaseType {
 	if dc.Postgres.Enabled {
 		return Postgres
-	} else if dc.Sqlite.Enabled {
-		return Sqlite
 	}
 	return ""
 }
@@ -55,11 +53,6 @@ type PostgresConfig struct {
 	Verbose  bool   `mapstructure:"verbose" json:"verbose"`
 	CertPem  string `mapstructure:"cert_pem"`
 	CertKey  string `mapstructure:"cert_key"`
-}
-
-type SqliteConfig struct {
-	Enabled bool   `mapstructure:"enabled" json:"enabled"`
-	DbName  string `mapstructure:"db_name" json:"db_name"`
 }
 
 type CronConfig struct {

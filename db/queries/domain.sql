@@ -7,7 +7,16 @@ RETURNING *;
 -- name: GetDomain :one
 SELECT * FROM domains WHERE name = $1;
 
--- name: GetDomains :many
+-- name: GetDomainByOwner :one
+SELECT * FROM domains
+WHERE owner = $1 AND name = $2;
+
+-- name: GetAllDomainsByOwner :many
+SELECT * FROM domains
+WHERE owner = $1
+ORDER BY name;
+
+-- name: GetAllDomains :many
 SELECT * FROM domains
 ORDER BY name;
 

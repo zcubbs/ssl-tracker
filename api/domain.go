@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/charmbracelet/log"
 	"github.com/gofiber/fiber/v2"
+	"github.com/jackc/pgx/v5/pgtype"
 	db "github.com/zcubbs/tlz/db/sqlc"
 	"github.com/zcubbs/tlz/util"
 	"time"
@@ -19,6 +20,11 @@ const (
 	StatusUnknown  Status = "unknown"
 	StatusExpired  Status = "expired"
 	StatusExpiring Status = "expiring"
+)
+
+const (
+	InvalidDomainName = "Invalid domain name"
+	CannotGetDomain   = "Cannot get domain(s)"
 )
 
 type CreateDomainRequest struct {
@@ -43,25 +49,25 @@ func (s *Server) CreateDomain(c *fiber.Ctx) error {
 
 	// Validate the request body
 	if !util.IsDomaineNameValid(domainRequest.Name) {
-		log.Error("Invalid domain name", "domain", domainRequest.Name)
+		log.Error(InvalidDomainName, "domain", domainRequest.Name)
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid domain name",
+			"error": InvalidDomainName,
 		})
 	}
 
 	// Check if the domain already exists
 	_, err := s.store.GetDomain(c.Context(), domainRequest.Name)
 	if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		log.Error("Cannot get domain", "error", err)
+		log.Error(CannotGetDomain, "error", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Cannot get domain",
+			"error": CannotGetDomain,
 		})
 	}
 
 	// Add the domain to the database
 	if _, err := s.store.InsertDomain(c.Context(), db.InsertDomainParams{
 		Name: domainRequest.Name,
-		Status: sql.NullString{
+		Status: pgtype.Text{
 			String: (string)(StatusPending),
 			Valid:  true,
 		},
@@ -87,11 +93,11 @@ type GetDomainResponse struct {
 
 func (s *Server) GetDomains(c *fiber.Ctx) error {
 	// Get the domains from the database
-	domains, err := s.store.GetDomains(c.Context())
+	domains, err := s.store.GetAllDomains(c.Context())
 	if err != nil {
-		log.Error("Cannot get domains", "error", err)
+		log.Error(CannotGetDomain, "error", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Cannot get domains",
+			"error": CannotGetDomain,
 		})
 	}
 
@@ -131,25 +137,25 @@ func (s *Server) GetDomain(c *fiber.Ctx) error {
 
 	if !util.IsDomaineNameValid(req.Name) {
 		log.Error("validation failed",
-			"error", "invalid domain name",
+			"error", InvalidDomainName,
 			"domain", req.Name,
 		)
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
-			"error": "Invalid domain name",
+			"error": InvalidDomainName,
 		})
 	}
 
 	// Get the domain from the database
 	domain, err := s.store.GetDomain(c.Context(), req.Name)
 	if err != nil {
-		log.Error("Cannot get domain", "error", err)
+		log.Error(CannotGetDomain, "error", err)
 		if errors.Is(err, sql.ErrNoRows) {
 			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 				"error": "Domain not found",
 			})
 		}
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": "Cannot get domain",
+			"error": CannotGetDomain,
 		})
 	}
 

@@ -3,8 +3,8 @@ package task
 import (
 	"bytes"
 	"context"
-	"database/sql"
 	"github.com/charmbracelet/log"
+	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/zcubbs/tlz/api"
 	db "github.com/zcubbs/tlz/db/sqlc"
 	"github.com/zcubbs/tlz/pkg/tls"
@@ -13,7 +13,7 @@ import (
 )
 
 func (t *Task) CheckCertificateValidity(ctx context.Context) {
-	domains, err := t.store.GetDomains(ctx)
+	domains, err := t.store.GetAllDomains(ctx)
 	if err != nil {
 		log.Error("Cannot get domains", "error", err)
 		return
@@ -31,7 +31,7 @@ func (t *Task) CheckCertificateValidity(ctx context.Context) {
 			if _, err := t.store.UpdateDomain(ctx, db.UpdateDomainParams{
 				Status:            domain.Status,
 				CertificateExpiry: domain.CertificateExpiry,
-				Issuer:            sql.NullString{},
+				Issuer:            pgtype.Text{},
 				Name:              domain.Name,
 			}); err != nil {
 				log.Error("Cannot update domain", "error", err)

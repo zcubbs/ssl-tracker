@@ -7,7 +7,8 @@ package db
 
 import (
 	"context"
-	"database/sql"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createUser = `-- name: CreateUser :one
@@ -18,7 +19,7 @@ INSERT INTO users (
   email
 ) VALUES (
            $1, $2, $3, $4
-         ) RETURNING username, hashed_password, full_name, email, password_changed_at, created_at
+         ) RETURNING id, username, hashed_password, full_name, email, password_changed_at, created_at
 `
 
 type CreateUserParams struct {
@@ -29,7 +30,7 @@ type CreateUserParams struct {
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, createUser,
+	row := q.db.QueryRow(ctx, createUser,
 		arg.Username,
 		arg.HashedPassword,
 		arg.FullName,
@@ -37,6 +38,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 	)
 	var i User
 	err := row.Scan(
+		&i.ID,
 		&i.Username,
 		&i.HashedPassword,
 		&i.FullName,
@@ -48,14 +50,35 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 }
 
 const getUser = `-- name: GetUser :one
-SELECT username, hashed_password, full_name, email, password_changed_at, created_at FROM users
+SELECT id, username, hashed_password, full_name, email, password_changed_at, created_at FROM users
 WHERE username = $1 LIMIT 1
 `
 
 func (q *Queries) GetUser(ctx context.Context, username string) (User, error) {
-	row := q.db.QueryRowContext(ctx, getUser, username)
+	row := q.db.QueryRow(ctx, getUser, username)
 	var i User
 	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.HashedPassword,
+		&i.FullName,
+		&i.Email,
+		&i.PasswordChangedAt,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
+const getUserByEmail = `-- name: GetUserByEmail :one
+SELECT id, username, hashed_password, full_name, email, password_changed_at, created_at FROM users
+WHERE email = $1 LIMIT 1
+`
+
+func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
+	row := q.db.QueryRow(ctx, getUserByEmail, email)
+	var i User
+	err := row.Scan(
+		&i.ID,
 		&i.Username,
 		&i.HashedPassword,
 		&i.FullName,
@@ -75,19 +98,19 @@ SET
   email = COALESCE($4, email)
 WHERE
     username = $5
-  RETURNING username, hashed_password, full_name, email, password_changed_at, created_at
+  RETURNING id, username, hashed_password, full_name, email, password_changed_at, created_at
 `
 
 type UpdateUserParams struct {
-	HashedPassword    sql.NullString `json:"hashed_password"`
-	PasswordChangedAt sql.NullTime   `json:"password_changed_at"`
-	FullName          sql.NullString `json:"full_name"`
-	Email             sql.NullString `json:"email"`
-	Username          string         `json:"username"`
+	HashedPassword    pgtype.Text        `json:"hashed_password"`
+	PasswordChangedAt pgtype.Timestamptz `json:"password_changed_at"`
+	FullName          pgtype.Text        `json:"full_name"`
+	Email             pgtype.Text        `json:"email"`
+	Username          string             `json:"username"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
-	row := q.db.QueryRowContext(ctx, updateUser,
+	row := q.db.QueryRow(ctx, updateUser,
 		arg.HashedPassword,
 		arg.PasswordChangedAt,
 		arg.FullName,
@@ -96,6 +119,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 	)
 	var i User
 	err := row.Scan(
+		&i.ID,
 		&i.Username,
 		&i.HashedPassword,
 		&i.FullName,

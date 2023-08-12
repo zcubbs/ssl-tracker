@@ -7,14 +7,16 @@ package db
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 )
 
 const deleteNotification = `-- name: DeleteNotification :exec
 DELETE FROM notifications WHERE id = $1
 `
 
-func (q *Queries) DeleteNotification(ctx context.Context, id int32) error {
-	_, err := q.db.ExecContext(ctx, deleteNotification, id)
+func (q *Queries) DeleteNotification(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.Exec(ctx, deleteNotification, id)
 	return err
 }
 
@@ -22,8 +24,8 @@ const getNotification = `-- name: GetNotification :one
 SELECT id, subject, message, send_to, channel, created_at FROM notifications WHERE id = $1
 `
 
-func (q *Queries) GetNotification(ctx context.Context, id int32) (Notification, error) {
-	row := q.db.QueryRowContext(ctx, getNotification, id)
+func (q *Queries) GetNotification(ctx context.Context, id uuid.UUID) (Notification, error) {
+	row := q.db.QueryRow(ctx, getNotification, id)
 	var i Notification
 	err := row.Scan(
 		&i.ID,
@@ -41,7 +43,7 @@ SELECT id, subject, message, send_to, channel, created_at FROM notifications
 `
 
 func (q *Queries) GetNotifications(ctx context.Context) ([]Notification, error) {
-	rows, err := q.db.QueryContext(ctx, getNotifications)
+	rows, err := q.db.Query(ctx, getNotifications)
 	if err != nil {
 		return nil, err
 	}
@@ -60,9 +62,6 @@ func (q *Queries) GetNotifications(ctx context.Context) ([]Notification, error) 
 			return nil, err
 		}
 		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -75,7 +74,7 @@ SELECT id, subject, message, send_to, channel, created_at FROM notifications WHE
 `
 
 func (q *Queries) GetNotificationsByChannel(ctx context.Context, channel string) ([]Notification, error) {
-	rows, err := q.db.QueryContext(ctx, getNotificationsByChannel, channel)
+	rows, err := q.db.Query(ctx, getNotificationsByChannel, channel)
 	if err != nil {
 		return nil, err
 	}
@@ -94,9 +93,6 @@ func (q *Queries) GetNotificationsByChannel(ctx context.Context, channel string)
 			return nil, err
 		}
 		items = append(items, i)
-	}
-	if err := rows.Close(); err != nil {
-		return nil, err
 	}
 	if err := rows.Err(); err != nil {
 		return nil, err
@@ -119,7 +115,7 @@ type InsertNotificationParams struct {
 }
 
 func (q *Queries) InsertNotification(ctx context.Context, arg InsertNotificationParams) (Notification, error) {
-	row := q.db.QueryRowContext(ctx, insertNotification,
+	row := q.db.QueryRow(ctx, insertNotification,
 		arg.Subject,
 		arg.Message,
 		arg.SendTo,
@@ -144,15 +140,15 @@ RETURNING id, subject, message, send_to, channel, created_at
 `
 
 type UpdateNotificationParams struct {
-	Subject string `json:"subject"`
-	Message string `json:"message"`
-	SendTo  string `json:"send_to"`
-	Channel string `json:"channel"`
-	ID      int32  `json:"id"`
+	Subject string    `json:"subject"`
+	Message string    `json:"message"`
+	SendTo  string    `json:"send_to"`
+	Channel string    `json:"channel"`
+	ID      uuid.UUID `json:"id"`
 }
 
 func (q *Queries) UpdateNotification(ctx context.Context, arg UpdateNotificationParams) (Notification, error) {
-	row := q.db.QueryRowContext(ctx, updateNotification,
+	row := q.db.QueryRow(ctx, updateNotification,
 		arg.Subject,
 		arg.Message,
 		arg.SendTo,

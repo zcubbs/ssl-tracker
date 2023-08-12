@@ -14,14 +14,18 @@ type Querier interface {
 	CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	DeleteDomain(ctx context.Context, name string) error
-	DeleteNotification(ctx context.Context, id int32) error
+	DeleteNotification(ctx context.Context, id uuid.UUID) error
+	GetAllDomains(ctx context.Context) ([]Domain, error)
+	GetAllDomainsByOwner(ctx context.Context, owner uuid.UUID) ([]Domain, error)
 	GetDomain(ctx context.Context, name string) (Domain, error)
-	GetDomains(ctx context.Context) ([]Domain, error)
-	GetNotification(ctx context.Context, id int32) (Notification, error)
+	GetDomainByOwner(ctx context.Context, arg GetDomainByOwnerParams) (Domain, error)
+	GetNotification(ctx context.Context, id uuid.UUID) (Notification, error)
 	GetNotifications(ctx context.Context) ([]Notification, error)
 	GetNotificationsByChannel(ctx context.Context, channel string) ([]Notification, error)
 	GetSession(ctx context.Context, id uuid.UUID) (Session, error)
+	GetSessionByUserId(ctx context.Context, userID uuid.UUID) (Session, error)
 	GetUser(ctx context.Context, username string) (User, error)
+	GetUserByEmail(ctx context.Context, email string) (User, error)
 	InsertDomain(ctx context.Context, arg InsertDomainParams) (Domain, error)
 	InsertNotification(ctx context.Context, arg InsertNotificationParams) (Notification, error)
 	UpdateDomain(ctx context.Context, arg UpdateDomainParams) (Domain, error)

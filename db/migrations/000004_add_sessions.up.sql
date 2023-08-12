@@ -1,10 +1,15 @@
-CREATE TABLE IF NOT EXISTS "sessions" (
-                       "id" uuid PRIMARY KEY,
-                       "username" varchar NOT NULL REFERENCES "users" ("username") ON DELETE CASCADE,
-                       "refresh_token" varchar NOT NULL,
-                       "user_agent" varchar NOT NULL,
-                       "client_ip" varchar UNIQUE NOT NULL,
-                       "is_blocked" boolean NOT NULL DEFAULT false,
-                       "expires_at" timestamptz NOT NULL,
-                       "created_at" timestamptz NOT NULL DEFAULT (now())
+CREATE TABLE IF NOT EXISTS "sessions"
+(
+  "id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  "user_id" UUID NOT NULL,
+  "refresh_token" TEXT NOT NULL,
+  "user_agent" varchar NOT NULL,
+  "client_ip" varchar UNIQUE NOT NULL,
+  "is_blocked" boolean NOT NULL DEFAULT false,
+  "expires_at" timestamptz NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT current_timestamp
 );
+
+CREATE UNIQUE INDEX idx_sessions_user_id ON "sessions" ("user_id");
+
+ALTER TABLE "sessions" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");

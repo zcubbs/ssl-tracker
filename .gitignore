@@ -35,3 +35,4 @@ database.sqlite
 
 /layers/
 /bin/
+!/db/sqlc/test.db.sqlite

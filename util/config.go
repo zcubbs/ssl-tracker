@@ -1,7 +1,7 @@
 package util
 
 import (
-	"fmt"
+	"github.com/charmbracelet/log"
 	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 	"strings"
@@ -24,7 +24,7 @@ func loadConfig() {
 
 	if err != nil {
 		if viper.GetString("debug") == "true" {
-			fmt.Println("loading .env file")
+			log.Warn("No .env file found")
 		}
 	}
 
@@ -41,7 +41,7 @@ func loadConfig() {
 
 	err = viper.ReadInConfig()
 	if err != nil {
-		fmt.Printf("warn: %s\n", err)
+		log.Warn("Cannot read config file", "path", ViperConfigName+"."+ViperConfigType)
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
@@ -50,13 +50,13 @@ func loadConfig() {
 	for _, key := range allowedEnvVarKeys {
 		err := viper.BindEnv(key)
 		if err != nil {
-			fmt.Printf("error: %s", err)
+			log.Printf("error: %s", err)
 		}
 	}
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
 	err = viper.Unmarshal(&config)
 	if err != nil {
-		fmt.Printf("warn: could not decode config into struct: %v", err)
+		log.Printf("warn: could not decode config into struct: %v", err)
 	}
 }

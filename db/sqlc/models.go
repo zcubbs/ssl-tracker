@@ -5,23 +5,24 @@
 package db
 
 import (
-	"database/sql"
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Domain struct {
-	Name              string         `json:"name"`
-	CertificateExpiry sql.NullTime   `json:"certificate_expiry"`
-	Status            sql.NullString `json:"status"`
-	Issuer            sql.NullString `json:"issuer"`
-	Owner             string         `json:"owner"`
-	CreatedAt         time.Time      `json:"created_at"`
+	ID                uuid.UUID        `json:"id"`
+	Name              string           `json:"name"`
+	CertificateExpiry pgtype.Timestamp `json:"certificate_expiry"`
+	Status            pgtype.Text      `json:"status"`
+	Issuer            pgtype.Text      `json:"issuer"`
+	Owner             uuid.UUID        `json:"owner"`
+	CreatedAt         time.Time        `json:"created_at"`
 }
 
 type Notification struct {
-	ID        int32     `json:"id"`
+	ID        uuid.UUID `json:"id"`
 	Subject   string    `json:"subject"`
 	Message   string    `json:"message"`
 	SendTo    string    `json:"send_to"`
@@ -31,7 +32,7 @@ type Notification struct {
 
 type Session struct {
 	ID           uuid.UUID `json:"id"`
-	Username     string    `json:"username"`
+	UserID       uuid.UUID `json:"user_id"`
 	RefreshToken string    `json:"refresh_token"`
 	UserAgent    string    `json:"user_agent"`
 	ClientIp     string    `json:"client_ip"`
@@ -41,6 +42,7 @@ type Session struct {
 }
 
 type User struct {
+	ID                uuid.UUID `json:"id"`
 	Username          string    `json:"username"`
 	HashedPassword    string    `json:"hashed_password"`
 	FullName          string    `json:"full_name"`
