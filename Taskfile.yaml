@@ -153,9 +153,14 @@ tasks:
   lint:
     desc: Run linter
     cmds:
-      - golangci-lint run ./...
+      - golangci-lint run ./... -v
 
   test:
     desc: Run tests
     cmds:
       - go test -v -cover ./...
+
+  gosec:
+    desc: Run security scanner
+    cmds:
+      - gosec -conf .gosec.config.json "./..."

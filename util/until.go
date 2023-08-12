@@ -36,11 +36,5 @@ func TimeUntil(t time.Time) string {
 }
 
 func HasDatePassed(t time.Time) bool {
-	now := time.Now()
-
-	if now.After(t) {
-		return true
-	}
-
-	return false
+	return time.Now().After(t)
 }
