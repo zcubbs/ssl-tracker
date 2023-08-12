@@ -29,10 +29,8 @@ gen
 # Go workspace file
 go.work
 
-database.sqlite
 !/bin/
 /bin/server
 
 /layers/
 /bin/
-!/db/sqlc/test.db.sqlite

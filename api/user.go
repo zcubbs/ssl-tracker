@@ -13,13 +13,14 @@ import (
 )
 
 type createUserRequest struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-	FullName string `json:"full_name"`
-	Email    string `json:"email"`
+	Username string `json:"username" validate:"required,alphanum"`
+	Password string `json:"password" validate:"required,min=6"`
+	FullName string `json:"full_name" validate:"required"`
+	Email    string `json:"email" validate:"required,email"`
 }
 
 type userResponse struct {
+	Id                uuid.UUID `json:"id"`
 	Username          string    `json:"username"`
 	FullName          string    `json:"full_name"`
 	Email             string    `json:"email"`
@@ -29,6 +30,7 @@ type userResponse struct {
 
 func newUserResponse(user db.User) userResponse {
 	return userResponse{
+		Id:                user.ID,
 		Username:          user.Username,
 		FullName:          user.FullName,
 		Email:             user.Email,
@@ -80,8 +82,8 @@ func (s *Server) createUser(c *fiber.Ctx) error {
 }
 
 type loginUserRequest struct {
-	Username string `json:"username" binding:"required,alphanum"`
-	Password string `json:"password" binding:"required,min=6"`
+	Username string `json:"username" validate:"required,alphanum"`
+	Password string `json:"password" validate:"required,min=6"`
 }
 
 type loginUserResponse struct {

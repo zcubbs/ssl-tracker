@@ -149,3 +149,13 @@ tasks:
     deps: [ pg, createdb, migrate, mailhog:up, go:build ]
     cmds:
       - ./bin/server
+
+  lint:
+    desc: Run linter
+    cmds:
+      - golangci-lint run ./...
+
+  test:
+    desc: Run tests
+    cmds:
+      - go test -v -cover ./...

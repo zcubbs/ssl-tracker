@@ -3,9 +3,9 @@ package api
 import (
 	"database/sql"
 	"errors"
-	"fmt"
 	"github.com/charmbracelet/log"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 	db "github.com/zcubbs/tlz/db/sqlc"
 	"github.com/zcubbs/tlz/util"
@@ -28,7 +28,13 @@ const (
 )
 
 type CreateDomainRequest struct {
-	Name string `json:"name"`
+	Name string `json:"name" validate:"required,domain-name"`
+}
+
+type CreateDomainResponse struct {
+	Name   string    `json:"name"`
+	Status string    `json:"status"`
+	ID     uuid.UUID `json:"id"`
 }
 
 func (s *Server) CreateDomain(c *fiber.Ctx) error {
@@ -44,8 +50,6 @@ func (s *Server) CreateDomain(c *fiber.Ctx) error {
 			"error": "Cannot parse JSON",
 		})
 	}
-
-	fmt.Println(domainRequest)
 
 	// Validate the request body
 	if !util.IsDomaineNameValid(domainRequest.Name) {
@@ -64,8 +68,9 @@ func (s *Server) CreateDomain(c *fiber.Ctx) error {
 		})
 	}
 
+	var newDomain db.Domain
 	// Add the domain to the database
-	if _, err := s.store.InsertDomain(c.Context(), db.InsertDomainParams{
+	if newDomain, err = s.store.InsertDomain(c.Context(), db.InsertDomainParams{
 		Name: domainRequest.Name,
 		Status: pgtype.Text{
 			String: (string)(StatusPending),
@@ -78,8 +83,10 @@ func (s *Server) CreateDomain(c *fiber.Ctx) error {
 		})
 	}
 
-	return c.Status(fiber.StatusCreated).JSON(fiber.Map{
-		"message": "Domain added",
+	return c.Status(fiber.StatusCreated).JSON(CreateDomainResponse{
+		Name:   newDomain.Name,
+		ID:     newDomain.ID,
+		Status: newDomain.Status.String,
 	})
 }
 

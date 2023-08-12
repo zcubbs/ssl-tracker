@@ -81,7 +81,7 @@ func (mr *MockStoreMockRecorder) DeleteDomain(arg0, arg1 interface{}) *gomock.Ca
 }
 
 // DeleteNotification mocks base method.
-func (m *MockStore) DeleteNotification(arg0 context.Context, arg1 int32) error {
+func (m *MockStore) DeleteNotification(arg0 context.Context, arg1 uuid.UUID) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteNotification", arg0, arg1)
 	ret0, _ := ret[0].(error)
@@ -92,6 +92,36 @@ func (m *MockStore) DeleteNotification(arg0 context.Context, arg1 int32) error {
 func (mr *MockStoreMockRecorder) DeleteNotification(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteNotification", reflect.TypeOf((*MockStore)(nil).DeleteNotification), arg0, arg1)
+}
+
+// GetAllDomains mocks base method.
+func (m *MockStore) GetAllDomains(arg0 context.Context) ([]db.Domain, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAllDomains", arg0)
+	ret0, _ := ret[0].([]db.Domain)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAllDomains indicates an expected call of GetAllDomains.
+func (mr *MockStoreMockRecorder) GetAllDomains(arg0 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllDomains", reflect.TypeOf((*MockStore)(nil).GetAllDomains), arg0)
+}
+
+// GetAllDomainsByOwner mocks base method.
+func (m *MockStore) GetAllDomainsByOwner(arg0 context.Context, arg1 uuid.UUID) ([]db.Domain, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetAllDomainsByOwner", arg0, arg1)
+	ret0, _ := ret[0].([]db.Domain)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetAllDomainsByOwner indicates an expected call of GetAllDomainsByOwner.
+func (mr *MockStoreMockRecorder) GetAllDomainsByOwner(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetAllDomainsByOwner", reflect.TypeOf((*MockStore)(nil).GetAllDomainsByOwner), arg0, arg1)
 }
 
 // GetDomain mocks base method.
@@ -109,23 +139,23 @@ func (mr *MockStoreMockRecorder) GetDomain(arg0, arg1 interface{}) *gomock.Call 
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDomain", reflect.TypeOf((*MockStore)(nil).GetDomain), arg0, arg1)
 }
 
-// GetDomains mocks base method.
-func (m *MockStore) GetDomains(arg0 context.Context) ([]db.Domain, error) {
+// GetDomainByOwner mocks base method.
+func (m *MockStore) GetDomainByOwner(arg0 context.Context, arg1 db.GetDomainByOwnerParams) (db.Domain, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetDomains", arg0)
-	ret0, _ := ret[0].([]db.Domain)
+	ret := m.ctrl.Call(m, "GetDomainByOwner", arg0, arg1)
+	ret0, _ := ret[0].(db.Domain)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-// GetDomains indicates an expected call of GetDomains.
-func (mr *MockStoreMockRecorder) GetDomains(arg0 interface{}) *gomock.Call {
+// GetDomainByOwner indicates an expected call of GetDomainByOwner.
+func (mr *MockStoreMockRecorder) GetDomainByOwner(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDomains", reflect.TypeOf((*MockStore)(nil).GetDomains), arg0)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetDomainByOwner", reflect.TypeOf((*MockStore)(nil).GetDomainByOwner), arg0, arg1)
 }
 
 // GetNotification mocks base method.
-func (m *MockStore) GetNotification(arg0 context.Context, arg1 int32) (db.Notification, error) {
+func (m *MockStore) GetNotification(arg0 context.Context, arg1 uuid.UUID) (db.Notification, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetNotification", arg0, arg1)
 	ret0, _ := ret[0].(db.Notification)
@@ -184,6 +214,21 @@ func (mr *MockStoreMockRecorder) GetSession(arg0, arg1 interface{}) *gomock.Call
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSession", reflect.TypeOf((*MockStore)(nil).GetSession), arg0, arg1)
 }
 
+// GetSessionByUserId mocks base method.
+func (m *MockStore) GetSessionByUserId(arg0 context.Context, arg1 uuid.UUID) (db.Session, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetSessionByUserId", arg0, arg1)
+	ret0, _ := ret[0].(db.Session)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetSessionByUserId indicates an expected call of GetSessionByUserId.
+func (mr *MockStoreMockRecorder) GetSessionByUserId(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetSessionByUserId", reflect.TypeOf((*MockStore)(nil).GetSessionByUserId), arg0, arg1)
+}
+
 // GetUser mocks base method.
 func (m *MockStore) GetUser(arg0 context.Context, arg1 string) (db.User, error) {
 	m.ctrl.T.Helper()
@@ -197,6 +242,21 @@ func (m *MockStore) GetUser(arg0 context.Context, arg1 string) (db.User, error) 
 func (mr *MockStoreMockRecorder) GetUser(arg0, arg1 interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUser", reflect.TypeOf((*MockStore)(nil).GetUser), arg0, arg1)
+}
+
+// GetUserByEmail mocks base method.
+func (m *MockStore) GetUserByEmail(arg0 context.Context, arg1 string) (db.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserByEmail", arg0, arg1)
+	ret0, _ := ret[0].(db.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUserByEmail indicates an expected call of GetUserByEmail.
+func (mr *MockStoreMockRecorder) GetUserByEmail(arg0, arg1 interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserByEmail", reflect.TypeOf((*MockStore)(nil).GetUserByEmail), arg0, arg1)
 }
 
 // InsertDomain mocks base method.

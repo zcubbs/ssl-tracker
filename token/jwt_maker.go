@@ -37,20 +37,21 @@ func (maker *JwtMaker) CreateToken(username string, duration time.Duration) (str
 	return token, payload, nil
 }
 
-// VerifyToken checks if the token is valid or not.
+// VerifyToken checks if the token is valid or not
 func (maker *JwtMaker) VerifyToken(token string) (*Payload, error) {
 	keyFunc := func(token *jwt.Token) (interface{}, error) {
 		_, ok := token.Method.(*jwt.SigningMethodHMAC)
-		if !ok { // if not ok, return error
+		if !ok {
 			return nil, ErrInvalidToken
 		}
 		return []byte(maker.secretKey), nil
 	}
+
 	jwtToken, err := jwt.ParseWithClaims(token, &Payload{}, keyFunc)
 	if err != nil {
-		var verr *jwt.ValidationError
-		ok := errors.As(err, &verr)
-		if ok && (verr.Errors&jwt.ValidationErrorExpired != 0) { // if token is expired
+		var valErr *jwt.ValidationError
+		ok := errors.As(err, &valErr)
+		if ok && errors.Is(valErr.Inner, ErrExpiredToken) {
 			return nil, ErrExpiredToken
 		}
 		return nil, ErrInvalidToken

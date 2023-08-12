@@ -21,6 +21,7 @@ type Server struct {
 	tokenMaker  token.Maker
 	cfg         util.HttpServerConfig
 	staticEmbed *embed.FS
+	validate    *XValidator
 }
 
 func NewServer(store db.Store, staticEmbed *embed.FS, cfg util.HttpServerConfig) (*Server, error) {
@@ -52,6 +53,7 @@ func (s *Server) ApplyDefaultConfig() {
 	})
 
 	s.app = app
+	s.addValidator()
 	s.applyMiddleware()
 	s.addRoutes()
 	s.embedStatic()
@@ -90,4 +92,17 @@ func (s *Server) embedStatic() {
 			PathPrefix: "web/dist",
 		}))
 	}
+}
+
+func (s *Server) addValidator() {
+	val := &XValidator{
+		validator: validate,
+	}
+
+	err := val.validator.RegisterValidation("domain-name", validDomainName)
+	if err != nil {
+		log.Fatal("cannot register domain-name validator", "error", err)
+	}
+
+	s.validate = val
 }

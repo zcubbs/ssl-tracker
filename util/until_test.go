@@ -30,8 +30,8 @@ func TestHasDatePassed(t *testing.T) {
 		time     time.Time
 		expected bool
 	}{
-		{time.Now().Add(-time.Hour), true},
-		{time.Now().Add(time.Hour), false},
+		{time.Now().Add(-time.Hour * 2), true},
+		{time.Now().Add(2 * time.Hour), false},
 	}
 
 	for _, tt := range tests {
