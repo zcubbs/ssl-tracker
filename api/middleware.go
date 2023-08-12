@@ -2,7 +2,7 @@ package api
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"github.com/zcubbs/tlz/token"
+	"github.com/zcubbs/tlz/pkg/token"
 	"strings"
 )
 

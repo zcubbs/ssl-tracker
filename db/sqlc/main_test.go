@@ -3,7 +3,7 @@ package db
 import (
 	"context"
 	"github.com/charmbracelet/log"
-	"github.com/zcubbs/tlz/util"
+	"github.com/zcubbs/tlz/pkg/util"
 	"os"
 	"testing"
 )

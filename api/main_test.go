@@ -3,7 +3,7 @@ package api
 import (
 	"github.com/stretchr/testify/require"
 	db "github.com/zcubbs/tlz/db/sqlc"
-	"github.com/zcubbs/tlz/util"
+	"github.com/zcubbs/tlz/pkg/util"
 	"os"
 	"testing"
 	"time"

@@ -7,7 +7,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	db "github.com/zcubbs/tlz/db/sqlc"
-	"github.com/zcubbs/tlz/util"
+	"github.com/zcubbs/tlz/pkg/util"
 	"net/http"
 	"time"
 )

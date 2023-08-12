@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/stretchr/testify/require"
-	"github.com/zcubbs/tlz/token"
+	"github.com/zcubbs/tlz/pkg/token"
 	"net/http"
 	"net/http/httptest"
 	"testing"

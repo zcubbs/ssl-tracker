@@ -2,7 +2,7 @@ package token
 
 import (
 	"github.com/stretchr/testify/require"
-	"github.com/zcubbs/tlz/util"
+	"github.com/zcubbs/tlz/pkg/util"
 	"testing"
 	"time"
 )

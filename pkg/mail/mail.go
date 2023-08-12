@@ -2,7 +2,7 @@ package mail
 
 import (
 	"github.com/charmbracelet/log"
-	"github.com/zcubbs/tlz/util"
+	"github.com/zcubbs/tlz/pkg/util"
 )
 
 var Sender Mailer

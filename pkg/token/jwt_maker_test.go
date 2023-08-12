@@ -3,7 +3,7 @@ package token
 import (
 	"github.com/golang-jwt/jwt"
 	"github.com/stretchr/testify/require"
-	"github.com/zcubbs/tlz/util"
+	"github.com/zcubbs/tlz/pkg/util"
 	"testing"
 	"time"
 )

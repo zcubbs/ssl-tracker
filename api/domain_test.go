@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/require"
 	mockdb "github.com/zcubbs/tlz/db/mock"
 	db "github.com/zcubbs/tlz/db/sqlc"
-	"github.com/zcubbs/tlz/util"
+	"github.com/zcubbs/tlz/pkg/util"
 	"go.uber.org/mock/gomock"
 	"io"
 	"net/http"

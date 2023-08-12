@@ -4,16 +4,17 @@ import (
 	"context"
 	"embed"
 	"github.com/charmbracelet/log"
+	"github.com/jackc/pgx/v5"
 	"github.com/zcubbs/tlz/api"
 	db "github.com/zcubbs/tlz/db/sqlc"
 	"github.com/zcubbs/tlz/pkg/cron"
 	"github.com/zcubbs/tlz/pkg/mail"
+	"github.com/zcubbs/tlz/pkg/util"
 	"github.com/zcubbs/tlz/task"
-	"github.com/zcubbs/tlz/util"
 )
 
 //go:embed web/dist/*
-var f embed.FS
+var webDist embed.FS
 
 func main() {
 	// Bootstrap configuration
@@ -28,7 +29,7 @@ func main() {
 	if err != nil {
 		log.Fatal("cannot connect to database", "error", err)
 	}
-	defer conn.Close(ctx)
+	defer CloseDbConn(conn, ctx)
 
 	// Initialize store
 	store := db.NewSQLStore(conn)
@@ -40,7 +41,7 @@ func main() {
 	mail.Initialize(cfg.Notification.Mail)
 
 	// Create Server
-	s, err := api.NewServer(store, &f, cfg.HttpServer)
+	s, err := api.NewServer(store, &webDist, cfg.HttpServer)
 	if err != nil {
 		log.Fatal("cannot create server", "error", err)
 	}
@@ -49,6 +50,15 @@ func main() {
 	if err != nil {
 		log.Fatal("cannot start server", "error", err)
 	}
+}
+
+func CloseDbConn(conn *pgx.Conn, ctx context.Context) {
+	func(conn *pgx.Conn, ctx context.Context) {
+		err := conn.Close(ctx)
+		if err != nil {
+			log.Error("cannot close database connection", "error", err)
+		}
+	}(conn, ctx)
 }
 
 func startCronJobs(store db.Store, cfg util.CronConfig) {
