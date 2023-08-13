@@ -330,7 +330,7 @@ func randomUser(t *testing.T) (user db.User, password string) {
 		FullName:       util.RandomOwner(),
 		Email:          util.RandomEmail(),
 	}
-	return
+	return user, password
 }
 
 func requireBodyMatchUser(t *testing.T, body io.ReadCloser, user db.User) {
@@ -353,10 +353,9 @@ func requireBodyMatchLoginResponse(t *testing.T, body io.ReadCloser, user db.Use
 	require.NoError(t, err)
 
 	gotUser := db.User{
-		Username:       got.User.Username,
-		HashedPassword: user.HashedPassword,
-		FullName:       got.User.FullName,
-		Email:          got.User.Email,
+		Username: got.User.Username,
+		FullName: got.User.FullName,
+		Email:    got.User.Email,
 	}
 
 	requireUserMatch(t, gotUser, user)
@@ -366,5 +365,5 @@ func requireUserMatch(t *testing.T, got, want db.User) {
 	require.Equal(t, want.Username, got.Username)
 	require.Equal(t, want.FullName, got.FullName)
 	require.Equal(t, want.Email, got.Email)
-	require.Equal(t, want.HashedPassword, got.HashedPassword)
+	require.Empty(t, got.HashedPassword)
 }

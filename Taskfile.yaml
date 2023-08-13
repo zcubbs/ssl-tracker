@@ -4,7 +4,7 @@ env:
   GOOS: "{{OS}}"
 
 vars:
-  TEST_DB_URL: "postgres://postgres:postgres@localhost:5432/tlz?sslmode=disable"
+  TEST_DB_URL: "postgres://postgres:postgres@127.0.0.1:5432/tlz?sslmode=disable"
 
 tasks:
   bootstrap:
