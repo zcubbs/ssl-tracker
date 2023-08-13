@@ -22,26 +22,29 @@ func (t *Task) SendMailNotification(ctx context.Context) {
 
 	notifications, err := t.store.GetNotificationsByChannel(ctx, (string)(NotificationChannelEmail))
 	if err != nil {
-		log.Error("cannot get notifications from db", "error", err)
+		log.Error("Cannot get notifications from db", "error", err)
 		return
 	}
 
 	for _, notification := range notifications {
-		log.Info("sending notification", "notification", notification)
+		log.Info("Sending notification",
+			"notification", notification.Subject,
+			"to", notification.SendTo,
+		)
 
 		err = t.sendEmail(notification)
 		if err != nil {
-			log.Error("cannot send email notification", "error", err)
+			log.Error("Cannot send email notification", "error", err)
 		}
 
 		err = t.store.DeleteNotification(ctx, notification.ID)
 		if err != nil {
-			log.Error("cannot delete notification", "error", err)
+			log.Error("Cannot delete notification", "error", err)
 		}
 	}
 
 	if len(notifications) == 0 {
-		log.Info("no notifications to send")
+		log.Info("No notifications to send")
 	}
 }
 

@@ -1,7 +1,6 @@
 package api
 
 import (
-	"github.com/charmbracelet/log"
 	"github.com/gofiber/fiber/v2"
 	"github.com/zcubbs/tlz/pkg/token"
 	"strings"
@@ -37,7 +36,6 @@ func AuthMiddleware(maker token.Maker) fiber.Handler {
 		}
 
 		accessToken := fields[1]
-		log.Info("access token", "token", accessToken)
 		payload, err := maker.VerifyToken(accessToken)
 		if err != nil {
 			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{

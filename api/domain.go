@@ -68,6 +68,7 @@ func (s *Server) CreateDomain(c *fiber.Ctx) error {
 			"domain", domainRequest.Name,
 			"error", err,
 		)
+
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": CannotGetDomain,
 		})
@@ -78,7 +79,7 @@ func (s *Server) CreateDomain(c *fiber.Ctx) error {
 
 	var ownerId uuid.UUID
 	if authPayload != nil {
-		ownerId = authPayload.(*token.Payload).ID
+		ownerId = authPayload.(*token.Payload).UserID
 	}
 
 	var newDomain db.Domain
@@ -92,6 +93,12 @@ func (s *Server) CreateDomain(c *fiber.Ctx) error {
 		},
 	}); err != nil {
 		log.Error("Cannot add domain", "error", err)
+		errCode := db.ErrorCode(err)
+		if errCode == db.ForeignKeyViolation || errCode == db.UniqueViolation {
+			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+				"error": "Domain already exists",
+			})
+		}
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": "Cannot add domain",
 		})
