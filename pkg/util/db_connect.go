@@ -5,11 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"github.com/charmbracelet/log"
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func Connect(ctx context.Context, config DatabaseConfig) (*pgx.Conn, error) {
+func Connect(ctx context.Context, config DatabaseConfig) (*pgxpool.Pool, error) {
 	if config.Postgres.Enabled {
 		dbConn, err := connectToPostgres(ctx, config.Postgres)
 		if err != nil {
@@ -21,7 +21,7 @@ func Connect(ctx context.Context, config DatabaseConfig) (*pgx.Conn, error) {
 	return nil, errors.New("no supported database profile enabled, please enable one (ex: postgres)")
 }
 
-func connectToPostgres(ctx context.Context, dbCfg PostgresConfig) (*pgx.Conn, error) {
+func connectToPostgres(ctx context.Context, dbCfg PostgresConfig) (*pgxpool.Pool, error) {
 	var sslMode string
 	if dbCfg.SslMode {
 		sslMode = "enable"
@@ -43,12 +43,7 @@ func connectToPostgres(ctx context.Context, dbCfg PostgresConfig) (*pgx.Conn, er
 		"user", dbCfg.Username,
 		"dbname", dbCfg.DbName,
 	)
-	conn, err := pgx.Connect(ctx, dsn)
-	if err != nil {
-		return nil, err
-	}
-
-	err = conn.Ping(ctx)
+	conn, err := pgxpool.New(ctx, dsn)
 	if err != nil {
 		return nil, err
 	}

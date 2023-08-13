@@ -134,18 +134,19 @@ func (q *Queries) GetDomainByOwner(ctx context.Context, arg GetDomainByOwnerPara
 
 const insertDomain = `-- name: InsertDomain :one
 INSERT INTO domains
-    (name,status)
-VALUES ($1,$2)
+    (name,status,owner)
+VALUES ($1,$2,$3)
 RETURNING id, name, certificate_expiry, status, issuer, owner, created_at
 `
 
 type InsertDomainParams struct {
 	Name   string      `json:"name"`
 	Status pgtype.Text `json:"status"`
+	Owner  uuid.UUID   `json:"owner"`
 }
 
 func (q *Queries) InsertDomain(ctx context.Context, arg InsertDomainParams) (Domain, error) {
-	row := q.db.QueryRow(ctx, insertDomain, arg.Name, arg.Status)
+	row := q.db.QueryRow(ctx, insertDomain, arg.Name, arg.Status, arg.Owner)
 	var i Domain
 	err := row.Scan(
 		&i.ID,

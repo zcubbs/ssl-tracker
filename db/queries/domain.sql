@@ -1,7 +1,7 @@
 -- name: InsertDomain :one
 INSERT INTO domains
-    (name,status)
-VALUES ($1,$2)
+    (name,status,owner)
+VALUES ($1,$2,$3)
 RETURNING *;
 
 -- name: GetDomain :one

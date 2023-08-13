@@ -1,7 +1,6 @@
 package charmlogfiber
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 
@@ -65,11 +64,13 @@ func NewWithConfig(logger *log.Logger, config Config) fiber.Handler {
 		}
 
 		switch {
-		case c.Response().StatusCode() >= http.StatusBadRequest && c.Response().StatusCode() < http.StatusInternalServerError:
-			logger.Error(fmt.Sprintf("Incoming request with error: %s", err.Error()),
-				attributes...)
-		case c.Response().StatusCode() >= http.StatusInternalServerError:
-			logger.Error(err.Error(), attributes...)
+		case c.Response().StatusCode() >= http.StatusBadRequest:
+			if err != nil {
+				attributes = append(attributes, "error", err)
+			}
+			logger.Error("Incoming request with error",
+				attributes...,
+			)
 		default:
 			logger.Info("Incoming request", attributes...)
 		}

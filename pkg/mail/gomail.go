@@ -1,6 +1,9 @@
 package mail
 
-import "gopkg.in/gomail.v2"
+import (
+	"github.com/charmbracelet/log"
+	"gopkg.in/gomail.v2"
+)
 
 type GoMail struct {
 	Host     string
@@ -26,7 +29,8 @@ func (g GoMail) SendMail(mail Mail) error {
 
 	// Send the email to Bob, Cora and Dan.
 	if err := d.DialAndSend(m); err != nil {
-		panic(err)
+		log.Error("Error sending email",
+			"error", err)
 	}
 	return nil
 }

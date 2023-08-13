@@ -1,6 +1,7 @@
 package token
 
 import (
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/zcubbs/tlz/pkg/util"
 	"testing"
@@ -17,7 +18,7 @@ func TestPasetoMaker(t *testing.T) {
 	issuedAt := time.Now()
 	expiredAt := issuedAt.Add(duration)
 
-	token, payload, err := maker.CreateToken(username, duration)
+	token, payload, err := maker.CreateToken(username, uuid.UUID{}, duration)
 	require.NoError(t, err)
 	require.NotEmpty(t, token)
 	require.NotEmpty(t, payload)
@@ -35,7 +36,7 @@ func TestExpiredPasetoToken(t *testing.T) {
 	maker, err := NewPasetoMaker(util.RandomString(32))
 	require.NoError(t, err)
 
-	token, payload, err := maker.CreateToken(util.RandomString(32), -time.Minute)
+	token, payload, err := maker.CreateToken(util.RandomString(32), uuid.UUID{}, -time.Minute)
 	require.NoError(t, err)
 	require.NotEmpty(t, token)
 	require.NotEmpty(t, payload)

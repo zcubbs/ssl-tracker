@@ -29,7 +29,6 @@ func main() {
 	if err != nil {
 		log.Fatal("cannot connect to database", "error", err)
 	}
-	defer CloseDbConn(conn, ctx)
 
 	// Initialize store
 	store := db.NewSQLStore(conn)

@@ -6,8 +6,10 @@ import (
 	"github.com/charmbracelet/log"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 	db "github.com/zcubbs/tlz/db/sqlc"
+	"github.com/zcubbs/tlz/pkg/token"
 	"github.com/zcubbs/tlz/pkg/util"
 	"time"
 )
@@ -61,17 +63,26 @@ func (s *Server) CreateDomain(c *fiber.Ctx) error {
 
 	// Check if the domain already exists
 	_, err := s.store.GetDomain(c.Context(), domainRequest.Name)
-	if err != nil && !errors.Is(err, sql.ErrNoRows) {
-		log.Error(CannotGetDomain, "error", err)
+	if err != nil && !errors.Is(err, pgx.ErrNoRows) {
+		log.Error(
+			CannotGetDomain,
+			"domain", domainRequest.Name,
+			"error", err,
+		)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": CannotGetDomain,
 		})
 	}
 
+	authPayload := c.Locals(authorizationPayloadKey).(*token.Payload)
+
+	log.Info("User", "id", authPayload.ID)
+
 	var newDomain db.Domain
 	// Add the domain to the database
 	if newDomain, err = s.store.InsertDomain(c.Context(), db.InsertDomainParams{
-		Name: domainRequest.Name,
+		Name:  domainRequest.Name,
+		Owner: authPayload.ID,
 		Status: pgtype.Text{
 			String: (string)(StatusPending),
 			Valid:  true,

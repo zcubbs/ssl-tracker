@@ -142,7 +142,7 @@ func (s *Server) loginUser(c *fiber.Ctx) error {
 		})
 	}
 
-	user, err := s.store.GetUser(c.Context(), req.Username)
+	user, err := s.store.GetUserByUsername(c.Context(), req.Username)
 	if err != nil {
 		log.Error("failed to get user", "error", err)
 		if errors.Is(err, db.ErrRecordNotFound) {
@@ -168,6 +168,7 @@ func (s *Server) loginUser(c *fiber.Ctx) error {
 
 	accessToken, accessPayload, err := s.tokenMaker.CreateToken(
 		user.Username,
+		user.ID,
 		s.cfg.AccessTokenDuration,
 	)
 	if err != nil {
@@ -180,6 +181,7 @@ func (s *Server) loginUser(c *fiber.Ctx) error {
 
 	refreshToken, refreshPayload, err := s.tokenMaker.CreateToken(
 		user.Username,
+		user.ID,
 		s.cfg.RefreshTokenDuration,
 	)
 	if err != nil {
@@ -193,8 +195,8 @@ func (s *Server) loginUser(c *fiber.Ctx) error {
 	session, err := s.store.CreateSession(c.Context(), db.CreateSessionParams{
 		UserID:       user.ID,
 		RefreshToken: refreshToken,
-		UserAgent:    "",
-		ClientIp:     "",
+		UserAgent:    c.Get("User-Agent"),
+		ClientIp:     c.IP(),
 		IsBlocked:    false,
 		ExpiresAt:    refreshPayload.ExpiredAt,
 	})

@@ -3,6 +3,7 @@ package token
 import (
 	"errors"
 	"github.com/golang-jwt/jwt"
+	"github.com/google/uuid"
 	"time"
 )
 
@@ -23,8 +24,8 @@ func NewJwtMaker(secretKey string) (Maker, error) {
 }
 
 // CreateToken creates a new token for a specific username and duration.
-func (maker *JwtMaker) CreateToken(username string, duration time.Duration) (string, *Payload, error) {
-	payload, err := NewPayload(username, duration)
+func (maker *JwtMaker) CreateToken(username string, userId uuid.UUID, duration time.Duration) (string, *Payload, error) {
+	payload, err := NewPayload(username, userId, duration)
 	if err != nil {
 		return "", nil, err
 	}

@@ -61,11 +61,14 @@ func (s *Server) ApplyDefaultConfig() {
 
 func (s *Server) addRoutes() {
 	users := s.app.Group("/api/users")
-	users.Use(AuthMiddleware(s.tokenMaker))
 	users.Post("/login", s.loginUser)
 	users.Post("/", s.createUser)
 
+	tokens := s.app.Group("/api/tokens")
+	tokens.Post("/refresh", s.renewAccessToken)
+
 	domains := s.app.Group("/api/domains")
+	domains.Use(AuthMiddleware(s.tokenMaker))
 	domains.Post("/", s.CreateDomain)
 	domains.Get("/", s.GetDomains)
 }
