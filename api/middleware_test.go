@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"github.com/gofiber/fiber/v2"
+	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
 	"github.com/zcubbs/tlz/pkg/token"
 	"net/http"
@@ -19,7 +20,7 @@ func addAuthorization(
 	username string,
 	duration time.Duration,
 ) {
-	tkn, payload, err := tokenMaker.CreateToken(username, duration)
+	tkn, payload, err := tokenMaker.CreateToken(username, uuid.UUID{}, duration)
 	require.NoError(t, err)
 	require.NotEmpty(t, tkn)
 	require.NotEmpty(t, payload)

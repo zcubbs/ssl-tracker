@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stretchr/testify/require"
 	mockdb "github.com/zcubbs/tlz/db/mock"
@@ -50,7 +51,7 @@ func TestGetDomain(t *testing.T) {
 				store.EXPECT().
 					GetDomain(gomock.Any(), gomock.Eq(domain.Name)).
 					Times(1).
-					Return(db.Domain{}, sql.ErrNoRows)
+					Return(db.Domain{}, pgx.ErrNoRows)
 			},
 			checkResponse: func(t *testing.T, response *http.Response) {
 				require.Equal(t, http.StatusNotFound, response.StatusCode)
@@ -126,7 +127,7 @@ func TestCreateDomain(t *testing.T) {
 				store.EXPECT().
 					GetDomain(gomock.Any(), gomock.Eq(domainRequest.Name)).
 					Times(1).
-					Return(db.Domain{}, sql.ErrNoRows)
+					Return(db.Domain{}, pgx.ErrNoRows)
 				store.EXPECT().
 					InsertDomain(gomock.Any(), gomock.Any()).
 					Times(1).
@@ -144,7 +145,7 @@ func TestCreateDomain(t *testing.T) {
 				store.EXPECT().
 					GetDomain(gomock.Any(), gomock.Eq(domainRequest.Name)).
 					Times(1).
-					Return(db.Domain{}, sql.ErrNoRows)
+					Return(db.Domain{}, pgx.ErrNoRows)
 				store.EXPECT().
 					InsertDomain(gomock.Any(), gomock.Any()).
 					Times(1).

@@ -1,7 +1,6 @@
 package api
 
 import (
-	"database/sql"
 	"errors"
 	"github.com/charmbracelet/log"
 	"github.com/gofiber/fiber/v2"
@@ -74,15 +73,19 @@ func (s *Server) CreateDomain(c *fiber.Ctx) error {
 		})
 	}
 
-	authPayload := c.Locals(authorizationPayloadKey).(*token.Payload)
+	authPayload := c.Locals(authorizationPayloadKey)
+	log.Info("authPayload", "authPayload", authPayload)
 
-	log.Info("User", "id", authPayload.ID)
+	var ownerId uuid.UUID
+	if authPayload != nil {
+		ownerId = authPayload.(*token.Payload).ID
+	}
 
 	var newDomain db.Domain
 	// Add the domain to the database
 	if newDomain, err = s.store.InsertDomain(c.Context(), db.InsertDomainParams{
 		Name:  domainRequest.Name,
-		Owner: authPayload.ID,
+		Owner: ownerId,
 		Status: pgtype.Text{
 			String: (string)(StatusPending),
 			Valid:  true,
@@ -167,7 +170,7 @@ func (s *Server) GetDomain(c *fiber.Ctx) error {
 	domain, err := s.store.GetDomain(c.Context(), req.Name)
 	if err != nil {
 		log.Error(CannotGetDomain, "error", err)
-		if errors.Is(err, sql.ErrNoRows) {
+		if errors.Is(err, pgx.ErrNoRows) {
 			return c.Status(fiber.StatusNotFound).JSON(fiber.Map{
 				"error": "Domain not found",
 			})
