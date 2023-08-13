@@ -193,6 +193,7 @@ func (s *Server) loginUser(c *fiber.Ctx) error {
 	}
 
 	session, err := s.store.CreateSession(c.Context(), db.CreateSessionParams{
+		ID:           refreshPayload.ID,
 		UserID:       user.ID,
 		RefreshToken: refreshToken,
 		UserAgent:    c.Get("User-Agent"),

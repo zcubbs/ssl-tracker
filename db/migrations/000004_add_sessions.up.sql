@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS "sessions"
 (
-  "id" UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  "id" UUID PRIMARY KEY,
   "user_id" UUID NOT NULL,
   "refresh_token" TEXT NOT NULL,
   "user_agent" varchar NOT NULL,

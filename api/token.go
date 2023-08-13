@@ -55,6 +55,8 @@ func (s *Server) renewAccessToken(c *fiber.Ctx) error {
 		})
 	}
 
+	log.Info("refresh token verified", "value", refreshPayload)
+
 	session, err := s.store.GetSession(c.Context(), refreshPayload.ID)
 	if err != nil {
 		log.Error("failed to get session", "error", err)
@@ -71,13 +73,15 @@ func (s *Server) renewAccessToken(c *fiber.Ctx) error {
 	}
 
 	if session.IsBlocked {
+		log.Error("session is blocked", "error", err, "userId", session.UserID)
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"error": true,
 			"msg":   "invalid refresh token",
 		})
 	}
 
-	if session.ID != refreshPayload.UserID {
+	if session.ID != refreshPayload.ID {
+		log.Error("session id does not match refresh token id", "error", err, "userId", session.UserID)
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"error": true,
 			"msg":   "invalid refresh token",

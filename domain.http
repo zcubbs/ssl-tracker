@@ -1,3 +1,4 @@
+### Create User
 # curl -X POST -H "Content-Type: application/json" -d '{"username":"test", "password": "ThisIsMyPassword"}' http://localhost:3000/api/users
 POST http://localhost:8000/api/users
 Content-Type: application/json
@@ -9,8 +10,7 @@ Content-Type: application/json
   "full_name": "Test User"
 }
 
-###
-# Store the token in a variable
+### Login
 POST http://localhost:8000/api/users/login
 Content-Type: application/json
 
@@ -24,9 +24,7 @@ Content-Type: application/json
   client.global.set("refresh_token", response.body.refresh_token);
 %}
 
-###
-# Refresh the token
-
+### Refresh the token
 POST http://localhost:8000/api/tokens/refresh
 Content-Type: application/json
 
@@ -36,17 +34,16 @@ Content-Type: application/json
 
 > {%
   client.global.set("access_token", response.body.access_token);
-  client.global.set("refresh_token", response.body.refresh_token);
 %}
 
-###
+### Get All Domains
 
 # curl -X POST -H "Content-Type: application/json" -d '{"name":"example.com"}' http://localhost:3000/domains
 GET http://localhost:8000/api/domains
 Content-Type: application/json
 Authorization: Bearer {{ access_token }}
 
-###
+### Add new Domain
 
 # curl -X POST -H "Content-Type: application/json" -d '{"name":"example.com"}' http://localhost:3000/domains
 POST http://localhost:8000/api/domains
