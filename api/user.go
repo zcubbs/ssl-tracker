@@ -3,6 +3,7 @@ package api
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"github.com/charmbracelet/log"
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
@@ -55,10 +56,23 @@ func (s *Server) createUser(c *fiber.Ctx) error {
 		return &MalformedRequest{Status: http.StatusBadRequest, Msg: msg}
 	}
 
+	// Validate the request body
+	err = s.validate.validator.Struct(req)
+	if err != nil {
+		log.Error("failed to validate request body", "error", err)
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": true,
+			"msg":   "invalid request body",
+		})
+	}
+
 	hashedPassword, err := util.HashPassword(req.Password)
 	if err != nil {
 		log.Error("failed to hash password", "error", err)
-		return err
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": true,
+			"msg":   "could not create user - err 2536",
+		})
 	}
 
 	arg := db.CreateUserParams{
@@ -71,6 +85,12 @@ func (s *Server) createUser(c *fiber.Ctx) error {
 	user, err := s.store.CreateUser(c.Context(), arg)
 	if err != nil {
 		log.Error("failed to create user", "error", err)
+		if err == db.ErrUniqueViolation {
+			return c.Status(fiber.StatusForbidden).JSON(fiber.Map{
+				"error": true,
+				"msg":   "username or email already exists",
+			})
+		}
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": true,
 			"msg":   "could not create user",
@@ -105,9 +125,32 @@ func (s *Server) loginUser(c *fiber.Ctx) error {
 		})
 	}
 
+	// Decode the request body into struct and failed if any error occur
+	err := json.Unmarshal(c.Body(), &req)
+	if err != nil {
+		msg := "Request body contains badly-formed JSON"
+		return &MalformedRequest{Status: http.StatusBadRequest, Msg: msg}
+	}
+
+	// Validate the request body
+	err = s.validate.validator.Struct(req)
+	if err != nil {
+		log.Error("failed to validate request body", "error", err)
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": true,
+			"msg":   "invalid request body",
+		})
+	}
+
 	user, err := s.store.GetUser(c.Context(), req.Username)
 	if err != nil {
 		log.Error("failed to get user", "error", err)
+		if errors.Is(err, db.ErrRecordNotFound) {
+			return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
+				"error": true,
+				"msg":   "invalid credentials",
+			})
+		}
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"error": true,
 			"msg":   "could not create user",
