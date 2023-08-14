@@ -9,7 +9,7 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-func Connect(ctx context.Context, config DatabaseConfig) (*pgxpool.Pool, error) {
+func DbConnect(ctx context.Context, config DatabaseConfig) (*pgxpool.Pool, error) {
 	if config.Postgres.Enabled {
 		dbConn, err := connectToPostgres(ctx, config.Postgres)
 		if err != nil {
@@ -22,6 +22,30 @@ func Connect(ctx context.Context, config DatabaseConfig) (*pgxpool.Pool, error) 
 }
 
 func connectToPostgres(ctx context.Context, dbCfg PostgresConfig) (*pgxpool.Pool, error) {
+	dsn := getPostgresConnectionString(dbCfg)
+	log.Info("connecting to Postgres",
+		"host", dbCfg.Host,
+		"port", dbCfg.Port,
+		"user", dbCfg.Username,
+		"dbname", dbCfg.DbName,
+	)
+	conn, err := pgxpool.New(ctx, dsn)
+	if err != nil {
+		return nil, err
+	}
+
+	return conn, nil
+}
+
+func GetDbConnectionString(config DatabaseConfig) string {
+	if config.Postgres.Enabled {
+		return getPostgresConnectionString(config.Postgres)
+	}
+
+	return ""
+}
+
+func getPostgresConnectionString(dbCfg PostgresConfig) string {
 	var sslMode string
 	if dbCfg.SslMode {
 		sslMode = "enable"
@@ -37,16 +61,6 @@ func connectToPostgres(ctx context.Context, dbCfg PostgresConfig) (*pgxpool.Pool
 		dbCfg.DbName,
 		sslMode,
 	)
-	log.Info("Connecting to Postgres",
-		"host", dbCfg.Host,
-		"port", dbCfg.Port,
-		"user", dbCfg.Username,
-		"dbname", dbCfg.DbName,
-	)
-	conn, err := pgxpool.New(ctx, dsn)
-	if err != nil {
-		return nil, err
-	}
 
-	return conn, nil
+	return dsn
 }

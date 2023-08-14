@@ -23,7 +23,7 @@ var (
 		"auth.refresh_token_duration":                  "24h",
 		"database.auto_migration":                      false,
 		"database.postgres.enabled":                    true,
-		"database.postgres.host":                       "localhost",
+		"database.postgres.host":                       "127.0.0.1",
 		"database.postgres.port":                       5432,
 		"database.postgres.username":                   "postgres",
 		"database.postgres.password":                   "postgres",

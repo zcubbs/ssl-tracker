@@ -9,9 +9,9 @@ import (
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/gofiber/fiber/v2/middleware/requestid"
 	db "github.com/zcubbs/tlz/db/sqlc"
+	"github.com/zcubbs/tlz/internal/util"
 	"github.com/zcubbs/tlz/pkg/charmlogfiber"
 	"github.com/zcubbs/tlz/pkg/token"
-	"github.com/zcubbs/tlz/pkg/util"
 	"net/http"
 )
 

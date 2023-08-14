@@ -15,6 +15,7 @@ var (
 
 func Bootstrap() Config {
 	onceConfig.Do(loadConfig)
+	log.Info("loaded configuration")
 	return config
 }
 
@@ -24,7 +25,7 @@ func loadConfig() {
 
 	if err != nil {
 		if viper.GetString("debug") == "true" {
-			log.Warn("No .env file found")
+			log.Warn("no .env file found")
 		}
 	}
 
@@ -40,8 +41,10 @@ func loadConfig() {
 	viper.SetConfigName(ViperConfigName)
 
 	err = viper.ReadInConfig()
-	if err != nil {
-		log.Warn("Cannot read config file", "path", ViperConfigName+"."+ViperConfigType)
+	if err != nil && viper.GetString("debug") == "true" {
+		log.Warn("unable to load config file",
+			"path", ViperConfigName+"."+ViperConfigType,
+		)
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match

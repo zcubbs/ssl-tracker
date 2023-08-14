@@ -8,7 +8,7 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/google/uuid"
 	db "github.com/zcubbs/tlz/db/sqlc"
-	"github.com/zcubbs/tlz/pkg/util"
+	"github.com/zcubbs/tlz/pkg/password"
 	"net/http"
 	"time"
 )
@@ -66,7 +66,7 @@ func (s *Server) createUser(c *fiber.Ctx) error {
 		})
 	}
 
-	hashedPassword, err := util.HashPassword(req.Password)
+	hashedPassword, err := password.Hash(req.Password)
 	if err != nil {
 		log.Error("failed to hash password", "error", err)
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -157,7 +157,7 @@ func (s *Server) loginUser(c *fiber.Ctx) error {
 		})
 	}
 
-	err = util.CheckPassword(req.Password, user.HashedPassword)
+	err = password.Check(req.Password, user.HashedPassword)
 	if err != nil {
 		log.Error("invalid credentials", "error", err)
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{

@@ -3,9 +3,9 @@ package gapi
 import (
 	"context"
 	db "github.com/zcubbs/tlz/db/sqlc"
-	"github.com/zcubbs/tlz/internal/validation"
+	"github.com/zcubbs/tlz/internal/validator"
 	"github.com/zcubbs/tlz/pb"
-	"github.com/zcubbs/tlz/pkg/util"
+	"github.com/zcubbs/tlz/pkg/password"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -17,7 +17,7 @@ func (s *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb
 		return nil, invalidArgumentError(violations)
 	}
 
-	hashedPassword, err := util.HashPassword(req.GetPassword())
+	hashedPassword, err := password.Hash(req.GetPassword())
 	if err != nil {
 		return nil, status.Errorf(codes.Internal, "could not hash password: %v", err)
 	}
@@ -44,19 +44,19 @@ func (s *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb
 }
 
 func validateCreateUserRequest(req *pb.CreateUserRequest) (violations []*errdetails.BadRequest_FieldViolation) {
-	if err := validation.ValidateUsername(req.GetUsername()); err != nil {
+	if err := validator.ValidateUsername(req.GetUsername()); err != nil {
 		violations = append(violations, fieldViolation("username", err))
 	}
 
-	if err := validation.ValidatePassword(req.GetPassword()); err != nil {
+	if err := validator.ValidatePassword(req.GetPassword()); err != nil {
 		violations = append(violations, fieldViolation("password", err))
 	}
 
-	if err := validation.ValidateFullName(req.GetFullName()); err != nil {
+	if err := validator.ValidateFullName(req.GetFullName()); err != nil {
 		violations = append(violations, fieldViolation("full_name", err))
 	}
 
-	if err := validation.ValidateEmail(req.GetEmail()); err != nil {
+	if err := validator.ValidateEmail(req.GetEmail()); err != nil {
 		violations = append(violations, fieldViolation("email", err))
 	}
 

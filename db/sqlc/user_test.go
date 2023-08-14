@@ -4,20 +4,21 @@ import (
 	"context"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stretchr/testify/require"
-	"github.com/zcubbs/tlz/pkg/util"
+	"github.com/zcubbs/tlz/pkg/password"
+	"github.com/zcubbs/tlz/pkg/random"
 	"testing"
 	"time"
 )
 
 func createRandomUser(t *testing.T) User {
-	password, err := util.HashPassword(util.RandomString(10))
+	pwd, err := password.Hash(random.RandomString(10))
 	require.NoError(t, err)
 
 	arg := CreateUserParams{
-		Username:       util.RandomOwner(),
-		Email:          util.RandomEmail(),
-		HashedPassword: password,
-		FullName:       util.RandomOwner(),
+		Username:       random.RandomOwner(),
+		Email:          random.RandomEmail(),
+		HashedPassword: pwd,
+		FullName:       random.RandomOwner(),
 	}
 
 	user, err := testStore.CreateUser(context.Background(), arg)
@@ -56,11 +57,11 @@ func TestUpdateUser(t *testing.T) {
 	arg := UpdateUserParams{
 		Username: user1.Username,
 		Email: pgtype.Text{
-			String: util.RandomEmail(),
+			String: random.RandomEmail(),
 			Valid:  true,
 		},
 		FullName: pgtype.Text{
-			String: util.RandomOwner(),
+			String: random.RandomOwner(),
 			Valid:  true,
 		},
 	}

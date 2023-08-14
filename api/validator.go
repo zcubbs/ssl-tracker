@@ -2,7 +2,7 @@ package api
 
 import (
 	"github.com/go-playground/validator/v10"
-	"github.com/zcubbs/tlz/pkg/util"
+	validator2 "github.com/zcubbs/tlz/pkg/validator"
 )
 
 var validate *validator.Validate
@@ -24,7 +24,7 @@ type ValidationErrorResponse struct {
 
 var validDomainName validator.Func = func(fieldLevel validator.FieldLevel) bool {
 	if domainName, ok := fieldLevel.Field().Interface().(string); ok {
-		return util.IsDomaineNameValid(domainName)
+		return validator2.IsDomaineNameValid(domainName)
 	}
 	return false
 }

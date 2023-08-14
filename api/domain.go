@@ -9,7 +9,8 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 	db "github.com/zcubbs/tlz/db/sqlc"
 	"github.com/zcubbs/tlz/pkg/token"
-	"github.com/zcubbs/tlz/pkg/util"
+	"github.com/zcubbs/tlz/pkg/until"
+	"github.com/zcubbs/tlz/pkg/validator"
 	"time"
 )
 
@@ -53,7 +54,7 @@ func (s *Server) CreateDomain(c *fiber.Ctx) error {
 	}
 
 	// Validate the request body
-	if !util.IsDomaineNameValid(domainRequest.Name) {
+	if !validator.IsDomaineNameValid(domainRequest.Name) {
 		log.Error(InvalidDomainName, "domain", domainRequest.Name)
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"error": InvalidDomainName,
@@ -133,7 +134,7 @@ func (s *Server) GetDomains(c *fiber.Ctx) error {
 	for i, domain := range domains {
 		u := "-"
 		if domain.CertificateExpiry.Valid {
-			u = util.TimeUntil(domain.CertificateExpiry.Time)
+			u = until.TimeUntil(domain.CertificateExpiry.Time)
 		}
 
 		domainResponse[i] = GetDomainResponse{
@@ -163,7 +164,7 @@ func (s *Server) GetDomain(c *fiber.Ctx) error {
 		})
 	}
 
-	if !util.IsDomaineNameValid(req.Name) {
+	if !validator.IsDomaineNameValid(req.Name) {
 		log.Error("validation failed",
 			"error", InvalidDomainName,
 			"domain", req.Name,

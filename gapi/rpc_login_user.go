@@ -5,7 +5,7 @@ import (
 	"errors"
 	db "github.com/zcubbs/tlz/db/sqlc"
 	"github.com/zcubbs/tlz/pb"
-	"github.com/zcubbs/tlz/pkg/util"
+	"github.com/zcubbs/tlz/pkg/password"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -20,7 +20,7 @@ func (s *Server) LoginUser(ctx context.Context, req *pb.LoginUserRequest) (*pb.L
 		return nil, status.Errorf(codes.Internal, "failed to login user")
 	}
 
-	err = util.CheckPassword(req.Password, user.HashedPassword)
+	err = password.Check(req.Password, user.HashedPassword)
 	if err != nil {
 		return nil, status.Errorf(codes.Unauthenticated, "invalid credentials: %v", err)
 	}
