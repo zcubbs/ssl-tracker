@@ -87,8 +87,10 @@ func (s *Server) StartHttpGateway() {
 		log.Fatal("cannot register handler server", "error", err)
 	}
 
+	apiPath := "/api/"
 	mux := http.NewServeMux()
-	mux.Handle("/api", grpcMux)
+	mux.Handle(apiPath, http.StripPrefix(apiPath, grpcMux))
+	log.Info("serving API Gateway", "path", apiPath)
 
 	for _, opt := range s.embedAssets {
 		log.Info("serving embedded assets", "path", opt.Path)

@@ -31,7 +31,7 @@ func (s *Server) LoginUser(ctx context.Context, req *pb.LoginUserRequest) (*pb.L
 		s.cfg.Auth.AccessTokenDuration,
 	)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "cannot create access token: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to create access token: %v", err)
 	}
 
 	refreshToken, refreshPayload, err := s.tokenMaker.CreateToken(
@@ -40,7 +40,7 @@ func (s *Server) LoginUser(ctx context.Context, req *pb.LoginUserRequest) (*pb.L
 		s.cfg.Auth.RefreshTokenDuration,
 	)
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "cannot create refresh token: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to create refresh token: %v", err)
 	}
 
 	meta := s.extractMetaData(ctx)
@@ -54,7 +54,7 @@ func (s *Server) LoginUser(ctx context.Context, req *pb.LoginUserRequest) (*pb.L
 		ExpiresAt:    refreshPayload.ExpiredAt,
 	})
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "cannot create session: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to create session: %v", err)
 	}
 
 	rsp := &pb.LoginUserResponse{

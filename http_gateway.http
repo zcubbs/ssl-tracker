@@ -1,6 +1,6 @@
 ### gRPC - Create User
 # curl -X POST -H "Content-Type: application/json" -d '{"username":"test", "password": "ThisIsMyPassword"}' http://localhost:3000/api/users
-POST http://localhost:8000/v1/create_user
+POST http://localhost:8000/api/v1/create_user
 Content-Type: application/json
 
 {
@@ -11,7 +11,7 @@ Content-Type: application/json
 }
 
 ### gRPC - Login
-POST http://localhost:8000/v1/login_user
+POST http://localhost:8000/api/v1/login_user
 Content-Type: application/json
 
 {
@@ -35,6 +35,15 @@ Content-Type: application/json
 > {%
   client.global.set("access_token", response.body.access_token);
 %}
+
+### gRPC - Update User
+PUT http://localhost:8000/api/v1/update_user
+Content-Type: application/json
+
+{
+    "username":"test2",
+    "email": "modified@email.com"
+}
 
 ### gRPC - Get All Domains
 

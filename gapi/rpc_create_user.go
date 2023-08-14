@@ -19,7 +19,7 @@ func (s *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb
 
 	hashedPassword, err := password.Hash(req.GetPassword())
 	if err != nil {
-		return nil, status.Errorf(codes.Internal, "could not hash password: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to hash password: %v", err)
 	}
 
 	arg := db.CreateUserParams{
@@ -34,7 +34,7 @@ func (s *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb
 		if err == db.ErrUniqueViolation {
 			return nil, status.Errorf(codes.AlreadyExists, "username already taken: %v", err)
 		}
-		return nil, status.Errorf(codes.Internal, "cannot create user: %v", err)
+		return nil, status.Errorf(codes.Internal, "failed to create user: %v", err)
 	}
 
 	rsp := &pb.CreateUserResponse{
