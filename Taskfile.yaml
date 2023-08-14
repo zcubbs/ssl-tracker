@@ -189,17 +189,20 @@ tasks:
         --go_out=pb --go_opt=paths=source_relative
         --go-grpc_out=pb --go-grpc_opt=paths=source_relative
         --grpc-gateway_out=pb --grpc-gateway_opt=paths=source_relative
+        --openapiv2_out=docs/swagger --openapiv2_opt=allow_merge=true,merge_file_name=tlz
         "proto/*.proto"
 
   proto:windows:
     desc: Generate proto code for Windows
     cmds:
       - cmd: powershell rm "pb/*.go"
+      - cmd: powershell rm "docs/swagger/*.json"
 
   proto:darwin:
     desc: Generate proto code for MacOS
     cmds:
       - cmd: rm -f pb/*.go
+      - cmd: rm -f docs/swagger/*.json
 
   evans:
     desc: Run Evans CLI

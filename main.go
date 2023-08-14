@@ -4,7 +4,6 @@ import (
 	"context"
 	"embed"
 	"github.com/charmbracelet/log"
-	"github.com/zcubbs/tlz/api"
 	db "github.com/zcubbs/tlz/db/sqlc"
 	"github.com/zcubbs/tlz/gapi"
 	"github.com/zcubbs/tlz/pkg/cron"
@@ -15,6 +14,9 @@ import (
 
 //go:embed web/dist/*
 var webDist embed.FS
+
+//go:embed docs/swagger/*
+var swaggerDist embed.FS
 
 func main() {
 	// Bootstrap configuration
@@ -34,32 +36,44 @@ func main() {
 	store := db.NewSQLStore(conn)
 
 	// Start cron jobs
-	startCronJobs(store, cfg.Cron)
+	//startCronJobs(store, cfg.Cron)
 
 	// Initialize mailer
 	mail.Initialize(cfg.Notification.Mail)
 
 	// Create gRPC Server
-	gs, err := gapi.NewServer(store, cfg)
+	gs, err := gapi.NewServer(store, cfg,
+		gapi.EmbedAssetsOpts{
+			Dir:    swaggerDist,
+			Path:   "/swagger/",
+			Prefix: "docs/swagger",
+		},
+		gapi.EmbedAssetsOpts{
+			Dir:    webDist,
+			Path:   "/",
+			Prefix: "web/dist",
+		},
+	)
 	if err != nil {
 		log.Fatal("cannot create grpc server", "error", err)
 	}
-	// Start gRPC Server
-	err = gs.Start()
-	if err != nil {
-		log.Fatal("cannot start grpc server", "error", err)
-	}
 
-	// Create Https Server
-	s, err := api.NewServer(store, &webDist, cfg)
-	if err != nil {
-		log.Fatal("cannot create server", "error", err)
-	}
-	// Start Http Server
-	err = s.Start()
-	if err != nil {
-		log.Fatal("cannot start server", "error", err)
-	}
+	// Start HTTP Gateway
+	go gs.StartGateway()
+
+	// Start gRPC Server
+	gs.Start()
+
+	//// Create Https Server
+	//s, err := api.NewServer(store, &webDist, cfg)
+	//if err != nil {
+	//	log.Fatal("cannot create server", "error", err)
+	//}
+	//// Start Http Server
+	//err = s.Start()
+	//if err != nil {
+	//	log.Fatal("cannot start server", "error", err)
+	//}
 }
 
 func startCronJobs(store db.Store, cfg util.CronConfig) {

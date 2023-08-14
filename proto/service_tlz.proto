@@ -5,20 +5,42 @@ package pb;
 import "google/api/annotations.proto";
 import "rpc_create_user.proto";
 import "rpc_login_user.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
 
 option go_package = "github.com/zcubbs/tlz/pb";
 
+option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
+  info: {
+    title: "TLZ API";
+    version: "1.0.0";
+    contact: {
+      name: "TLZ API";
+      url: "https://github.com/zcubbs/tlz";
+      email: "zcubbs@pm.me";
+    };
+  };
+};
+
 service Tlz {
-    rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {
-        option (google.api.http) = {
-            post: "/v1/create_user"
-            body: "*"
-        };
-    }
-    rpc LoginUser(LoginUserRequest) returns (LoginUserResponse) {
-        option (google.api.http) = {
-            post: "/v1/login_user"
-            body: "*"
-        };
-    }
+  rpc CreateUser(CreateUserRequest) returns (CreateUserResponse) {
+    option (google.api.http) = {
+      post: "/v1/create_user"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Create a new user";
+      description: "Create a new user";
+    };
+  }
+  rpc LoginUser(LoginUserRequest) returns (LoginUserResponse) {
+    option (google.api.http) = {
+      post: "/v1/login_user"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Login a user";
+      description: "Login a user and retrieve access/refresh tokens";
+    };
+
+  }
 }
