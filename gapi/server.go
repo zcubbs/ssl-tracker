@@ -50,7 +50,7 @@ func NewServer(store db.Store, cfg util.Config, embedOpts ...EmbedAssetsOpts) (*
 	return s, nil
 }
 
-func (s *Server) Start() {
+func (s *Server) StartGrpcServer() {
 	grpcServer := grpc.NewServer()
 	pb.RegisterTlzServer(grpcServer, s)
 
@@ -67,7 +67,7 @@ func (s *Server) Start() {
 	}
 }
 
-func (s *Server) StartGateway() {
+func (s *Server) StartHttpGateway() {
 	jsonOpts := runtime.WithMarshalerOption(runtime.MIMEWildcard, &runtime.JSONPb{
 		MarshalOptions: protojson.MarshalOptions{
 			UseProtoNames: true,

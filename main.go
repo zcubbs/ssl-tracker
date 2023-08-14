@@ -59,10 +59,10 @@ func main() {
 	}
 
 	// Start HTTP Gateway
-	go gs.StartGateway()
+	go gs.StartHttpGateway()
 
 	// Start gRPC Server
-	gs.Start()
+	gs.StartGrpcServer()
 
 	//// Create Https Server
 	//s, err := api.NewServer(store, &webDist, cfg)
