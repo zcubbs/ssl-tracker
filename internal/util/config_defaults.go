@@ -4,7 +4,7 @@ const (
 	ViperConfigName      = "config"
 	ViperConfigType      = "yaml"
 	ViperConfigEnvPrefix = "TLZ"
-	DefaultDbName        = "database"
+	DefaultDbName        = "tlz"
 )
 
 var (
@@ -27,7 +27,7 @@ var (
 		"database.postgres.port":                       5432,
 		"database.postgres.username":                   "postgres",
 		"database.postgres.password":                   "postgres",
-		"database.postgres.db_name":                    "tlz",
+		"database.postgres.db_name":                    DefaultDbName,
 		"database.postgres.ssl_mode":                   false,
 		"database.postgres.verbose":                    false,
 		"cron.check_certificate_validity.enabled":      true,

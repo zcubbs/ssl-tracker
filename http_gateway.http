@@ -7,9 +7,10 @@ Content-Type: application/json
   "username":"test2",
   "password": "ThisIsMyPassword",
   "email": "test2@test.com",
-  "full_name": "Test2 User"
+  "full_name": "Test2User"
 }
 
+##########################################################################################
 ### gRPC - Login
 POST http://localhost:8000/api/v1/login_user
 Content-Type: application/json
@@ -24,6 +25,7 @@ Content-Type: application/json
   client.global.set("refresh_token", response.body.refresh_token);
 %}
 
+##########################################################################################
 ### gRPC - Refresh the token
 POST http://localhost:8000/api/tokens/refresh
 Content-Type: application/json
@@ -35,25 +37,28 @@ Content-Type: application/json
 > {%
   client.global.set("access_token", response.body.access_token);
 %}
-
+##########################################################################################
 ### gRPC - Update User
-PUT http://localhost:8000/api/v1/update_user
+PATCH http://localhost:8000/api/v1/update_user
 Content-Type: application/json
+Authorization: Bearer {{ access_token }}
 
 {
     "username":"test2",
-    "email": "modified@email.com"
+    "full_name": "Test Tester2",
+    "email": "modified@email.com",
+    "password": "yolo123456"
 }
 
+##########################################################################################
 ### gRPC - Get All Domains
-
 # curl -X POST -H "Content-Type: application/json" -d '{"name":"example.com"}' http://localhost:3000/domains
 GET http://localhost:8000/api/domains
 Content-Type: application/json
 Authorization: Bearer {{ access_token }}
 
+##########################################################################################
 ### gRPC - Add new Domain
-
 # curl -X POST -H "Content-Type: application/json" -d '{"name":"example.com"}' http://localhost:3000/domains
 POST http://localhost:8000/api/domains
 Content-Type: application/json

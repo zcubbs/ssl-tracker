@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package pb;
+
+option go_package = "github.com/zcubbs/tlz/pb";
+
+message PingRequest {}
+
+message PingResponse {
+  string message = 1;
+}

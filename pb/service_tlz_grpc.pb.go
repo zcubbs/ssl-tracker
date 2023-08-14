@@ -22,6 +22,7 @@ const (
 	Tlz_CreateUser_FullMethodName = "/pb.Tlz/CreateUser"
 	Tlz_UpdateUser_FullMethodName = "/pb.Tlz/UpdateUser"
 	Tlz_LoginUser_FullMethodName  = "/pb.Tlz/LoginUser"
+	Tlz_Ping_FullMethodName       = "/pb.Tlz/Ping"
 )
 
 // TlzClient is the client API for Tlz service.
@@ -31,6 +32,7 @@ type TlzClient interface {
 	CreateUser(ctx context.Context, in *CreateUserRequest, opts ...grpc.CallOption) (*CreateUserResponse, error)
 	UpdateUser(ctx context.Context, in *UpdateUserRequest, opts ...grpc.CallOption) (*UpdateUserResponse, error)
 	LoginUser(ctx context.Context, in *LoginUserRequest, opts ...grpc.CallOption) (*LoginUserResponse, error)
+	Ping(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingResponse, error)
 }
 
 type tlzClient struct {
@@ -68,6 +70,15 @@ func (c *tlzClient) LoginUser(ctx context.Context, in *LoginUserRequest, opts ..
 	return out, nil
 }
 
+func (c *tlzClient) Ping(ctx context.Context, in *PingRequest, opts ...grpc.CallOption) (*PingResponse, error) {
+	out := new(PingResponse)
+	err := c.cc.Invoke(ctx, Tlz_Ping_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TlzServer is the server API for Tlz service.
 // All implementations must embed UnimplementedTlzServer
 // for forward compatibility
@@ -75,6 +86,7 @@ type TlzServer interface {
 	CreateUser(context.Context, *CreateUserRequest) (*CreateUserResponse, error)
 	UpdateUser(context.Context, *UpdateUserRequest) (*UpdateUserResponse, error)
 	LoginUser(context.Context, *LoginUserRequest) (*LoginUserResponse, error)
+	Ping(context.Context, *PingRequest) (*PingResponse, error)
 	mustEmbedUnimplementedTlzServer()
 }
 
@@ -90,6 +102,9 @@ func (UnimplementedTlzServer) UpdateUser(context.Context, *UpdateUserRequest) (*
 }
 func (UnimplementedTlzServer) LoginUser(context.Context, *LoginUserRequest) (*LoginUserResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method LoginUser not implemented")
+}
+func (UnimplementedTlzServer) Ping(context.Context, *PingRequest) (*PingResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Ping not implemented")
 }
 func (UnimplementedTlzServer) mustEmbedUnimplementedTlzServer() {}
 
@@ -158,6 +173,24 @@ func _Tlz_LoginUser_Handler(srv interface{}, ctx context.Context, dec func(inter
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Tlz_Ping_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(PingRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TlzServer).Ping(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Tlz_Ping_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TlzServer).Ping(ctx, req.(*PingRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Tlz_ServiceDesc is the grpc.ServiceDesc for Tlz service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -176,6 +209,10 @@ var Tlz_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "LoginUser",
 			Handler:    _Tlz_LoginUser_Handler,
+		},
+		{
+			MethodName: "Ping",
+			Handler:    _Tlz_Ping_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

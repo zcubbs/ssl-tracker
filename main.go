@@ -19,10 +19,14 @@ var webDist embed.FS
 //go:embed docs/swagger/*
 var swaggerDist embed.FS
 
-func main() {
-	// Bootstrap configuration
-	cfg := util.Bootstrap()
+var cfg util.Config
 
+func init() {
+	// Bootstrap configuration
+	cfg = util.Bootstrap()
+}
+
+func main() {
 	// Initialize logger
 	//logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{}))
 

@@ -6,6 +6,7 @@ import "google/api/annotations.proto";
 import "rpc_create_user.proto";
 import "rpc_update_user.proto";
 import "rpc_login_user.proto";
+import "rpc_ping.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 
 option go_package = "github.com/zcubbs/tlz/pb";
@@ -52,6 +53,15 @@ service Tlz {
       summary: "Login a user";
       description: "Login a user and retrieve access/refresh tokens";
     };
+  }
 
+  rpc Ping(PingRequest) returns (PingResponse) {
+    option (google.api.http) = {
+      get: "/v1/ping"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Ping the server";
+      description: "Ping the server";
+    };
   }
 }

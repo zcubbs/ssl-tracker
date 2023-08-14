@@ -4,33 +4,44 @@ import (
 	"github.com/charmbracelet/log"
 	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
+	"os"
 	"strings"
 	"sync"
 )
 
 var (
 	config     Config
+	onceLogger sync.Once
 	onceConfig sync.Once
 )
 
 func Bootstrap() Config {
+	onceLogger.Do(setupLogger)
 	onceConfig.Do(loadConfig)
 	log.Info("loaded configuration")
 	return config
 }
 
+func setupLogger() {
+	// read environment variable for log level
+	env := os.Getenv("ENVIRONMENT")
+	if env == "production" || env == "prod" {
+		log.SetLevel(log.InfoLevel)
+		log.SetFormatter(log.JSONFormatter)
+	} else {
+		log.SetLevel(log.DebugLevel)
+	}
+}
+
 func loadConfig() {
+	for k, v := range defaults {
+		viper.SetDefault(k, v)
+	}
 
 	err := godotenv.Load(".env")
 
 	if err != nil {
-		if viper.GetString("debug") == "true" {
-			log.Warn("no .env file found")
-		}
-	}
-
-	for k, v := range defaults {
-		viper.SetDefault(k, v)
+		log.Debug("no .env file found")
 	}
 
 	for _, p := range viperConfigPaths {

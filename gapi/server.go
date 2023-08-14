@@ -51,12 +51,13 @@ func NewServer(store db.Store, cfg util.Config, embedOpts ...EmbedAssetsOpts) (*
 }
 
 func (s *Server) StartGrpcServer() {
-	grpcServer := grpc.NewServer()
+	grpcLogger := grpc.UnaryInterceptor(GrpcLogger)
+	grpcServer := grpc.NewServer(grpcLogger)
 	pb.RegisterTlzServer(grpcServer, s)
 
 	reflection.Register(grpcServer)
 
-	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", s.cfg.GrpcServer.Port))
+	listener, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%d", s.cfg.GrpcServer.Port))
 	if err != nil {
 		log.Fatal("cannot listen", "error", err, "port", s.cfg.GrpcServer.Port)
 	}
@@ -87,9 +88,9 @@ func (s *Server) StartHttpGateway() {
 		log.Fatal("cannot register handler server", "error", err)
 	}
 
-	apiPath := "/api/"
+	apiPath := "/api"
 	mux := http.NewServeMux()
-	mux.Handle(apiPath, http.StripPrefix(apiPath, grpcMux))
+	mux.Handle(apiPath+"/", http.StripPrefix(apiPath, grpcMux))
 	log.Info("serving API Gateway", "path", apiPath)
 
 	for _, opt := range s.embedAssets {
@@ -108,7 +109,8 @@ func (s *Server) StartHttpGateway() {
 	}
 
 	log.Info("starting HTTP Gateway server", "port", s.cfg.HttpServer.Port)
-	if err := http.Serve(listener, mux); err != nil {
+	handler := HttpLogger(mux)
+	if err := http.Serve(listener, handler); err != nil {
 		log.Fatal("cannot start HTTP Gateway server", "error", err)
 	}
 }

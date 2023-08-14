@@ -89,6 +89,30 @@
         ]
       }
     },
+    "/v1/ping": {
+      "get": {
+        "summary": "Ping the server",
+        "description": "Ping the server",
+        "operationId": "Tlz_Ping",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/pbPingResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "Tlz"
+        ]
+      }
+    },
     "/v1/update_user": {
       "patch": {
         "summary": "Update a new user",
@@ -183,6 +207,14 @@
         "refreshTokenExpiresAt": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "pbPingResponse": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "string"
         }
       }
     },

@@ -5,6 +5,7 @@ env:
 
 vars:
   TEST_DB_URL: "postgres://postgres:postgres@127.0.0.1:5432/tlz?sslmode=disable"
+  LOCAL_HOST: 127.0.0.1
 
 tasks:
   bootstrap:
@@ -207,4 +208,4 @@ tasks:
   evans:
     desc: Run Evans CLI
     cmds:
-      - evans --host localhost --port 9000 -r repl
+      - evans --host {{.LOCAL_HOST}} --port 9000 -r repl
