@@ -106,3 +106,13 @@ SQLite is a self-contained, serverless, zero-configuration SQL database engine, 
 | `notification.mail.smtp.username`              | SMTP username for mail notification         | `""`                           |
 | `notification.mail.smtp.password`              | SMTP password for mail notification         | `""`                           |
 | `notification.mail.smtp.from`                  | SMTP from address for mail notification     | `"no-reply@tlz"`               |
+
+## Development
+
+### Prerequisites
+
+- [Go](https://golang.org/doc/install) (version 1.20 or higher)
+- [Task](https://taskfile.dev/#/installation)
+- [Docker](https://docs.docker.com/get-docker/) 
+- Windows:
+  - [Scoop](https://scoop.sh/) 

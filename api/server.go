@@ -19,13 +19,13 @@ type Server struct {
 	store       db.Store
 	app         *fiber.App
 	tokenMaker  token.Maker
-	cfg         util.HttpServerConfig
+	cfg         util.Config
 	staticEmbed *embed.FS
 	validate    *XValidator
 }
 
-func NewServer(store db.Store, staticEmbed *embed.FS, cfg util.HttpServerConfig) (*Server, error) {
-	tokenMaker, err := token.NewPasetoMaker(cfg.TokenSymmetricKey)
+func NewServer(store db.Store, staticEmbed *embed.FS, cfg util.Config) (*Server, error) {
+	tokenMaker, err := token.NewPasetoMaker(cfg.Auth.TokenSymmetricKey)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create new tokenMaker: %w", err)
 	}
@@ -42,13 +42,13 @@ func NewServer(store db.Store, staticEmbed *embed.FS, cfg util.HttpServerConfig)
 }
 
 func (s *Server) Start() error {
-	log.Info("starting HTTP server", "port", s.cfg.Port)
-	return s.app.Listen(fmt.Sprintf(":%d", s.cfg.Port))
+	log.Info("starting HTTP server", "port", s.cfg.HttpServer.Port)
+	return s.app.Listen(fmt.Sprintf(":%d", s.cfg.HttpServer.Port))
 }
 
 func (s *Server) ApplyDefaultConfig() {
 	app := fiber.New(fiber.Config{
-		EnablePrintRoutes:     s.cfg.EnablePrintRoutes,
+		EnablePrintRoutes:     s.cfg.HttpServer.EnablePrintRoutes,
 		DisableStartupMessage: true,
 	})
 
@@ -83,8 +83,8 @@ func (s *Server) applyMiddleware() {
 
 	// Or extend your config for customization
 	s.app.Use(cors.New(cors.Config{
-		AllowOrigins: s.cfg.AllowOrigins,
-		AllowHeaders: s.cfg.AllowHeaders,
+		AllowOrigins: s.cfg.HttpServer.AllowOrigins,
+		AllowHeaders: s.cfg.HttpServer.AllowHeaders,
 	}))
 }
 

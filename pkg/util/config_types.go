@@ -1,23 +1,30 @@
 package util
 
-import (
-	"time"
-)
+import "time"
 
 type Config struct {
 	Debug        bool               `mapstructure:"debug"`
 	HttpServer   HttpServerConfig   `mapstructure:"http_server"`
+	GrpcServer   GrpcServerConfig   `mapstructure:"grpc_server"`
+	Auth         AuthConfig         `mapstructure:"auth"`
 	Database     DatabaseConfig     `mapstructure:"database"`
 	Cron         CronConfig         `mapstructure:"cron"`
 	Notification NotificationConfig `mapstructure:"notification"`
 }
 
 type HttpServerConfig struct {
-	Port                 int           `mapstructure:"port"`
-	AllowOrigins         string        `mapstructure:"allow_origins"`
-	AllowHeaders         string        `mapstructure:"allow_headers"`
-	TZ                   string        `mapstructure:"tz"`
-	EnablePrintRoutes    bool          `mapstructure:"enable_print_routes"`
+	Port              int    `mapstructure:"port"`
+	AllowOrigins      string `mapstructure:"allow_origins"`
+	AllowHeaders      string `mapstructure:"allow_headers"`
+	TZ                string `mapstructure:"tz"`
+	EnablePrintRoutes bool   `mapstructure:"enable_print_routes"`
+}
+
+type GrpcServerConfig struct {
+	Port int `mapstructure:"port"`
+}
+
+type AuthConfig struct {
 	TokenSymmetricKey    string        `mapstructure:"token_symmetric_key"`
 	AccessTokenDuration  time.Duration `mapstructure:"access_token_duration"`
 	RefreshTokenDuration time.Duration `mapstructure:"refresh_token_duration"`

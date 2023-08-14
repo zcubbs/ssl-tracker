@@ -114,7 +114,7 @@ func (s *Server) renewAccessToken(c *fiber.Ctx) error {
 	accessToken, accessPayload, err := s.tokenMaker.CreateToken(
 		user.Username,
 		user.ID,
-		s.cfg.AccessTokenDuration,
+		s.cfg.Auth.AccessTokenDuration,
 	)
 	if err != nil {
 		log.Error("failed to create access token", "error", err)

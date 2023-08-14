@@ -169,7 +169,7 @@ func (s *Server) loginUser(c *fiber.Ctx) error {
 	accessToken, accessPayload, err := s.tokenMaker.CreateToken(
 		user.Username,
 		user.ID,
-		s.cfg.AccessTokenDuration,
+		s.cfg.Auth.AccessTokenDuration,
 	)
 	if err != nil {
 		log.Error("failed to create access token", "error", err)
@@ -182,7 +182,7 @@ func (s *Server) loginUser(c *fiber.Ctx) error {
 	refreshToken, refreshPayload, err := s.tokenMaker.CreateToken(
 		user.Username,
 		user.ID,
-		s.cfg.RefreshTokenDuration,
+		s.cfg.Auth.RefreshTokenDuration,
 	)
 	if err != nil {
 		log.Error("failed to create refresh token", "error", err)

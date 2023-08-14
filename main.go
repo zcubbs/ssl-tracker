@@ -4,9 +4,9 @@ import (
 	"context"
 	"embed"
 	"github.com/charmbracelet/log"
-	"github.com/jackc/pgx/v5"
 	"github.com/zcubbs/tlz/api"
 	db "github.com/zcubbs/tlz/db/sqlc"
+	"github.com/zcubbs/tlz/gapi"
 	"github.com/zcubbs/tlz/pkg/cron"
 	"github.com/zcubbs/tlz/pkg/mail"
 	"github.com/zcubbs/tlz/pkg/util"
@@ -39,25 +39,27 @@ func main() {
 	// Initialize mailer
 	mail.Initialize(cfg.Notification.Mail)
 
-	// Create Server
-	s, err := api.NewServer(store, &webDist, cfg.HttpServer)
+	// Create gRPC Server
+	gs, err := gapi.NewServer(store, cfg)
+	if err != nil {
+		log.Fatal("cannot create grpc server", "error", err)
+	}
+	// Start gRPC Server
+	err = gs.Start()
+	if err != nil {
+		log.Fatal("cannot start grpc server", "error", err)
+	}
+
+	// Create Https Server
+	s, err := api.NewServer(store, &webDist, cfg)
 	if err != nil {
 		log.Fatal("cannot create server", "error", err)
 	}
-
+	// Start Http Server
 	err = s.Start()
 	if err != nil {
 		log.Fatal("cannot start server", "error", err)
 	}
-}
-
-func CloseDbConn(conn *pgx.Conn, ctx context.Context) {
-	func(conn *pgx.Conn, ctx context.Context) {
-		err := conn.Close(ctx)
-		if err != nil {
-			log.Error("cannot close database connection", "error", err)
-		}
-	}(conn, ctx)
 }
 
 func startCronJobs(store db.Store, cfg util.CronConfig) {
