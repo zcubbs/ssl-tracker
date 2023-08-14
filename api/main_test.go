@@ -3,7 +3,8 @@ package api
 import (
 	"github.com/stretchr/testify/require"
 	db "github.com/zcubbs/tlz/db/sqlc"
-	"github.com/zcubbs/tlz/pkg/util"
+	"github.com/zcubbs/tlz/internal/util"
+	"github.com/zcubbs/tlz/pkg/random"
 	"os"
 	"testing"
 	"time"
@@ -12,7 +13,7 @@ import (
 func newTestServer(t *testing.T, store db.Store) *Server {
 	config := util.Config{
 		Auth: util.AuthConfig{
-			TokenSymmetricKey:    util.RandomString(32),
+			TokenSymmetricKey:    random.RandomString(32),
 			AccessTokenDuration:  time.Minute,
 			RefreshTokenDuration: 5 * time.Minute,
 		},

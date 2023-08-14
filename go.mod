@@ -13,7 +13,6 @@ require (
 	github.com/jackc/pgx/v5 v5.4.3
 	github.com/joho/godotenv v1.5.1
 	github.com/mattes/migrate v3.0.1+incompatible
-	github.com/mattn/go-sqlite3 v1.14.17
 	github.com/o1egl/paseto v1.0.0
 	github.com/robfig/cron/v3 v3.0.1
 	github.com/spf13/viper v1.16.0

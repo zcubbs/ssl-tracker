@@ -74,3 +74,23 @@ func TestUpdateUser(t *testing.T) {
 	require.Equal(t, arg.FullName.String, user2.FullName)
 	require.WithinDuration(t, user1.CreatedAt, user2.CreatedAt, time.Second)
 }
+
+func TestUpdateUserOnlyFullname(t *testing.T) {
+	user1 := createRandomUser(t)
+
+	arg := UpdateUserParams{
+		Username: user1.Username,
+		FullName: pgtype.Text{
+			String: random.RandomOwner(),
+			Valid:  true,
+		},
+	}
+	user2, err := testStore.UpdateUser(context.Background(), arg)
+	require.NoError(t, err)
+	require.NotEmpty(t, user2)
+
+	require.Equal(t, arg.Username, user2.Username)
+	require.Equal(t, user1.Email, user2.Email)
+	require.Equal(t, arg.FullName.String, user2.FullName)
+	require.WithinDuration(t, user1.CreatedAt, user2.CreatedAt, time.Second)
+}

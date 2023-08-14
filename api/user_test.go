@@ -9,7 +9,8 @@ import (
 	"github.com/stretchr/testify/require"
 	mockdb "github.com/zcubbs/tlz/db/mock"
 	db "github.com/zcubbs/tlz/db/sqlc"
-	"github.com/zcubbs/tlz/pkg/util"
+	"github.com/zcubbs/tlz/pkg/password"
+	"github.com/zcubbs/tlz/pkg/random"
 	"go.uber.org/mock/gomock"
 	"io"
 	"net/http"
@@ -29,7 +30,7 @@ func (e eqCreateUserParamsMatcher) Matches(x interface{}) bool {
 		return false
 	}
 
-	err := util.CheckPassword(e.password, arg.HashedPassword)
+	err := password.Check(e.password, arg.HashedPassword)
 	if err != nil {
 		return false
 	}
@@ -47,7 +48,7 @@ func EqCreateUserParams(arg db.CreateUserParams, password string) gomock.Matcher
 }
 
 func TestCreateUserAPI(t *testing.T) {
-	user, password := randomUser(t)
+	user, pwd := randomUser(t)
 
 	testCases := []struct {
 		name          string
@@ -59,7 +60,7 @@ func TestCreateUserAPI(t *testing.T) {
 			name: "OK",
 			body: createUserRequest{
 				Username: user.Username,
-				Password: password,
+				Password: pwd,
 				FullName: user.FullName,
 				Email:    user.Email,
 			},
@@ -70,7 +71,7 @@ func TestCreateUserAPI(t *testing.T) {
 					Email:    user.Email,
 				}
 				store.EXPECT().
-					CreateUser(gomock.Any(), EqCreateUserParams(arg, password)).
+					CreateUser(gomock.Any(), EqCreateUserParams(arg, pwd)).
 					Times(1).
 					Return(user, nil)
 			},
@@ -83,7 +84,7 @@ func TestCreateUserAPI(t *testing.T) {
 			name: "InternalError",
 			body: createUserRequest{
 				Username: user.Username,
-				Password: password,
+				Password: pwd,
 				FullName: user.FullName,
 				Email:    user.Email,
 			},
@@ -101,7 +102,7 @@ func TestCreateUserAPI(t *testing.T) {
 			name: "DuplicateUsername",
 			body: createUserRequest{
 				Username: user.Username,
-				Password: password,
+				Password: pwd,
 				FullName: user.FullName,
 				Email:    user.Email,
 			},
@@ -119,7 +120,7 @@ func TestCreateUserAPI(t *testing.T) {
 			name: "InvalidUsername",
 			body: createUserRequest{
 				Username: "invalid-user#1",
-				Password: password,
+				Password: pwd,
 				FullName: user.FullName,
 				Email:    user.Email,
 			},
@@ -136,7 +137,7 @@ func TestCreateUserAPI(t *testing.T) {
 			name: "InvalidEmail",
 			body: createUserRequest{
 				Username: user.Username,
-				Password: password,
+				Password: pwd,
 				FullName: user.FullName,
 				Email:    "invalid-email",
 			},
@@ -197,7 +198,7 @@ func TestCreateUserAPI(t *testing.T) {
 }
 
 func TestLoginUser(t *testing.T) {
-	user, password := randomUser(t)
+	user, pwd := randomUser(t)
 
 	testCases := []struct {
 		name          string
@@ -209,7 +210,7 @@ func TestLoginUser(t *testing.T) {
 			name: "OK",
 			body: loginUserRequest{
 				Username: user.Username,
-				Password: password,
+				Password: pwd,
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
@@ -229,7 +230,7 @@ func TestLoginUser(t *testing.T) {
 			name: "UserNotFound",
 			body: loginUserRequest{
 				Username: "NotFound",
-				Password: password,
+				Password: pwd,
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
@@ -261,7 +262,7 @@ func TestLoginUser(t *testing.T) {
 			name: "InternalError",
 			body: loginUserRequest{
 				Username: user.Username,
-				Password: password,
+				Password: pwd,
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
@@ -277,7 +278,7 @@ func TestLoginUser(t *testing.T) {
 			name: "InvalidUsername",
 			body: loginUserRequest{
 				Username: "invalid username#",
-				Password: password,
+				Password: pwd,
 			},
 			buildStubs: func(store *mockdb.MockStore) {
 				store.EXPECT().
@@ -319,18 +320,18 @@ func TestLoginUser(t *testing.T) {
 
 }
 
-func randomUser(t *testing.T) (user db.User, password string) {
-	password = util.RandomString(6)
-	hashedPassword, err := util.HashPassword(password)
+func randomUser(t *testing.T) (user db.User, pwd string) {
+	pwd = random.RandomString(6)
+	hashedPassword, err := password.Hash(pwd)
 	require.NoError(t, err)
 
 	user = db.User{
-		Username:       util.RandomOwner(),
+		Username:       random.RandomOwner(),
 		HashedPassword: hashedPassword,
-		FullName:       util.RandomOwner(),
-		Email:          util.RandomEmail(),
+		FullName:       random.RandomOwner(),
+		Email:          random.RandomEmail(),
 	}
-	return user, password
+	return user, pwd
 }
 
 func requireBodyMatchUser(t *testing.T, body io.ReadCloser, user db.User) {

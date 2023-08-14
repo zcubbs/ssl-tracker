@@ -12,7 +12,7 @@ import (
 	"github.com/stretchr/testify/require"
 	mockdb "github.com/zcubbs/tlz/db/mock"
 	db "github.com/zcubbs/tlz/db/sqlc"
-	"github.com/zcubbs/tlz/pkg/util"
+	"github.com/zcubbs/tlz/pkg/random"
 	"go.uber.org/mock/gomock"
 	"io"
 	"net/http"
@@ -263,7 +263,7 @@ func TestGetDomains(t *testing.T) {
 
 func randomDomain() db.Domain {
 	return db.Domain{
-		Name:              util.RandomDomainName(),
+		Name:              random.RandomDomainName(),
 		CertificateExpiry: pgtype.Timestamp{},
 		Status:            pgtype.Text{},
 		Issuer:            pgtype.Text{},

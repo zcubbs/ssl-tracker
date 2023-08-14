@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/charmbracelet/log"
 	"github.com/jackc/pgx/v5/pgxpool"
-	_ "github.com/mattn/go-sqlite3"
 )
 
 func DbConnect(ctx context.Context, config DatabaseConfig) (*pgxpool.Pool, error) {
