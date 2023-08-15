@@ -134,7 +134,7 @@ func (s *Server) GetDomains(c *fiber.Ctx) error {
 	for i, domain := range domains {
 		u := "-"
 		if domain.CertificateExpiry.Valid {
-			u = until.TimeUntil(domain.CertificateExpiry.Time)
+			u = until.TimeUntil(time.Now(), domain.CertificateExpiry.Time)
 		}
 
 		domainResponse[i] = GetDomainResponse{
