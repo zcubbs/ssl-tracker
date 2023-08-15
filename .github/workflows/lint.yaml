@@ -26,8 +26,6 @@ on:
 jobs:
   lint:
     runs-on: ubuntu-latest
-    env:
-      GO111MODULE: on
     steps:
       - uses: actions/checkout@v3
 
