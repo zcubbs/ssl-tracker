@@ -12,11 +12,11 @@ on:
       - 'scripts/**'
       - 'LICENSE'
       - 'sqlc.yaml'
-      - `Taskfile.yaml`
+      - 'Taskfile.yaml'
       - '.gitignore'
       - 'project.toml'
       - '.gosec.config.json'
-      - `.editorconfig`
+      - '.editorconfig'
   pull_request:
 
 jobs:
