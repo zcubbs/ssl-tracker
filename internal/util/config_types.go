@@ -8,6 +8,7 @@ type Config struct {
 	GrpcServer   GrpcServerConfig   `mapstructure:"grpc_server"`
 	Auth         AuthConfig         `mapstructure:"auth"`
 	Database     DatabaseConfig     `mapstructure:"database"`
+	Redis        RedisConfig        `mapstructure:"redis"`
 	Cron         CronConfig         `mapstructure:"cron"`
 	Notification NotificationConfig `mapstructure:"notification"`
 }
@@ -60,6 +61,11 @@ type PostgresConfig struct {
 	Verbose  bool   `mapstructure:"verbose" json:"verbose"`
 	CertPem  string `mapstructure:"cert_pem"`
 	CertKey  string `mapstructure:"cert_key"`
+}
+
+type RedisConfig struct {
+	Host string `mapstructure:"host"`
+	Port int    `mapstructure:"port"`
 }
 
 type CronConfig struct {

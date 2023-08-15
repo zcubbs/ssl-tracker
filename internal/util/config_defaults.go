@@ -5,6 +5,7 @@ const (
 	ViperConfigType      = "yaml"
 	ViperConfigEnvPrefix = "TLZ"
 	DefaultDbName        = "tlz"
+	Localhost            = "127.0.0.1"
 )
 
 var (
@@ -23,19 +24,21 @@ var (
 		"auth.refresh_token_duration":                  "24h",
 		"database.auto_migration":                      false,
 		"database.postgres.enabled":                    true,
-		"database.postgres.host":                       "127.0.0.1",
+		"database.postgres.host":                       Localhost,
 		"database.postgres.port":                       5432,
 		"database.postgres.username":                   "postgres",
 		"database.postgres.password":                   "postgres",
 		"database.postgres.db_name":                    DefaultDbName,
 		"database.postgres.ssl_mode":                   false,
 		"database.postgres.verbose":                    false,
+		"redis.host":                                   Localhost,
+		"redis.port":                                   6379,
 		"cron.check_certificate_validity.enabled":      true,
 		"cron.check_certificate_validity.cron_pattern": "*/10 * * * * *",
 		"cron.send_mail_notification.enabled":          true,
 		"cron.send_mail_notification.cron_pattern":     "*/10 * * * * *",
 		"notification.mail.smtp.enabled":               true,
-		"notification.mail.smtp.host":                  "localhost",
+		"notification.mail.smtp.host":                  Localhost,
 		"notification.mail.smtp.port":                  1025,
 		"notification.mail.smtp.username":              "",
 		"notification.mail.smtp.password":              "",
@@ -64,6 +67,8 @@ var (
 		"database.postgres.verbose",
 		"database.sqlite.enabled",
 		"database.sqlite.db_name",
+		"redis.host",
+		"redis.port",
 		"cron.check_certificate_validity.enabled",
 		"cron.check_certificate_validity.cron_pattern",
 		"cron.send_mail_notification.enabled",

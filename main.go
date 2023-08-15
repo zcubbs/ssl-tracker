@@ -11,6 +11,7 @@ import (
 	"github.com/zcubbs/tlz/pkg/cron"
 	"github.com/zcubbs/tlz/pkg/mail"
 	"github.com/zcubbs/tlz/task"
+	"github.com/zcubbs/tlz/worker"
 )
 
 //go:embed web/dist/*
@@ -52,8 +53,12 @@ func main() {
 	// Initialize mailer
 	mail.Initialize(cfg.Notification.Mail)
 
+	// Run task worker
+	w := worker.New(cfg, store)
+	go w.Run()
+
 	// Create gRPC Server
-	gs, err := gapi.NewServer(store, cfg,
+	gs, err := gapi.NewServer(store, w.TaskDistributor, cfg,
 		gapi.EmbedAssetsOpts{
 			Dir:    swaggerDist,
 			Path:   "/swagger/",

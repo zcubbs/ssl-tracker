@@ -209,3 +209,8 @@ tasks:
     desc: Run Evans CLI
     cmds:
       - evans --host {{.LOCAL_HOST}} --port 9000 -r repl
+
+  redis:
+    desc: Start Redis
+    cmds:
+      - docker run --rm --name tlz-redis -p 6379:6379 -d redis:alpine
