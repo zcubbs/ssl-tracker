@@ -44,7 +44,7 @@ func (s *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb
 				asynq.Queue(worker.QueueCritical),
 			}
 
-			return s.taskDispatcher.DistributeTaskSendVerifyEmail(ctx, taskPayload, opts...)
+			return s.taskDistributor.DistributeTaskSendVerifyEmail(ctx, taskPayload, opts...)
 		},
 	}
 

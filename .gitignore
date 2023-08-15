@@ -35,3 +35,6 @@ go.work
 /layers/
 /bin/
 /gosec-results.json
+/pkg/mail/.env
+
+.env

@@ -65,7 +65,7 @@ func migratePostgres(conn *sql.DB, dbname string) error {
 		return fmt.Errorf("failed to apply migrations: %w", err)
 	}
 
-	log.Info("applied database migrations")
+	log.Info("✔️ applied database migrations")
 	return nil
 }
 

@@ -35,7 +35,6 @@ type DatabaseType string
 
 const (
 	Postgres DatabaseType = "postgres"
-	Sqlite   DatabaseType = "sqlite"
 )
 
 type DatabaseConfig struct {
@@ -92,10 +91,11 @@ type MailConfig struct {
 }
 
 type SmtpConfig struct {
-	Enabled  bool   `mapstructure:"enabled"`
-	Host     string `mapstructure:"host"`
-	Port     int    `mapstructure:"port"`
-	Username string `mapstructure:"username"`
-	Password string `mapstructure:"password"`
-	From     string `mapstructure:"from"`
+	Enabled     bool   `mapstructure:"enabled"`
+	Host        string `mapstructure:"host"`
+	Port        int    `mapstructure:"port"`
+	Username    string `mapstructure:"username"`
+	Password    string `mapstructure:"password"`
+	FromAddress string `mapstructure:"from_address"`
+	FromName    string `mapstructure:"from_name"`
 }

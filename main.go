@@ -8,9 +8,7 @@ import (
 	db "github.com/zcubbs/tlz/db/sqlc"
 	"github.com/zcubbs/tlz/gapi"
 	"github.com/zcubbs/tlz/internal/util"
-	"github.com/zcubbs/tlz/pkg/cron"
 	"github.com/zcubbs/tlz/pkg/mail"
-	"github.com/zcubbs/tlz/task"
 	"github.com/zcubbs/tlz/worker"
 )
 
@@ -48,10 +46,10 @@ func main() {
 	store := db.NewSQLStore(conn)
 
 	// Start cron jobs
-	//startCronJobs(store, cfg.Cron)
+	startCronJobs(store, cfg.Cron)
 
 	// Initialize mailer
-	mail.Initialize(cfg.Notification.Mail)
+	mail.NewDefaultSender(cfg.Notification.Mail.Smtp)
 
 	// Run task worker
 	w := worker.New(cfg, store)
@@ -82,18 +80,11 @@ func main() {
 }
 
 func startCronJobs(store db.Store, cfg util.CronConfig) {
-	t := task.New(store)
-	if cfg.CheckCertificateValidity.Enabled {
-		go cron.StartCronJob(
-			cfg.CheckCertificateValidity.CronPattern,
-			t.CheckCertificateValidity,
-		)
-	}
-
-	if cfg.SendMailNotification.Enabled {
-		go cron.StartCronJob(
-			cfg.SendMailNotification.CronPattern,
-			t.SendMailNotification,
-		)
-	}
+	//t := task.New(store)
+	//if cfg.CheckCertificateValidity.Enabled {
+	//	go cron.StartCronJob(
+	//		cfg.CheckCertificateValidity.CronPattern,
+	//		t.CheckCertificateValidity,
+	//	)
+	//}
 }

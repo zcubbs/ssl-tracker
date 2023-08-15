@@ -27,7 +27,7 @@ func New(cfg util.Config, store db.Store) *Worker {
 
 func (w *Worker) Run() {
 	taskProcessor := NewRedisTaskProcessor(w.redisOpt, w.store)
-	log.Info("Starting task processor")
+	log.Info("✔️ starting task processor")
 
 	err := taskProcessor.Start()
 	if err != nil {

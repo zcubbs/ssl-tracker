@@ -42,7 +42,8 @@ var (
 		"notification.mail.smtp.port":                  1025,
 		"notification.mail.smtp.username":              "",
 		"notification.mail.smtp.password":              "",
-		"notification.mail.smtp.from":                  "no-reply@tlz",
+		"notification.mail.smtp.from_address":          "no-reply@localhost",
+		"notification.mail.smtp.from_name":             "TLZ",
 	}
 
 	allowedEnvVarKeys = []string{
@@ -78,6 +79,7 @@ var (
 		"notification.mail.smtp.port",
 		"notification.mail.smtp.username",
 		"notification.mail.smtp.password",
-		"notification.mail.smtp.from",
+		"notification.mail.smtp.from_address",
+		"notification.mail.smtp.from_name",
 	}
 )

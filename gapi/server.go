@@ -21,11 +21,11 @@ import (
 
 type Server struct {
 	pb.UnimplementedTlzServer
-	store          db.Store
-	tokenMaker     token.Maker
-	cfg            util.Config
-	embedAssets    []EmbedAssetsOpts
-	taskDispatcher worker.TaskDistributor
+	store           db.Store
+	tokenMaker      token.Maker
+	cfg             util.Config
+	embedAssets     []EmbedAssetsOpts
+	taskDistributor worker.TaskDistributor
 }
 
 type EmbedAssetsOpts struct {
@@ -38,7 +38,7 @@ type EmbedAssetsOpts struct {
 
 func NewServer(
 	store db.Store,
-	taskDispatcher worker.TaskDistributor,
+	taskDistributor worker.TaskDistributor,
 	cfg util.Config,
 	embedOpts ...EmbedAssetsOpts,
 ) (*Server, error) {
@@ -49,10 +49,11 @@ func NewServer(
 	}
 
 	s := &Server{
-		store:       store,
-		tokenMaker:  tokenMaker,
-		cfg:         cfg,
-		embedAssets: embedOpts,
+		store:           store,
+		tokenMaker:      tokenMaker,
+		cfg:             cfg,
+		embedAssets:     embedOpts,
+		taskDistributor: taskDistributor,
 	}
 
 	return s, nil
@@ -70,7 +71,7 @@ func (s *Server) StartGrpcServer() {
 		log.Fatal("cannot listen", "error", err, "port", s.cfg.GrpcServer.Port)
 	}
 
-	log.Info("starting gRPC server", "port", s.cfg.GrpcServer.Port)
+	log.Info("🟢 starting gRPC server", "port", s.cfg.GrpcServer.Port)
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatal("cannot start server: %w", err)
 	}
@@ -116,7 +117,7 @@ func (s *Server) StartHttpGateway() {
 		log.Fatal("cannot listen", "error", err, "port", s.cfg.HttpServer.Port)
 	}
 
-	log.Info("starting HTTP Gateway server", "port", s.cfg.HttpServer.Port)
+	log.Info("🟢 starting HTTP Gateway server", "port", s.cfg.HttpServer.Port)
 	handler := HttpLogger(mux)
 	if err := http.Serve(listener, handler); err != nil {
 		log.Fatal("cannot start HTTP Gateway server", "error", err)

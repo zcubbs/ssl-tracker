@@ -11,15 +11,25 @@ import (
 
 var (
 	config     Config
+	onceEnv    sync.Once
 	onceLogger sync.Once
 	onceConfig sync.Once
 )
 
 func Bootstrap() Config {
+	onceEnv.Do(LoadEnv)
 	onceLogger.Do(setupLogger)
 	onceConfig.Do(loadConfig)
 	log.Info("loaded configuration")
 	return config
+}
+
+func LoadEnv() {
+	err := godotenv.Load(".env")
+
+	if err != nil {
+		log.Debug("no .env file found")
+	}
 }
 
 func setupLogger() {
@@ -38,12 +48,6 @@ func loadConfig() {
 		viper.SetDefault(k, v)
 	}
 
-	err := godotenv.Load(".env")
-
-	if err != nil {
-		log.Debug("no .env file found")
-	}
-
 	for _, p := range viperConfigPaths {
 		viper.AddConfigPath(p)
 	}
@@ -51,7 +55,7 @@ func loadConfig() {
 	viper.SetConfigType(ViperConfigType)
 	viper.SetConfigName(ViperConfigName)
 
-	err = viper.ReadInConfig()
+	err := viper.ReadInConfig()
 	if err != nil && viper.GetString("debug") == "true" {
 		log.Warn("unable to load config file",
 			"path", ViperConfigName+"."+ViperConfigType,

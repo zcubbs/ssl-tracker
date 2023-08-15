@@ -123,7 +123,12 @@ tasks:
   pg:
     desc: Start Postgres
     cmds:
-      - docker run --rm --name tlz-postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=tlz -p 5432:5432 -d postgres:14-alpine
+      - docker run --name tlz-postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=tlz -p 5432:5432 -d postgres:14-alpine
+
+  pg:start:
+    desc: Start Postgres
+    cmds:
+      - docker start tlz-postgres
 
   pg:down:
     desc: Stop Postgres
@@ -213,4 +218,19 @@ tasks:
   redis:
     desc: Start Redis
     cmds:
-      - docker run --rm --name tlz-redis -p 6379:6379 -d redis:alpine
+      - docker run --name tlz-redis -p 6379:6379 -d redis:alpine
+
+  redis:start:
+    desc: Start Redis
+    cmds:
+      - docker start tlz-redis
+
+  redis:down:
+    desc: Stop Redis
+    cmds:
+      - docker stop tlz-redis
+
+  mailhog:
+    desc: Start MailHog
+    cmds:
+      - docker run --rm --name tlz-mailhog -d -p 1025:1025 -p 8025:8025 mailhog/mailhog

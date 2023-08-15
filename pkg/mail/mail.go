@@ -1,38 +1,72 @@
 package mail
 
 import (
+	"fmt"
 	"github.com/charmbracelet/log"
+	"github.com/jordan-wright/email"
 	"github.com/zcubbs/tlz/internal/util"
+	"net/smtp"
 )
-
-var Sender Mailer
 
 type Mailer interface {
 	SendMail(mail Mail) error
 }
 
 type Mail struct {
-	From    string   `json:"from"`
-	To      []string `json:"to"`
-	Subject string   `json:"subject"`
-	Body    string   `json:"body"`
+	To            []string `json:"to"`
+	Cc            []string `json:"cc"`
+	Bcc           []string `json:"bcc"`
+	Subject       string   `json:"subject"`
+	Content       string   `json:"body"`
+	AttachedFiles []string `json:"attachedFiles"`
 }
 
-func Initialize(cfg util.MailConfig) {
-	if !cfg.Smtp.Enabled {
-		log.Warn("no mailer enabled, please enable either smtp, sendgrid or gomail")
-		return
+type DefaultSender struct {
+	userName    string
+	password    string
+	fromName    string
+	fromAddress string
+	serverHost  string
+	serverPort  int
+}
+
+func NewDefaultSender(cfg util.SmtpConfig) Mailer {
+	return &DefaultSender{
+		userName:    cfg.Username,
+		password:    cfg.Password,
+		fromName:    cfg.FromName,
+		fromAddress: cfg.FromAddress,
+		serverHost:  cfg.Host,
+		serverPort:  cfg.Port,
+	}
+}
+
+func (s DefaultSender) SendMail(mail Mail) error {
+	log.Info("Sending email",
+		"from", fmt.Sprintf("%s <%s>", s.fromName, s.fromAddress),
+		"to", mail.To,
+		"cc", mail.Cc,
+		"bcc", mail.Bcc,
+		"subject", mail.Subject,
+		"content", mail.Content,
+		"attachedFiles", mail.AttachedFiles,
+	)
+
+	e := email.NewEmail()
+	e.From = fmt.Sprintf("%s <%s>", s.fromName, s.fromAddress)
+	e.Subject = mail.Subject
+	e.HTML = []byte(mail.Content)
+	e.To = mail.To
+	e.Cc = mail.Cc
+	e.Bcc = mail.Bcc
+	for _, file := range mail.AttachedFiles {
+		if _, err := e.AttachFile(file); err != nil {
+			return fmt.Errorf("failed to attach file %s: %w", file, err)
+		}
 	}
 
-	if cfg.Smtp.Enabled {
-		Sender = GoMail{
-			Host:     cfg.Smtp.Host,
-			Port:     cfg.Smtp.Port,
-			Username: cfg.Smtp.Username,
-			Password: cfg.Smtp.Password,
-			From:     cfg.Smtp.From,
-		}
-		log.Info("configured SMTP server")
-		return
-	}
+	smtpGmailHost := fmt.Sprintf("%s:%d", s.serverHost, s.serverPort)
+	smtpAuth := smtp.PlainAuth("", s.userName, s.password, s.serverHost)
+
+	return e.Send(smtpGmailHost, smtpAuth)
 }
