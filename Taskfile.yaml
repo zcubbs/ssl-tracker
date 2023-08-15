@@ -11,7 +11,7 @@ tasks:
   bootstrap:
     desc: Install all necessary tools and CLI dependencies
     cmds:
-      - go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+      - task: install:golangci-lint
       - go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
       - go install github.com/securego/gosec/v2/cmd/gosec@latest
       - go install go.uber.org/mock/mockgen@latest
@@ -49,6 +49,11 @@ tasks:
       - sudo add-apt-repository ppa:cncf-buildpacks/pack-cli
       - sudo apt-get update
       - sudo apt-get install pack-cli
+
+  install:golangci-lint:
+    desc: Install golangci-lint
+    cmds:
+      - go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 
   go:deps:
     desc: Install Go dependencies

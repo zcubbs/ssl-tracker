@@ -46,7 +46,8 @@ jobs:
         options: --health-cmd wget -T 10 -s http://localhost:8025 || exit 1
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
       - name: Set up Go
         uses: actions/setup-go@v3
@@ -59,6 +60,20 @@ jobs:
         with:
           version: 3.x
           repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+
+      - name: Build web
+        run: task react:build
+
+      - name: Install golangci-lint
+        run: task install:golangci-lint
+
+      - name: Lint
+        run: task lint
 
       - name: Test
         run: task test
