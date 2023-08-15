@@ -5,9 +5,7 @@ import (
 	"time"
 )
 
-func TimeUntil(t time.Time) string {
-	now := time.Now()
-
+func TimeUntil(now, t time.Time) string {
 	// if the time is in the past, return "Time Passed"
 	if t.Before(now) {
 		return "Time Passed"
@@ -35,6 +33,9 @@ func TimeUntil(t time.Time) string {
 	return "Less than a day remaining"
 }
 
-func HasDatePassed(t time.Time) bool {
-	return time.Now().After(t)
+func HasDatePassed(now, t time.Time) bool {
+	t = time.Date(t.Year(), t.Month(), t.Day(), 0, 0, 0, 0, t.Location())
+	now = time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
+
+	return now.After(t)
 }
