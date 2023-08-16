@@ -1,5 +1,10 @@
 # TLZ;
 
+
+[![test](https://github.com/zcubbs/tlz/actions/workflows/test.yml/badge.svg)](https://github.com/zcubbs/tlz/actions/workflows/test.yml)
+[![release](https://github.com/zcubbs/tlz/actions/workflows/release.yml/badge.svg)](https://github.com/zcubbs/tlz/actions/workflows/release.yml)
+
+
 This application is designed to monitor the status and health of SSL/TLS certificates. In today's digital world, ensuring the validity and security of your SSL/TLS certificates is crucial. With our application, you can streamline this process, keeping an eye on your certificates and their expiry dates.
 
 **TLZ;** does more than just monitor - it actively notifies you of any pending expiry dates, ensuring you have ample time to renew and prevent any potential downtime or security issues. By proactively managing your SSL/TLS certificates, our application helps maintain the integrity and reliability of your digital infrastructure.
