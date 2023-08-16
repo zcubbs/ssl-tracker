@@ -1,0 +1,35 @@
+name: Scan
+
+defaults:
+  run:
+    shell: bash
+on:
+  workflow_dispatch:
+  schedule:
+    # every day at 00:00 UTC
+    - cron: '0 0 * * *'
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: Checkout Code
+        uses: actions/checkout@v3.5.3
+
+      - name: Set up Go
+        uses: actions/setup-go@v4.1.0
+        with:
+          go-version: '1.20'
+
+      - name: Install Task
+        uses: arduino/setup-task@v1.0.3
+        with:
+          version: 3.x
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Install Security Scanner
+        run: task bootstrap_tasks:install:gosec
+
+      - name: Run Go Security Scanner
+        run: task scan

@@ -12,6 +12,7 @@ on:
       - 'README.md'
       - 'docs/**'
       - '.github/**'
+      - '.taskfiles/**'
       - 'scripts/**'
       - 'LICENSE'
       - 'sqlc.yaml'
@@ -65,10 +66,7 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install Linter
-        run: task install:golangci-lint
-
-      - name: Install Security Scanner
-        run: task install:gosec
+        run: task bootstrap_tasks:install:golangci-lint
 
       - name: Set up Node
         uses: actions/setup-node@v3.8.0
@@ -81,9 +79,6 @@ jobs:
 
       - name: Lint
         run: task lint
-
-      - name: Run Go Security Scanner
-        run: task gosec
 
       - name: Test
         run: task test
