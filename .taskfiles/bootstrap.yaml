@@ -7,7 +7,7 @@ tasks:
     cmds:
       - task: install:golangci-lint
       - task: install:gosec
-      - task: install:pack:{{OS}}
+      - task: install:pack
       - go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
       - go install go.uber.org/mock/mockgen@latest
       - go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
@@ -57,6 +57,11 @@ tasks:
     desc: Install gosec
     cmds:
       - go install github.com/securego/gosec/v2/cmd/gosec@latest
+
+  install:pack:
+    desc: Install pack
+    cmds:
+      - task: install:pack:{{OS}}
 
   install:pack:linux:
     desc: Install pack for Linux

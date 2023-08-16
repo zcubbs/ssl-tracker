@@ -1,8 +1,5 @@
 version: '3'
 
-includes:
-  bootstrap_tasks: ./bootstrap.yaml
-
 tasks:
   deps:go:
     desc: Install Go dependencies
@@ -36,8 +33,8 @@ tasks:
 
   build:pack:gh:
     desc: Build image using Buildpacks
-    deps: [ bootstrap_tasks:gh ]
     cmds:
+      - task: :bootstrap_tasks:gh
       - pack build ghcr.io/${REPO}:${SHA} --builder gcr.io/buildpacks/builder:v1 --buildpack paketo-buildpacks/go --path .
       - docker push ghcr.io/${REPO}:${SHA}
     env:
