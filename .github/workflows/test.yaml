@@ -76,7 +76,7 @@ jobs:
           cache-dependency-path: 'web/package-lock.json'
 
       - name: Build web
-        run: task npm:build
+        run: task build_tasks:build:npm
 
       - name: Lint
         run: task lint
