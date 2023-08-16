@@ -7,16 +7,19 @@ on:
     workflows: ["Build"]
     types:
       - completed
-  push:
-    tags:
-      - 'v*'
 
 jobs:
 
   create-release:
     permissions: write-all
     runs-on: ubuntu-latest
-    if: github.event.workflow_run.conclusion == 'success'
+    # This if condition checks two things:
+    # 1. That the Build pipeline completed successfully.
+    # 2. That the current ref is a tag.
+    if: |
+      github.event.workflow_run.conclusion == 'success' &&
+      startsWith(github.ref, 'refs/tags/')
+
     steps:
       - name: Create GitHub Release
         uses: actions/create-release@v1
