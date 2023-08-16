@@ -26,15 +26,16 @@ tasks:
 
   build:pack:
     desc: Build Docker image
-    deps: [ build ]
+    deps: [ build:npm ]
     cmds:
-      - pack build tlz --builder gcr.io/buildpacks/builder:v1 --buildpack paketo-buildpacks/go
+      - pack build tlz --builder gcr.io/buildpacks/builder:v1 --buildpack paketo-buildpacks/go --path .
       - pack sbom download tlz
 
   build:pack:gh:
     desc: Build image using Buildpacks
+    deps: [ build:npm ]
     cmds:
-      - task: :bootstrap_tasks:gh
+      - task: :bootstrap_tasks:install:pack
       - pack build ghcr.io/${REPO}:${SHA} --builder gcr.io/buildpacks/builder:v1 --buildpack paketo-buildpacks/go --path .
       - docker push ghcr.io/${REPO}:${SHA}
     env:
