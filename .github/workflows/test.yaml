@@ -1,4 +1,4 @@
-name: test
+name: Test
 
 on:
   workflow_dispatch:
@@ -21,8 +21,11 @@ on:
       - '.gosec.config.json'
       - '.editorconfig'
 
-jobs:
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
+jobs:
   test:
     runs-on: ubuntu-latest
     services:
@@ -48,32 +51,39 @@ jobs:
 
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v3.5.3
 
       - name: Set up Go
-        uses: actions/setup-go@v3
+        uses: actions/setup-go@v4.1.0
         with:
           go-version: '1.20'
 
       - name: Install Task
-        uses: arduino/setup-task@v1
+        uses: arduino/setup-task@v1.0.3
         with:
           version: 3.x
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Install Linter
+        run: task install:golangci-lint
+
+      - name: Install Security Scanner
+        run: task install:gosec
+
       - name: Set up Node
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v3.8.0
         with:
-          node-version: 18
+          node-version: '18'
+          cache: 'npm'
 
       - name: Build web
-        run: task react:build
-
-      - name: Install golangci-lint
-        run: task install:golangci-lint
+        run: task npm:build
 
       - name: Lint
         run: task lint
+
+      - name: Run Go Security Scanner
+        run: task gosec
 
       - name: Test
         run: task test
