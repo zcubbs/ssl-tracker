@@ -2,6 +2,7 @@
 
 [![tag](https://img.shields.io/github/tag/zcubbs/tlz)](https://github.com/zcubbs/tlz/releases)
 ![Go Version](https://img.shields.io/badge/Go-%3E%3D%201.20-%23007d9c)
+[![Lint](https://github.com/zcubbs/tlz/actions/workflows/lint.yaml/badge.svg)](https://github.com/zcubbs/tlz/actions/workflows/lint.yaml)
 [![Test](https://github.com/zcubbs/tlz/actions/workflows/test.yaml/badge.svg)](https://github.com/zcubbs/tlz/actions/workflows/test.yaml)
 [![Build](https://github.com/zcubbs/tlz/actions/workflows/build.yaml/badge.svg)](https://github.com/zcubbs/tlz/actions/workflows/build.yaml)
 [![release](https://github.com/zcubbs/tlz/actions/workflows/release.yml/badge.svg)](https://github.com/zcubbs/tlz/actions/workflows/release.yaml)
