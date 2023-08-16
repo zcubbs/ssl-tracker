@@ -112,14 +112,16 @@ func (s *Server) StartHttpGateway() {
 		mux.Handle(opt.Path, http.StripPrefix(opt.Path, dir))
 	}
 
-	listener, err := net.Listen("tcp", fmt.Sprintf(":%d", s.cfg.HttpServer.Port))
-	if err != nil {
-		log.Fatal("cannot listen", "error", err, "port", s.cfg.HttpServer.Port)
-	}
-
 	log.Info("🟢 starting HTTP Gateway server", "port", s.cfg.HttpServer.Port)
 	handler := HttpLogger(mux)
-	if err := http.Serve(listener, handler); err != nil {
+
+	httpSrv := &http.Server{
+		Handler:     handler,
+		Addr:        fmt.Sprintf(":%d", s.cfg.HttpServer.Port),
+		ReadTimeout: s.cfg.HttpServer.ReadHeaderTimeout,
+	}
+
+	if err := httpSrv.ListenAndServe(); err != nil {
 		log.Fatal("cannot start HTTP Gateway server", "error", err)
 	}
 }

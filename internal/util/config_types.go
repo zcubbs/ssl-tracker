@@ -19,6 +19,8 @@ type HttpServerConfig struct {
 	AllowHeaders      string `mapstructure:"allow_headers"`
 	TZ                string `mapstructure:"tz"`
 	EnablePrintRoutes bool   `mapstructure:"enable_print_routes"`
+	// ReadHeaderTimeout is the amount of time allowed to read request headers. Default values: '3s'
+	ReadHeaderTimeout time.Duration `mapstructure:"read_header_timeout"`
 }
 
 type GrpcServerConfig struct {
