@@ -1,0 +1,51 @@
+version: '3'
+
+includes:
+  bootstrap_tasks: ./bootstrap.yaml
+
+tasks:
+  deps:go:
+    desc: Install Go dependencies
+    cmds:
+      - go mod tidy
+      - go mod download
+
+  deps:npm:
+    desc: Install Node.js dependencies
+    cmds:
+      - cd web && npm install
+
+  build:npm:
+    desc: Build React application
+    deps: [ deps:npm ]
+    cmds:
+      - cd web && npm run build
+
+  build:
+    desc: Build Go application
+    deps: [ deps:go, build:npm ]
+    cmds:
+      - go build -o bin/app .
+
+  build:pack:
+    desc: Build Docker image
+    deps: [ build ]
+    cmds:
+      - pack build tlz --builder gcr.io/buildpacks/builder:v1 --buildpack paketo-buildpacks/go
+      - pack sbom download tlz
+
+  build:pack:gh:
+    desc: Build image using Buildpacks
+    deps: [ bootstrap_tasks:gh ]
+    cmds:
+      - pack build ghcr.io/${REPO}:${SHA} --builder gcr.io/buildpacks/builder:v1 --buildpack paketo-buildpacks/go --path .
+      - docker push ghcr.io/${REPO}:${SHA}
+    env:
+      GITHUB_ACTOR:
+        sh: echo "${GITHUB_ACTOR}"
+      GITHUB_TOKEN:
+        sh: echo "${GITHUB_TOKEN}"
+      REPO:
+        sh: echo "${GITHUB_REPOSITORY}"
+      SHA:
+        sh: echo "${GITHUB_SHA}"

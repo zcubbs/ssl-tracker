@@ -1,0 +1,79 @@
+version: '3'
+
+tasks:
+
+  local:
+    desc: Install all necessary tools and CLI dependencies for local development
+    cmds:
+      - task: install:golangci-lint
+      - task: install:gosec
+      - task: install:pack:{{OS}}
+      - go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
+      - go install go.uber.org/mock/mockgen@latest
+      - go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
+      ### Proto
+      - go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
+      - go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
+      - >-
+        go install
+        github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway
+        github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
+        google.golang.org/protobuf/cmd/protoc-gen-go
+        google.golang.org/grpc/cmd/protoc-gen-go-grpc
+      ### OS specific
+      - task: local:{{OS}}
+
+  local:darwin:
+    desc: Install all necessary tools and CLI dependencies for MacOS
+    cmds:
+      - brew install protobuf
+      - brew tap ktr0731/evans
+      - brew install evans
+
+  local:windows:
+    desc: Install all necessary tools and CLI dependencies for Windows
+    cmds:
+      - powershell -File ./scripts/install_protobuf.ps1
+      - go install github.com/ktr0731/evans@latest # on Mac brew is better
+
+  local:linux:
+    desc: Install all necessary tools and CLI dependencies for Linux
+    cmds:
+      - echo "TODO"
+
+  gh:
+    desc: Install all necessary tools and CLI dependencies for GitHub Actions
+    cmds:
+      - task: install:golangci-lint
+      - task: install:gosec
+      - task: install:pack:{{OS}}
+
+  install:golangci-lint:
+    desc: Install golangci-lint
+    cmds:
+      - go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+
+  install:gosec:
+    desc: Install gosec
+    cmds:
+      - go install github.com/securego/gosec/v2/cmd/gosec@latest
+
+  install:pack:linux:
+    desc: Install pack for Linux
+    cmds:
+      - curl -sSL "https://github.com/buildpacks/pack/releases/download/v0.29.0/pack-v0.29.0-linux.tgz" | sudo tar -C /usr/local/bin/ --no-same-owner -xzv pack
+
+  install:pack:darwin:
+    desc: Install pack for MacOS
+    cmds:
+      - brew install buildpacks/tap/pack
+
+  install:pack:windows:
+    desc: Install pack for Windows
+    cmds:
+      - scoop install pack
+      - scoop update pack
+
+
+
+

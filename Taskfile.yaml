@@ -1,5 +1,12 @@
 version: '3'
 
+includes:
+  bootstrap_tasks: .taskfiles/bootstrap.yaml
+  container_tasks: .taskfiles/containers.yaml
+  build_tasks: .taskfiles/build.yaml
+  test_tasks: .taskfiles/test.yaml
+  gen_tasks: .taskfiles/gen.yaml
+
 env:
   GOOS: "{{OS}}"
 
@@ -8,234 +15,114 @@ vars:
   LOCAL_HOST: 127.0.0.1
 
 tasks:
+
+  ################################################################
+  # Bootstrap tasks
+  ################################################################
   bootstrap:
     desc: Install all necessary tools and CLI dependencies
     cmds:
-      - task: install:golangci-lint
-      - go install github.com/sqlc-dev/sqlc/cmd/sqlc@latest
-      - go install github.com/securego/gosec/v2/cmd/gosec@latest
-      - go install go.uber.org/mock/mockgen@latest
-      - go install -tags 'postgres' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
-      ### Proto
-      - go install google.golang.org/protobuf/cmd/protoc-gen-go@latest
-      - go install google.golang.org/grpc/cmd/protoc-gen-go-grpc@latest
-      - >-
-        go install
-        github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway
-        github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-openapiv2
-        google.golang.org/protobuf/cmd/protoc-gen-go
-        google.golang.org/grpc/cmd/protoc-gen-go-grpc
-      ### OS specific
-      - task: bootstrap:{{OS}}
+      - task: bootstrap_tasks:local
 
-  bootstrap:darwin:
-    desc: Install all necessary tools and CLI dependencies for MacOS
+  boostrap:gh:
+    desc: Install all necessary tools and CLI dependencies for GitHub Actions
     cmds:
-      - brew install buildpacks/tap/pack
-      - brew install protobuf
-      - brew tap ktr0731/evans
-      - brew install evans
+      - task: bootstrap_tasks:gh
 
-  bootstrap:windows:
-    desc: Install all necessary tools and CLI dependencies for Windows
+
+  ################################################################
+  # Build tasks
+  ################################################################
+  build:
     cmds:
-      - scoop install pack
-      - powershell -File ./scripts/install_protobuf.ps1
-      - go install github.com/ktr0731/evans@latest # on Mac brew is better
+      - task: build_tasks:build
 
-  bootstrap:linux:
-    desc: Install all necessary tools and CLI dependencies for Linux
+  build:pack:
     cmds:
-      - sudo add-apt-repository ppa:cncf-buildpacks/pack-cli
-      - sudo apt-get update
-      - sudo apt-get install pack-cli
+      - task: build_tasks:build:pack
 
-  install:golangci-lint:
-    desc: Install golangci-lint
+  build:pack:gh:
     cmds:
-      - go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
+      - task: build_tasks:build:pack:gh
 
-  go:deps:
-    desc: Install Go dependencies
-    cmds:
-      - go mod tidy
-      - go mod download
-
-  node:deps:
-    desc: Install Node.js dependencies
-    cmds:
-      - cd web && npm install
-
-  react:build:
-    desc: Build React application
-    deps: [ node:deps ]
-    cmds:
-      - cd web && npm run build
-
-  go:build:
-    desc: Build Go application
-    deps: [ go:deps, react:build ]
-    cmds:
-      - go build -o ./bin/server ./...
-
-  image:build:
-    desc: Build Docker image
-    deps: [ go:build ]
-    cmds:
-      - pack build tlz --builder gcr.io/buildpacks/builder:v1 --buildpack paketo-buildpacks/go
-      - pack sbom download tlz
-
-  start:
-    desc: Start the application
-    cmds:
-      - ./bin/server
-
-  mock:
-    desc: Generate mocks
-    cmds:
-      - cmd: mockgen -package mockdb -destination db/mock/store.go github.com/zcubbs/tlz/db/sqlc Store
-
-  sqlc:
-    desc: Generate SQLC code
-    cmds:
-      - task: sqlc-{{OS}}
-
-  sqlc-windows:
-    desc: Generate SQLC code for Windows
-    cmds:
-      - cmd: docker run --rm -v "${PWD}:/src" -w /src sqlc/sqlc generate
-
-  sqlc-darwin:
-    desc: Generate SQLC code for MacOS
-    cmds:
-      - cmd: sqlc generate
-
-  sqlc-linux:
-    desc: Generate SQLC code for Linux
-    cmds:
-      - cmd: sqlc generate
-
-  mailhog:up:
-    desc: Start MailHog
-    cmds:
-      - docker run --rm --name mailhog -d -p 1025:1025 -p 8025:8025 mailhog/mailhog
-
-  mailhog:down:
-    desc: Stop MailHog
-    cmds:
-      - docker stop mailhog
-
-  pg:
-    desc: Start Postgres
-    cmds:
-      - docker run --name tlz-postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=tlz -p 5432:5432 -d postgres:14-alpine
-
-  pg:start:
-    desc: Start Postgres
-    cmds:
-      - docker start tlz-postgres
-
-  pg:down:
-    desc: Stop Postgres
-    cmds:
-      - docker stop tlz-postgres
-
-  createdb:
-    desc: Create database
-    cmds:
-      - docker exec -it tlz-postgres createdb --username=postgres --owner=postgres tlz
-
-  dropdb:
-    desc: Drop database
-    cmds:
-      - docker exec -it tlz-postgres dropdb --username=postgres tlz
-
-  migrate:
-    desc: Run database migration
-    cmds:
-      - migrate -path db/migrations -database "{{.TEST_DB_URL}}" -verbose up
-
-  migrate:down:
-    desc: Rollback database migration
-    cmds:
-      - migrate -path db/migrations -database "{{.TEST_DB_URL}}" -verbose down
-
-  migrate:new:
-    desc: "Generate migration. Usage: task migrate:new -- <migration_name>"
-    cmds:
-      - cmd: migrate create -ext sql -dir db/migrations -seq {{.CLI_ARGS}}
-
-  network:
-    desc: Create Docker network
-    cmds:
-      - docker network create tlz
-
-  up:
-    desc: Start the application with all dependencies
-    deps: [ pg, createdb, migrate, mailhog:up, go:build ]
-    cmds:
-      - ./bin/server
-
+  ################################################################
+  # Test tasks
+  ################################################################
   lint:
-    desc: Run linter
     cmds:
-      - golangci-lint run ./... -v
+      - task: test_tasks:lint
+
+  scan:
+    cmds:
+      - task: test_tasks:scan
 
   test:
-    desc: Run tests
     cmds:
-      - go test -v -cover ./...
+      - task: test_tasks:test
 
-  gosec:
-    desc: Run security scanner
+  run:
     cmds:
-      - gosec -conf .gosec.config.json "./..."
+      - task: test_tasks:run
 
-  proto:
-    desc: Generate proto code
+  preview:
     cmds:
-      - task: proto:{{OS}}
-      - >-
-        protoc --proto_path=proto
-        --go_out=pb --go_opt=paths=source_relative
-        --go-grpc_out=pb --go-grpc_opt=paths=source_relative
-        --grpc-gateway_out=pb --grpc-gateway_opt=paths=source_relative
-        --openapiv2_out=docs/swagger --openapiv2_opt=allow_merge=true,merge_file_name=tlz
-        "proto/*.proto"
-
-  proto:windows:
-    desc: Generate proto code for Windows
-    cmds:
-      - cmd: powershell rm "pb/*.go"
-      - cmd: powershell rm "docs/swagger/*.json"
-
-  proto:darwin:
-    desc: Generate proto code for MacOS
-    cmds:
-      - cmd: rm -f pb/*.go
-      - cmd: rm -f docs/swagger/*.json
+      - task: test_tasks:preview
 
   evans:
-    desc: Run Evans CLI
     cmds:
-      - evans --host {{.LOCAL_HOST}} --port 9000 -r repl
+      - task: test_tasks:evans
+
+  ################################################################
+  # Generate tasks
+  ################################################################
+  proto:
+    cmds:
+      - task: gen_tasks:proto
+
+  mock:
+    cmds:
+      - task: gen_tasks:mock
+
+  sqlc:
+    cmds:
+      - task: gen_tasks:sqlc
+
+
+  ################################################################
+  # Container tasks
+  ################################################################
+  pg:
+    cmds:
+      - task: container_tasks:pg
+
+  pg:start:
+    cmds:
+      - task: container_tasks:pg:start
+
+  pg:down:
+    cmds:
+      - task: container_tasks:pg:down
 
   redis:
-    desc: Start Redis
     cmds:
-      - docker run --name tlz-redis -p 6379:6379 -d redis:alpine
+      - task: container_tasks:redis
 
   redis:start:
-    desc: Start Redis
     cmds:
-      - docker start tlz-redis
+      - task: container_tasks:redis:start
 
   redis:down:
-    desc: Stop Redis
     cmds:
-      - docker stop tlz-redis
+      - task: container_tasks:redis:down
 
   mailhog:
-    desc: Start MailHog
     cmds:
-      - docker run --rm --name tlz-mailhog -d -p 1025:1025 -p 8025:8025 mailhog/mailhog
+      - task: container_tasks:mailhog
+
+  mailhog:start:
+    cmds:
+      - task: container_tasks:mailhog:start
+
+  mailhog:down:
+    cmds:
+      - task: container_tasks:mailhog:down

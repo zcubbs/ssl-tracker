@@ -1,0 +1,62 @@
+version: '3'
+
+includes:
+  build_tasks: ./build.yaml
+
+tasks:
+
+  lint:
+    desc: Run linter
+    cmds:
+      - golangci-lint run ./... -v
+
+  test:
+    desc: Run tests
+    cmds:
+      - go test -v -cover ./...
+
+  scan:
+    desc: Run security scanner
+    cmds:
+      - gosec -conf .gosec.config.json "./..."
+
+  run:
+    desc: Start the application with all dependencies
+    cmds:
+      - go run main.go
+
+  preview:
+    desc: Start the application with all dependencies
+    deps: [ build_tasks:build ]
+    cmds:
+      - ./bin/app
+
+  createdb:
+    desc: Create database
+    cmds:
+      - docker exec -it tlz-postgres createdb --username=postgres --owner=postgres tlz
+
+  dropdb:
+    desc: Drop database
+    cmds:
+      - docker exec -it tlz-postgres dropdb --username=postgres tlz
+
+  migrate:
+    desc: Run database migration
+    cmds:
+      - migrate -path db/migrations -database "{{.TEST_DB_URL}}" -verbose up
+
+  migrate:down:
+    desc: Rollback database migration
+    cmds:
+      - migrate -path db/migrations -database "{{.TEST_DB_URL}}" -verbose down
+
+  migrate:new:
+    desc: "Generate migration. Usage: task migrate:new -- <migration_name>"
+    cmds:
+      - cmd: migrate create -ext sql -dir db/migrations -seq {{.CLI_ARGS}}
+
+  network:
+    desc: Create Docker network
+    cmds:
+      - docker network create tlz
