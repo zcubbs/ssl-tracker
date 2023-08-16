@@ -1,9 +1,9 @@
 # TLZ;
 
 
-[![test](https://github.com/zcubbs/tlz/actions/workflows/test.yml/badge.svg)](https://github.com/zcubbs/tlz/actions/workflows/test.yml)
-[![release](https://github.com/zcubbs/tlz/actions/workflows/release.yml/badge.svg)](https://github.com/zcubbs/tlz/actions/workflows/release.yml)
-[![vulnerability-scan](https://github.com/zcubbs/tlz/actions/workflows/scan.yml/badge.svg)](https://github.com/zcubbs/tlz/actions/workflows/scan.yml)
+[![test](https://github.com/zcubbs/tlz/actions/workflows/test.yml/badge.svg)](https://github.com/zcubbs/tlz/actions/workflows/test.yaml)
+[![release](https://github.com/zcubbs/tlz/actions/workflows/release.yml/badge.svg)](https://github.com/zcubbs/tlz/actions/workflows/release.yaml)
+[![vulnerability-scan](https://github.com/zcubbs/tlz/actions/workflows/scan.yml/badge.svg)](https://github.com/zcubbs/tlz/actions/workflows/scan.yaml)
 
 
 This application is designed to monitor the status and health of SSL/TLS certificates. In today's digital world, ensuring the validity and security of your SSL/TLS certificates is crucial. With our application, you can streamline this process, keeping an eye on your certificates and their expiry dates.
