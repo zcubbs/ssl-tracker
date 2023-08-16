@@ -1,4 +1,4 @@
-name: Test
+name: Lint
 
 on:
   workflow_dispatch:
@@ -27,28 +27,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
+  lint:
     runs-on: ubuntu-latest
-    services:
-      postgres:
-        image: postgres:14-alpine
-        env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: tlz
-        ports:
-          - 5432:5432
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-
-      mailhog:
-        image: mailhog/mailhog
-        ports:
-          - 1025:1025
-          - 8025:8025
 
     steps:
       - name: Checkout Code
@@ -65,5 +45,8 @@ jobs:
           version: 3.x
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Test
-        run: task test
+      - name: Install Linter
+        run: task bootstrap_tasks:install:golangci-lint
+
+      - name: Lint
+        run: task lint

@@ -4,16 +4,19 @@ tasks:
 
   lint:
     desc: Run linter
+    deps: [ create-dummy-dist ]
     cmds:
       - golangci-lint run ./... -v
 
   test:
     desc: Run tests
+    deps: [ create-dummy-dist ]
     cmds:
       - go test -v -cover ./...
 
   scan:
     desc: Run security scanner
+    deps: [ create-dummy-dist ]
     cmds:
       - gosec -conf .gosec.config.json "./..."
 
@@ -57,3 +60,26 @@ tasks:
     desc: Create Docker network
     cmds:
       - docker network create tlz
+
+  # create file under path web/dist/index.html
+  create-dummy-dist:
+    desc: Create dummy dist file
+    cmds:
+      - task: create-dummy-dist:{{OS}}
+
+  create-dummy-dist:linux:
+    desc: Create dummy dist file for Linux
+    cmds:
+      - mkdir -p web/dist
+      - touch web/dist/index.html
+
+  create-dummy-dist:darwin:
+    desc: Create dummy dist file for Darwin
+    cmds:
+      - task: create-dummy-dist:linux
+
+  create-dummy-dist:windows:
+    desc: Create dummy dist file for Windows
+    cmds:
+      - cmd: powershell New-Item -Path '.\web\dist\index.html' -ItemType File -Force
+
