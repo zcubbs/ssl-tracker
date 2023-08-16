@@ -1,10 +1,12 @@
 # TLZ;
 
-
-[![test](https://github.com/zcubbs/tlz/actions/workflows/test.yml/badge.svg)](https://github.com/zcubbs/tlz/actions/workflows/test.yaml)
+[![tag](https://img.shields.io/github/tag/zcubbs/tlz)](https://github.com/zcubbs/tlz/releases)
+![Go Version](https://img.shields.io/badge/Go-%3E%3D%201.20-%23007d9c)
+[![Test](https://github.com/zcubbs/tlz/actions/workflows/test.yaml/badge.svg)](https://github.com/zcubbs/tlz/actions/workflows/test.yaml)
+[![Build](https://github.com/zcubbs/tlz/actions/workflows/build.yaml/badge.svg)](https://github.com/zcubbs/tlz/actions/workflows/build.yaml)
 [![release](https://github.com/zcubbs/tlz/actions/workflows/release.yml/badge.svg)](https://github.com/zcubbs/tlz/actions/workflows/release.yaml)
-[![vulnerability-scan](https://github.com/zcubbs/tlz/actions/workflows/scan.yml/badge.svg)](https://github.com/zcubbs/tlz/actions/workflows/scan.yaml)
-
+[![vulnerability-scan](https://github.com/zcubbs/tlz/actions/workflows/scan.yaml/badge.svg)](https://github.com/zcubbs/tlz/actions/workflows/scan.yaml)
+[![Contributors](https://img.shields.io/github/contributors/zcubbs/go-containers)](https://github.com/zcubbs/tlz/graphs/contributors)
 
 This application is designed to monitor the status and health of SSL/TLS certificates. In today's digital world, ensuring the validity and security of your SSL/TLS certificates is crucial. With our application, you can streamline this process, keeping an eye on your certificates and their expiry dates.
 
