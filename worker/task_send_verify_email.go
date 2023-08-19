@@ -67,6 +67,7 @@ func (p *RedisTaskProcessor) ProcessTaskSendVerifyEmail(ctx context.Context, tas
 
 	verifyEmail, err := p.store.CreateVerifyEmail(ctx, db.CreateVerifyEmailParams{
 		UserID:     user.ID,
+		Email:      user.Email,
 		SecretCode: random.RandomString(32),
 	})
 	if err != nil {
@@ -79,10 +80,11 @@ func (p *RedisTaskProcessor) ProcessTaskSendVerifyEmail(ctx context.Context, tas
 		"email", user.Email,
 	)
 
-	verifyUrl := fmt.Sprintf("%s/verify-email/?id=%s&secret_code=%s",
+	verifyUrl := fmt.Sprintf("%s/api/v1/verify_email?email_id=%s&secret_code=%s",
 		p.attributes.ApiDomainName, verifyEmail.ID.String(), verifyEmail.SecretCode)
 
 	content := fmt.Sprintf(`Hello %s, <br>
+	Welcome to TLZ! <br>
 	please verify your email address by clicking
 	this <a href="%s">link</a>`,
 		user.Username,

@@ -58,3 +58,19 @@ func ValidateEmail(s string) error {
 
 	return nil
 }
+
+func ValidateEmailID(s string) error {
+	if err := ValidateString(s, 36, 36); err != nil {
+		return fmt.Errorf("invalid email ID, must be UUID")
+	}
+
+	return nil
+}
+
+func ValidateEmailVerificationCode(s string) error {
+	if err := ValidateString(s, 32, 32); err != nil {
+		return fmt.Errorf("invalid email verification code")
+	}
+
+	return nil
+}

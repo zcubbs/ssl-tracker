@@ -18,7 +18,7 @@ INSERT INTO verify_emails (
   secret_code
 ) VALUES (
  $1, $2, $3
-) RETURNING id, user_id, email, secret_code, created_at, expired_at
+) RETURNING id, user_id, email, secret_code, is_used, created_at, expired_at
 `
 
 type CreateVerifyEmailParams struct {
@@ -35,6 +35,39 @@ func (q *Queries) CreateVerifyEmail(ctx context.Context, arg CreateVerifyEmailPa
 		&i.UserID,
 		&i.Email,
 		&i.SecretCode,
+		&i.IsUsed,
+		&i.CreatedAt,
+		&i.ExpiredAt,
+	)
+	return i, err
+}
+
+const updateVerifyEmail = `-- name: UpdateVerifyEmail :one
+UPDATE verify_emails
+SET
+  is_used = true
+WHERE
+  id = $1
+  AND secret_code = $2
+  AND is_used = false
+  AND expired_at > now()
+RETURNING id, user_id, email, secret_code, is_used, created_at, expired_at
+`
+
+type UpdateVerifyEmailParams struct {
+	ID         uuid.UUID `json:"id"`
+	SecretCode string    `json:"secret_code"`
+}
+
+func (q *Queries) UpdateVerifyEmail(ctx context.Context, arg UpdateVerifyEmailParams) (VerifyEmail, error) {
+	row := q.db.QueryRow(ctx, updateVerifyEmail, arg.ID, arg.SecretCode)
+	var i VerifyEmail
+	err := row.Scan(
+		&i.ID,
+		&i.UserID,
+		&i.Email,
+		&i.SecretCode,
+		&i.IsUsed,
 		&i.CreatedAt,
 		&i.ExpiredAt,
 	)

@@ -29,5 +29,5 @@ SET
   email = COALESCE(sqlc.narg(email), email),
   is_email_verified = COALESCE(sqlc.narg(is_email_verified), is_email_verified)
 WHERE
-    username = sqlc.arg(username)
+    id = sqlc.arg(id)
   RETURNING *;

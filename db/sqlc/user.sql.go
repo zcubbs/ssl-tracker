@@ -123,7 +123,7 @@ SET
   email = COALESCE($4, email),
   is_email_verified = COALESCE($5, is_email_verified)
 WHERE
-    username = $6
+    id = $6
   RETURNING id, username, hashed_password, full_name, email, password_changed_at, created_at, is_email_verified
 `
 
@@ -133,7 +133,7 @@ type UpdateUserParams struct {
 	FullName          pgtype.Text        `json:"full_name"`
 	Email             pgtype.Text        `json:"email"`
 	IsEmailVerified   pgtype.Bool        `json:"is_email_verified"`
-	Username          string             `json:"username"`
+	ID                uuid.UUID          `json:"id"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
@@ -143,7 +143,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 		arg.FullName,
 		arg.Email,
 		arg.IsEmailVerified,
-		arg.Username,
+		arg.ID,
 	)
 	var i User
 	err := row.Scan(

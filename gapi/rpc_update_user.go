@@ -30,8 +30,16 @@ func (s *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb
 		return nil, status.Errorf(codes.PermissionDenied, "cannot update other user's profile")
 	}
 
+	user, err := s.store.GetUserByUsername(ctx, req.GetUsername())
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, status.Errorf(codes.NotFound, "user %s not found", req.GetUsername())
+		}
+		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
+	}
+
 	arg := db.UpdateUserParams{
-		Username: req.GetUsername(),
+		ID: user.ID,
 		FullName: pgtype.Text{
 			String: req.GetFullName(),
 			Valid:  req.FullName != nil,
@@ -59,7 +67,7 @@ func (s *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb
 		}
 	}
 
-	user, err := s.store.UpdateUser(ctx, arg)
+	updatedUser, err := s.store.UpdateUser(ctx, arg)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, status.Errorf(codes.NotFound, "user %s not found", req.GetUsername())
@@ -68,7 +76,7 @@ func (s *Server) UpdateUser(ctx context.Context, req *pb.UpdateUserRequest) (*pb
 	}
 
 	rsp := &pb.UpdateUserResponse{
-		User: convertUser(user),
+		User: convertUser(updatedUser),
 	}
 	return rsp, nil
 }
