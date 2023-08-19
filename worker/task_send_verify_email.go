@@ -9,6 +9,9 @@ import (
 	"github.com/charmbracelet/log"
 	"github.com/google/uuid"
 	"github.com/hibiken/asynq"
+	db "github.com/zcubbs/tlz/db/sqlc"
+	"github.com/zcubbs/tlz/pkg/mail"
+	"github.com/zcubbs/tlz/pkg/random"
 )
 
 const TaskSendVerifyEmail = "task:send_verify_email"
@@ -62,13 +65,40 @@ func (p *RedisTaskProcessor) ProcessTaskSendVerifyEmail(ctx context.Context, tas
 		return fmt.Errorf("failed to get user: %w", err)
 	}
 
-	// TODO: send email
+	verifyEmail, err := p.store.CreateVerifyEmail(ctx, db.CreateVerifyEmailParams{
+		UserID:     user.ID,
+		SecretCode: random.RandomString(32),
+	})
+	if err != nil {
+		return fmt.Errorf("failed to create verify email: %w", err)
+	}
 
 	log.Info("processed task",
 		"task", task.Type(),
 		"payload", payload,
 		"email", user.Email,
 	)
+
+	verifyUrl := fmt.Sprintf("%s/verify-email/?id=%s&secret_code=%s",
+		p.attributes.ApiDomainName, verifyEmail.ID.String(), verifyEmail.SecretCode)
+
+	content := fmt.Sprintf(`Hello %s, <br>
+	please verify your email address by clicking
+	this <a href="%s">link</a>`,
+		user.Username,
+		verifyUrl,
+	)
+
+	if err := p.mailer.SendMail(mail.Mail{
+		To:            []string{user.Email},
+		Cc:            nil,
+		Bcc:           nil,
+		Subject:       "Welcome to TLZ",
+		Content:       content,
+		AttachedFiles: nil,
+	}); err != nil {
+		return fmt.Errorf("failed to send verify email: %w", err)
+	}
 
 	return nil
 }

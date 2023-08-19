@@ -83,3 +83,8 @@ tasks:
     cmds:
       - cmd: powershell New-Item -Path '.\web\dist\index.html' -ItemType File -Force
 
+
+  evans:
+    desc: Run Evans CLI
+    cmds:
+      - evans --host localhost --port 9000 -r repl

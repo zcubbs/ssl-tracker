@@ -85,7 +85,8 @@ type SendMailNotification struct {
 }
 
 type NotificationConfig struct {
-	Mail MailConfig `mapstructure:"mail"`
+	Mail          MailConfig `mapstructure:"mail"`
+	ApiDomainName string     `mapstructure:"api_domain_name"`
 }
 
 type MailConfig struct {

@@ -1,11 +1,15 @@
 package util
 
+import "fmt"
+
 const (
 	ViperConfigName      = "config"
 	ViperConfigType      = "yaml"
 	ViperConfigEnvPrefix = "TLZ"
 	DefaultDbName        = "tlz"
 	Localhost            = "127.0.0.1"
+	HttpPort             = 8000
+	GrpcPort             = 9000
 )
 
 var (
@@ -13,13 +17,13 @@ var (
 
 	defaults = map[string]interface{}{
 		"debug":                                        false,
-		"http_server.port":                             8000,
+		"http_server.port":                             HttpPort,
 		"http_server.allow_origins":                    "http://localhost:8000,http://localhost:5173,http://127.0.0.1:5173,http://127.0.0.1:8000",
 		"http_server.allow_headers":                    "Origin, Content-Type, Accept",
 		"http_server.tz":                               "UTC",
 		"http_server.enable_print_routes":              false,
 		"http_server.read_header_timeout":              "3s",
-		"grpc_server.port":                             9000,
+		"grpc_server.port":                             GrpcPort,
 		"auth.token_symmetric_key":                     "12345678901234567890123456789012",
 		"auth.access_token_duration":                   "15m",
 		"auth.refresh_token_duration":                  "24h",
@@ -38,6 +42,7 @@ var (
 		"cron.check_certificate_validity.cron_pattern": "*/10 * * * * *",
 		"cron.send_mail_notification.enabled":          true,
 		"cron.send_mail_notification.cron_pattern":     "*/10 * * * * *",
+		"notification.api_domain_name":                 fmt.Sprintf("http://%s:%d", Localhost, HttpPort),
 		"notification.mail.smtp.enabled":               true,
 		"notification.mail.smtp.host":                  Localhost,
 		"notification.mail.smtp.port":                  1025,
@@ -76,6 +81,7 @@ var (
 		"cron.check_certificate_validity.cron_pattern",
 		"cron.send_mail_notification.enabled",
 		"cron.send_mail_notification.cron_pattern",
+		"notification.api_domain_name",
 		"notification.mail.smtp.enabled",
 		"notification.mail.smtp.host",
 		"notification.mail.smtp.port",

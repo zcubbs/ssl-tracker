@@ -49,10 +49,12 @@ func main() {
 	startCronJobs(store, cfg.Cron)
 
 	// Initialize mailer
-	mail.NewDefaultSender(cfg.Notification.Mail.Smtp)
+	mailer := mail.NewDefaultSender(cfg.Notification.Mail.Smtp)
 
 	// Run task worker
-	w := worker.New(cfg, store)
+	w := worker.New(cfg, store, mailer, worker.Attributes{
+		ApiDomainName: cfg.Notification.ApiDomainName,
+	})
 	go w.Run()
 
 	// Create gRPC Server

@@ -5,6 +5,7 @@ import (
 	"github.com/charmbracelet/log"
 	"github.com/hibiken/asynq"
 	db "github.com/zcubbs/tlz/db/sqlc"
+	"github.com/zcubbs/tlz/pkg/mail"
 )
 
 const (
@@ -18,11 +19,13 @@ type TaskProcessor interface {
 }
 
 type RedisTaskProcessor struct {
-	server *asynq.Server
-	store  db.Store
+	server     *asynq.Server
+	store      db.Store
+	mailer     mail.Mailer
+	attributes Attributes
 }
 
-func NewRedisTaskProcessor(redisOpt asynq.RedisClientOpt, store db.Store) TaskProcessor {
+func NewRedisTaskProcessor(redisOpt asynq.RedisClientOpt, store db.Store, mailer mail.Mailer, attributes Attributes) TaskProcessor {
 	server := asynq.NewServer(redisOpt, asynq.Config{
 		Concurrency: 10,
 		Queues: map[string]int{
@@ -38,7 +41,7 @@ func NewRedisTaskProcessor(redisOpt asynq.RedisClientOpt, store db.Store) TaskPr
 		}),
 		Logger: NewLogger(),
 	})
-	return &RedisTaskProcessor{server: server, store: store}
+	return &RedisTaskProcessor{server: server, store: store, mailer: mailer, attributes: attributes}
 }
 
 func (p *RedisTaskProcessor) Start() error {
