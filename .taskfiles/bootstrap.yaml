@@ -33,7 +33,7 @@ tasks:
   local:windows:
     desc: Install all necessary tools and CLI dependencies for Windows
     cmds:
-      - powershell -File ./scripts/install_protobuf.ps1
+      - powershell -ExecutionPolicy Bypass -File ./scripts/install_protobuf.ps1
       - go install github.com/ktr0731/evans@latest # on Mac brew is better
 
   local:linux:
