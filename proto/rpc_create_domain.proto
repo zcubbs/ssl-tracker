@@ -1,0 +1,15 @@
+syntax = "proto3";
+
+package pb;
+
+import "domain.proto";
+
+option go_package = "github.com/zcubbs/tlz/pb";
+
+message CreateDomainRequest {
+  string name = 1;
+}
+
+message CreateDomainResponse {
+  Domain domain = 1;
+}

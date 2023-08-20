@@ -8,6 +8,7 @@ import "rpc_update_user.proto";
 import "rpc_login_user.proto";
 import "rpc_verify_email.proto";
 import "rpc_ping.proto";
+import "rpc_create_domain.proto";
 import "protoc-gen-openapiv2/options/annotations.proto";
 
 option go_package = "github.com/zcubbs/tlz/pb";
@@ -72,6 +73,17 @@ service Tlz {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       summary: "Ping the server";
       description: "Ping the server";
+    };
+  }
+
+  rpc CreateDomain(CreateDomainRequest) returns (CreateDomainResponse) {
+    option (google.api.http) = {
+      post: "/v1/create_domain"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Create a new domain";
+      description: "Create a new domain for a user";
     };
   }
 }

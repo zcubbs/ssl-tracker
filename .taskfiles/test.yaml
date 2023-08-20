@@ -81,7 +81,7 @@ tasks:
   create-dummy-dist:windows:
     desc: Create dummy dist file for Windows
     cmds:
-      - cmd: powershell New-Item -Path '.\web\dist\index.html' -ItemType File -Force
+      - cmd: powershell New-Item -Path '.\web\dist\empty.txt' -ItemType File -Force
 
 
   evans:

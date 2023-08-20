@@ -55,7 +55,7 @@ func TestUpdateUser(t *testing.T) {
 	user1 := createRandomUser(t)
 
 	arg := UpdateUserParams{
-		Username: user1.Username,
+		ID: user1.ID,
 		Email: pgtype.Text{
 			String: random.RandomEmail(),
 			Valid:  true,
@@ -69,7 +69,7 @@ func TestUpdateUser(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, user2)
 
-	require.Equal(t, arg.Username, user2.Username)
+	require.Equal(t, arg.ID, user2.ID)
 	require.Equal(t, arg.Email.String, user2.Email)
 	require.Equal(t, arg.FullName.String, user2.FullName)
 	require.WithinDuration(t, user1.CreatedAt, user2.CreatedAt, time.Second)
@@ -79,7 +79,7 @@ func TestUpdateUserOnlyFullname(t *testing.T) {
 	user1 := createRandomUser(t)
 
 	arg := UpdateUserParams{
-		Username: user1.Username,
+		ID: user1.ID,
 		FullName: pgtype.Text{
 			String: random.RandomOwner(),
 			Valid:  true,
@@ -89,7 +89,7 @@ func TestUpdateUserOnlyFullname(t *testing.T) {
 	require.NoError(t, err)
 	require.NotEmpty(t, user2)
 
-	require.Equal(t, arg.Username, user2.Username)
+	require.Equal(t, arg.ID, user2.ID)
 	require.Equal(t, user1.Email, user2.Email)
 	require.Equal(t, arg.FullName.String, user2.FullName)
 	require.WithinDuration(t, user1.CreatedAt, user2.CreatedAt, time.Second)
