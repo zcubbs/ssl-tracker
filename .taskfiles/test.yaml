@@ -12,7 +12,7 @@ tasks:
     desc: Run tests
     deps: [ create-dummy-dist ]
     cmds:
-      - go test -v -cover ./...
+      - go test -cover ./...
 
   scan:
     desc: Run security scanner

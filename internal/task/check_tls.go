@@ -5,7 +5,7 @@ import (
 	"context"
 	"github.com/charmbracelet/log"
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/zcubbs/tlz/api"
+	"github.com/zcubbs/tlz/_archives/api"
 	db "github.com/zcubbs/tlz/db/sqlc"
 	"github.com/zcubbs/tlz/pkg/tls"
 	"text/template"
@@ -26,7 +26,7 @@ func (t *Task) CheckCertificateValidity(ctx context.Context) {
 		if err != nil {
 			log.Warn("Cannot check certificate", "domain", domain.Name, "error", err)
 			domain.CertificateExpiry.Valid = false
-			domain.Status.String = (string)(api.StatusUnknown)
+			domain.Status.String = (string)(StatusUnknown)
 			domain.Status.Valid = true
 			if _, err := t.store.UpdateDomain(ctx, db.UpdateDomainParams{
 				Status:            domain.Status,
