@@ -4,9 +4,9 @@ import (
 	"context"
 	"embed"
 	"github.com/charmbracelet/log"
+	"github.com/zcubbs/tlz/api"
 	"github.com/zcubbs/tlz/db/migrations"
 	db "github.com/zcubbs/tlz/db/sqlc"
-	"github.com/zcubbs/tlz/gapi"
 	"github.com/zcubbs/tlz/internal/util"
 	"github.com/zcubbs/tlz/pkg/mail"
 	"github.com/zcubbs/tlz/worker"
@@ -58,13 +58,13 @@ func main() {
 	go w.Run()
 
 	// Create gRPC Server
-	gs, err := gapi.NewServer(store, w.TaskDistributor, cfg,
-		gapi.EmbedAssetsOpts{
+	gs, err := api.NewServer(store, w.TaskDistributor, cfg,
+		api.EmbedAssetsOpts{
 			Dir:    swaggerDist,
 			Path:   "/swagger/",
 			Prefix: "docs/swagger",
 		},
-		gapi.EmbedAssetsOpts{
+		api.EmbedAssetsOpts{
 			Dir:    webDist,
 			Path:   "/",
 			Prefix: "web/dist",

@@ -1,111 +1,127 @@
 package api
 
 import (
+	"context"
 	"embed"
 	"fmt"
 	"github.com/charmbracelet/log"
-	"github.com/gofiber/fiber/v2"
-	"github.com/gofiber/fiber/v2/middleware/cors"
-	"github.com/gofiber/fiber/v2/middleware/filesystem"
-	"github.com/gofiber/fiber/v2/middleware/requestid"
+	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	db "github.com/zcubbs/tlz/db/sqlc"
 	"github.com/zcubbs/tlz/internal/util"
-	"github.com/zcubbs/tlz/pkg/charmlogfiber"
+	"github.com/zcubbs/tlz/pb"
 	"github.com/zcubbs/tlz/pkg/token"
+	"github.com/zcubbs/tlz/worker"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/reflection"
+	"google.golang.org/protobuf/encoding/protojson"
+	"io/fs"
+	"net"
 	"net/http"
 )
 
 type Server struct {
-	store       db.Store
-	app         *fiber.App
-	tokenMaker  token.Maker
-	cfg         util.Config
-	staticEmbed *embed.FS
-	validate    *XValidator
+	pb.UnimplementedTlzServer
+	store           db.Store
+	tokenMaker      token.Maker
+	cfg             util.Config
+	embedAssets     []EmbedAssetsOpts
+	taskDistributor worker.TaskDistributor
 }
 
-func NewServer(store db.Store, staticEmbed *embed.FS, cfg util.Config) (*Server, error) {
+type EmbedAssetsOpts struct {
+	// The directory to embed.
+	// Defaults to "assets".
+	Dir    embed.FS
+	Path   string
+	Prefix string
+}
+
+func NewServer(
+	store db.Store,
+	taskDistributor worker.TaskDistributor,
+	cfg util.Config,
+	embedOpts ...EmbedAssetsOpts,
+) (*Server, error) {
+
 	tokenMaker, err := token.NewPasetoMaker(cfg.Auth.TokenSymmetricKey)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create new tokenMaker: %w", err)
 	}
-	s := &Server{
-		store:       store,
-		tokenMaker:  tokenMaker,
-		cfg:         cfg,
-		staticEmbed: staticEmbed,
-	}
 
-	s.ApplyDefaultConfig()
+	s := &Server{
+		store:           store,
+		tokenMaker:      tokenMaker,
+		cfg:             cfg,
+		embedAssets:     embedOpts,
+		taskDistributor: taskDistributor,
+	}
 
 	return s, nil
 }
 
-func (s *Server) Start() error {
-	log.Info("starting HTTP server", "port", s.cfg.HttpServer.Port)
-	return s.app.Listen(fmt.Sprintf(":%d", s.cfg.HttpServer.Port))
+func (s *Server) StartGrpcServer() {
+	grpcLogger := grpc.UnaryInterceptor(GrpcLogger)
+	grpcServer := grpc.NewServer(grpcLogger)
+	pb.RegisterTlzServer(grpcServer, s)
+
+	reflection.Register(grpcServer)
+
+	listener, err := net.Listen("tcp", fmt.Sprintf("0.0.0.0:%d", s.cfg.GrpcServer.Port))
+	if err != nil {
+		log.Fatal("cannot listen", "error", err, "port", s.cfg.GrpcServer.Port)
+	}
+
+	log.Info("🟢 starting gRPC server", "port", s.cfg.GrpcServer.Port)
+	if err := grpcServer.Serve(listener); err != nil {
+		log.Fatal("cannot start server: %w", err)
+	}
 }
 
-func (s *Server) ApplyDefaultConfig() {
-	app := fiber.New(fiber.Config{
-		EnablePrintRoutes:     s.cfg.HttpServer.EnablePrintRoutes,
-		DisableStartupMessage: true,
+func (s *Server) StartHttpGateway() {
+	jsonOpts := runtime.WithMarshalerOption(runtime.MIMEWildcard, &runtime.JSONPb{
+		MarshalOptions: protojson.MarshalOptions{
+			UseProtoNames: true,
+		},
+		UnmarshalOptions: protojson.UnmarshalOptions{
+			DiscardUnknown: true,
+		},
 	})
 
-	s.app = app
-	s.addValidator()
-	s.applyMiddleware()
-	s.addRoutes()
-	s.embedStatic()
-}
+	grpcMux := runtime.NewServeMux(jsonOpts)
 
-func (s *Server) addRoutes() {
-	users := s.app.Group("/api/users")
-	users.Post("/login", s.loginUser)
-	users.Post("/", s.createUser)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
 
-	tokens := s.app.Group("/api/tokens")
-	tokens.Post("/refresh", s.renewAccessToken)
-
-	domains := s.app.Group("/api/domains")
-	domains.Use(AuthMiddleware(s.tokenMaker))
-	domains.Post("/", s.CreateDomain)
-	domains.Get("/", s.GetDomains)
-}
-
-func (s *Server) applyMiddleware() {
-	// Initialize default config
-	s.app.Use(cors.New())
-	s.app.Use(requestid.New())
-	// Logging Request ID
-	s.app.Use(requestid.New())
-	s.app.Use(charmlogfiber.New(log.Default()))
-
-	// Or extend your config for customization
-	s.app.Use(cors.New(cors.Config{
-		AllowOrigins: s.cfg.HttpServer.AllowOrigins,
-		AllowHeaders: s.cfg.HttpServer.AllowHeaders,
-	}))
-}
-
-func (s *Server) embedStatic() {
-	if s.staticEmbed != nil {
-		s.app.Use("/", filesystem.New(filesystem.Config{
-			Root:       http.FS(s.staticEmbed),
-			PathPrefix: "web/dist",
-		}))
-	}
-}
-
-func (s *Server) addValidator() {
-	val := &XValidator{
-		validator: validate,
-	}
-
-	err := val.validator.RegisterValidation("domain-name", validDomainName)
+	err := pb.RegisterTlzHandlerServer(ctx, grpcMux, s)
 	if err != nil {
-		log.Fatal("cannot register domain-name validator", "error", err)
+		log.Fatal("cannot register handler server", "error", err)
 	}
 
-	s.validate = val
+	apiPath := "/api"
+	mux := http.NewServeMux()
+	mux.Handle(apiPath+"/", http.StripPrefix(apiPath, grpcMux))
+	log.Info("serving API Gateway", "path", apiPath)
+
+	for _, opt := range s.embedAssets {
+		log.Info("serving embedded assets", "path", opt.Path)
+		sub, err := fs.Sub(opt.Dir, opt.Prefix)
+		if err != nil {
+			log.Fatal("cannot serve embedded assets", "error", err)
+		}
+		dir := http.FileServer(http.FS(sub))
+		mux.Handle(opt.Path, http.StripPrefix(opt.Path, dir))
+	}
+
+	log.Info("🟢 starting HTTP Gateway server", "port", s.cfg.HttpServer.Port)
+	handler := HttpLogger(mux)
+
+	httpSrv := &http.Server{
+		Handler:     handler,
+		Addr:        fmt.Sprintf(":%d", s.cfg.HttpServer.Port),
+		ReadTimeout: s.cfg.HttpServer.ReadHeaderTimeout,
+	}
+
+	if err := httpSrv.ListenAndServe(); err != nil {
+		log.Fatal("cannot start HTTP Gateway server", "error", err)
+	}
 }
