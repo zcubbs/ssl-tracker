@@ -5,9 +5,9 @@ import (
 	"embed"
 	"github.com/zcubbs/tlz/cmd/server/api"
 	"github.com/zcubbs/tlz/cmd/server/config"
+	dbConnect "github.com/zcubbs/tlz/cmd/server/db/connect"
 	"github.com/zcubbs/tlz/cmd/server/db/migration"
 	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
-	dbUtil "github.com/zcubbs/tlz/cmd/server/db/util"
 	"github.com/zcubbs/tlz/cmd/server/logger"
 	"github.com/zcubbs/tlz/cmd/server/task"
 	"github.com/zcubbs/tlz/cmd/server/worker"
@@ -51,7 +51,7 @@ func main() {
 	}
 
 	// Connect to database with pgx pool
-	conn, err := dbUtil.Connect(ctx, cfg.Database)
+	conn, err := dbConnect.Connect(ctx, cfg.Database)
 	if err != nil {
 		log.Fatal("failed to connect to database", "error", err)
 	}

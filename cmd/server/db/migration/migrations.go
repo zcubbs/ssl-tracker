@@ -11,7 +11,7 @@ import (
 	"github.com/golang-migrate/migrate/v4/source/httpfs"
 	_ "github.com/mattes/migrate/source/file"
 	"github.com/zcubbs/tlz/cmd/server/config"
-	dbUtil "github.com/zcubbs/tlz/cmd/server/db/util"
+	dbConnect "github.com/zcubbs/tlz/cmd/server/db/connect"
 	"github.com/zcubbs/tlz/cmd/server/logger"
 	"net/http"
 )
@@ -25,7 +25,7 @@ var migrations embed.FS
 
 func Run(dbCfg config.DatabaseConfig) error {
 	if dbCfg.Postgres.Enabled {
-		conn, err := dbUtil.ConnectPostgresStdLib(dbCfg.Postgres)
+		conn, err := dbConnect.ConnectPostgresStdLib(dbCfg.Postgres)
 		if err != nil {
 			return err
 		}

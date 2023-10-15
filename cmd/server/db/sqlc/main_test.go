@@ -3,8 +3,8 @@ package db
 import (
 	"context"
 	"github.com/zcubbs/tlz/cmd/server/config"
-	"github.com/zcubbs/tlz/cmd/server/db/migration"
-	"github.com/zcubbs/tlz/cmd/server/db/util"
+	dbConnect "github.com/zcubbs/tlz/cmd/server/db/connect"
+	mig "github.com/zcubbs/tlz/cmd/server/db/migration"
 	"github.com/zcubbs/tlz/cmd/server/logger"
 	"os"
 	"testing"
@@ -19,11 +19,11 @@ func TestMain(m *testing.M) {
 	var (
 		log = logger.L()
 	)
-	err := migration.Run(cfg.Database)
+	err := mig.Run(cfg.Database)
 	if err != nil {
 		log.Fatal("failed perform database migrations", "error", err)
 	}
-	conn, err := util.Connect(ctx, cfg.Database)
+	conn, err := dbConnect.Connect(ctx, cfg.Database)
 	if err != nil {
 		log.Fatal("failed to connect to database", "error", err)
 	}
