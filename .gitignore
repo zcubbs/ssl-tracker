@@ -38,3 +38,6 @@ go.work
 /pkg/mail/.env
 
 .env
+
+*/dist/
+!/dist/noop
