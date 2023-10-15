@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/charmbracelet/log"
 	"github.com/google/uuid"
 	"github.com/hibiken/asynq"
 	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"

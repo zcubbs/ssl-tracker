@@ -3,7 +3,6 @@ package task
 import (
 	"bytes"
 	"context"
-	"github.com/charmbracelet/log"
 	"github.com/jackc/pgx/v5/pgtype"
 	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
 	"github.com/zcubbs/x/tls"
@@ -37,8 +36,6 @@ func (t *Task) CheckCertificateValidity(ctx context.Context) {
 			}
 			continue
 		}
-
-		log.Info(status)
 
 		newStatus := t.getCertStatus(status.ValidTo)
 

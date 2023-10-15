@@ -4,13 +4,13 @@ import (
 	"context"
 	"embed"
 	"fmt"
-	"github.com/charmbracelet/log"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/rs/cors"
 	"github.com/zcubbs/tlz/cmd/server/config"
 	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
+	"github.com/zcubbs/tlz/cmd/server/logger"
 	"github.com/zcubbs/tlz/cmd/server/worker"
-	"github.com/zcubbs/tlz/pb"
+	pb "github.com/zcubbs/tlz/pb"
 	"github.com/zcubbs/tlz/pkg/token"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
@@ -18,6 +18,10 @@ import (
 	"io/fs"
 	"net"
 	"net/http"
+)
+
+var (
+	log = logger.L()
 )
 
 type Server struct {

@@ -2,7 +2,6 @@ package util
 
 import (
 	"context"
-	"github.com/charmbracelet/log"
 	"github.com/zcubbs/tlz/cmd/server/config"
 	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
 	"github.com/zcubbs/x/password"

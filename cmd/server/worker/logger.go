@@ -1,52 +1,38 @@
 package worker
 
 import (
-	"fmt"
-	"github.com/charmbracelet/log"
+	"github.com/zcubbs/logwrapper/logger"
 )
 
 const (
 	taskProcessorLoggerName = "task processor"
 )
 
-type Logger struct{}
-
-func NewLogger() *Logger {
-	return &Logger{}
+type Logger struct {
+	logger logger.Logger
 }
 
-func (l *Logger) Print(level log.Level, args ...interface{}) {
-	switch level {
-	case log.DebugLevel:
-		log.Debug(taskProcessorLoggerName, "details", fmt.Sprint(args...))
-	case log.InfoLevel:
-		log.Info(taskProcessorLoggerName, "details", fmt.Sprint(args...))
-	case log.WarnLevel:
-		log.Warn(taskProcessorLoggerName, "details", fmt.Sprint(args...))
-	case log.ErrorLevel:
-		log.Error(taskProcessorLoggerName, "details", fmt.Sprint(args...))
-	case log.FatalLevel:
-		log.Fatal(taskProcessorLoggerName, "details", fmt.Sprint(args...))
-	}
+func NewLogger(logger logger.Logger) *Logger {
+	return &Logger{logger}
 }
 
 func (l *Logger) Debug(args ...interface{}) {
-	l.Print(log.DebugLevel, args...)
+	l.logger.Debug(taskProcessorLoggerName, args...)
 
 }
 
 func (l *Logger) Info(args ...interface{}) {
-	l.Print(log.InfoLevel, args...)
+	l.logger.Info(taskProcessorLoggerName, args...)
 }
 
 func (l *Logger) Warn(args ...interface{}) {
-	l.Print(log.WarnLevel, args...)
+	l.logger.Warn(taskProcessorLoggerName, args...)
 }
 
 func (l *Logger) Error(args ...interface{}) {
-	l.Print(log.ErrorLevel, args...)
+	l.logger.Error(taskProcessorLoggerName, args...)
 }
 
 func (l *Logger) Fatal(args ...interface{}) {
-	l.Print(log.FatalLevel, args...)
+	l.logger.Fatal(taskProcessorLoggerName, args...)
 }

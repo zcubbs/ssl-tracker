@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"github.com/charmbracelet/log"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/zcubbs/tlz/cmd/server/config"
 )

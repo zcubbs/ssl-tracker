@@ -3,9 +3,11 @@ package config
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/charmbracelet/log"
 	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
+	lwl "github.com/zcubbs/logwrapper/logger"
+	"github.com/zcubbs/tlz/cmd/server/logger"
+
 	"os"
 	"strings"
 	"sync"
@@ -16,6 +18,10 @@ var (
 	onceEnv    sync.Once
 	onceLogger sync.Once
 	onceConfig sync.Once
+)
+
+var (
+	log = logger.L()
 )
 
 var (
@@ -44,10 +50,12 @@ func setupLogger() {
 	// read environment variable for log level
 	env := os.Getenv("ENVIRONMENT")
 	if env == "production" || env == "prod" {
-		log.SetLevel(log.InfoLevel)
-		log.SetFormatter(log.JSONFormatter)
+		logger.SetFormat(lwl.JSONFormat)
+		logger.SetLevel(lwl.InfoLevel)
+		log.Info("production=true")
 	} else {
-		log.SetLevel(log.DebugLevel)
+		logger.SetFormat(lwl.TextFormat)
+		logger.SetLevel(lwl.DebugLevel)
 	}
 }
 
@@ -76,14 +84,14 @@ func loadConfig() {
 	for _, key := range allowedEnvVarKeys {
 		err := viper.BindEnv(key)
 		if err != nil {
-			log.Printf("error: %s", err)
+			log.Error("unable to bind environment variable", "key", key, "error", err)
 		}
 	}
 	viper.SetEnvKeyReplacer(strings.NewReplacer(".", "_"))
 
 	err = viper.Unmarshal(&cfg)
 	if err != nil {
-		log.Printf("warn: could not decode config into struct: %v", err)
+		log.Warn("unable to unmarshal config", "error", err)
 	}
 
 	if viper.GetString("debug") == "true" {

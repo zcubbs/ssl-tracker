@@ -2,8 +2,8 @@ package worker
 
 import (
 	"context"
-	"github.com/charmbracelet/log"
 	"github.com/hibiken/asynq"
+	"github.com/zcubbs/logwrapper/logger"
 	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
 	"github.com/zcubbs/x/mail"
 )
@@ -23,9 +23,10 @@ type RedisTaskProcessor struct {
 	store      db.Store
 	mailer     mail.Mailer
 	attributes Attributes
+	logger     logger.Logger
 }
 
-func NewRedisTaskProcessor(redisOpt asynq.RedisClientOpt, store db.Store, mailer mail.Mailer, attributes Attributes) TaskProcessor {
+func NewRedisTaskProcessor(redisOpt asynq.RedisClientOpt, store db.Store, mailer mail.Mailer, attributes Attributes, logger logger.Logger) TaskProcessor {
 	server := asynq.NewServer(redisOpt, asynq.Config{
 		Concurrency: 10,
 		Queues: map[string]int{
@@ -33,15 +34,15 @@ func NewRedisTaskProcessor(redisOpt asynq.RedisClientOpt, store db.Store, mailer
 			QueueDefault:  5,
 		},
 		ErrorHandler: asynq.ErrorHandlerFunc(func(ctx context.Context, task *asynq.Task, err error) {
-			log.Error("task processing error",
+			logger.Error("task processing error",
 				"task", task.Type,
 				"error", err,
 				"payload", string(task.Payload()),
 			)
 		}),
-		Logger: NewLogger(),
+		Logger: NewLogger(logger),
 	})
-	return &RedisTaskProcessor{server: server, store: store, mailer: mailer, attributes: attributes}
+	return &RedisTaskProcessor{server: server, store: store, mailer: mailer, attributes: attributes, logger: logger}
 }
 
 func (p *RedisTaskProcessor) Start() error {

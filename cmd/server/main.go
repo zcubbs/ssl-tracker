@@ -8,8 +8,8 @@ import (
 	"github.com/zcubbs/tlz/cmd/server/db/migration"
 	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
 	dbUtil "github.com/zcubbs/tlz/cmd/server/db/util"
-	"github.com/zcubbs/tlz/cmd/server/internal/logger"
-	"github.com/zcubbs/tlz/cmd/server/internal/task"
+	"github.com/zcubbs/tlz/cmd/server/logger"
+	"github.com/zcubbs/tlz/cmd/server/task"
 	"github.com/zcubbs/tlz/cmd/server/worker"
 	"github.com/zcubbs/x/cron"
 	"github.com/zcubbs/x/mail"
@@ -38,11 +38,11 @@ func init() {
 	config.Date = Date
 }
 
-func main() {
-	// Initialize logger
-	//logger := slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{}))
-	log := logger.GetLogger()
+var (
+	log = logger.L()
+)
 
+func main() {
 	ctx := context.Background()
 	// Migrate database
 	err := migration.Run(cfg.Database)
@@ -73,9 +73,11 @@ func main() {
 	})
 
 	// Run task worker
-	w := worker.New(cfg, store, mailer, worker.Attributes{
-		ApiDomainName: cfg.Notification.ApiDomainName,
-	})
+	w := worker.New(cfg, store, mailer,
+		worker.Attributes{
+			ApiDomainName: cfg.Notification.ApiDomainName,
+		},
+	)
 	go w.Run()
 
 	// Create gRPC Server
@@ -109,7 +111,7 @@ func startCronJobs(store db.Store, cfg config.CronConfig) {
 			"check_certificate_validity",
 			cfg.CheckCertificateValidity.CronPattern,
 			t.CheckCertificateValidity,
-			cron.WithLogger(logger.GetLoggerWithName("cron.check_certificate_validity")),
+			cron.WithLogger(logger.L()),
 		)
 
 		cj.Start()

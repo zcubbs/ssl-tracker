@@ -201,7 +201,7 @@ tasks:
   pg:
     desc: Start Postgres
     cmds:
-      - docker run --rm --name linkup-postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=linkup -p 5432:5432 -d postgres:14-alpine
+      - docker run --rm --name tlz-postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=tlz -p 5432:5432 -d postgres:14-alpine
 
   pg:stop:
     desc: Stop Postgres
@@ -226,6 +226,11 @@ tasks:
         -p 1025:1025 -p 1080:1080
         -e MP_SMTP_AUTH_ACCEPT_ANY=true -e MP_SMTP_AUTH_ALLOW_INSECURE=true
         axllent/mailpit
+
+  mailpit:down:
+    desc: Stop Mailpit
+    cmds:
+      - docker stop tlz-mailpit
 
   test-grpc:
     desc: Run grpcurl tests

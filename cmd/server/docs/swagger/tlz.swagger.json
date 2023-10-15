@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "TLZ API",
-    "version": "1.0.1",
+    "version": "0.1.0",
     "contact": {
       "name": "TLZ API",
       "url": "https://github.com/zcubbs/tlz",
@@ -21,6 +21,40 @@
     "application/json"
   ],
   "paths": {
+    "/v1/create_domain": {
+      "post": {
+        "summary": "Create a new domain",
+        "description": "Create a new domain for a user",
+        "operationId": "Tlz_CreateDomain",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/pbCreateDomainResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/pbCreateDomainRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Tlz"
+        ]
+      }
+    },
     "/v1/create_user": {
       "post": {
         "summary": "Create a new user",
@@ -50,6 +84,30 @@
             }
           }
         ],
+        "tags": [
+          "Tlz"
+        ]
+      }
+    },
+    "/v1/get_domains": {
+      "get": {
+        "summary": "Get domains",
+        "description": "Get domains for a user",
+        "operationId": "Tlz_GetDomains",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/pbGetDomainsResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
         "tags": [
           "Tlz"
         ]
@@ -109,7 +167,7 @@
           }
         },
         "tags": [
-          "Tlz"
+          "Ops"
         ]
       }
     },
@@ -187,6 +245,22 @@
     }
   },
   "definitions": {
+    "pbCreateDomainRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "pbCreateDomainResponse": {
+      "type": "object",
+      "properties": {
+        "domain": {
+          "$ref": "#/definitions/pbDomain"
+        }
+      }
+    },
     "pbCreateUserRequest": {
       "type": "object",
       "properties": {
@@ -209,6 +283,43 @@
       "properties": {
         "user": {
           "$ref": "#/definitions/pbUser"
+        }
+      }
+    },
+    "pbDomain": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "issuer": {
+          "type": "string"
+        },
+        "owner": {
+          "type": "string"
+        },
+        "certificateExpiry": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "pbGetDomainsResponse": {
+      "type": "object",
+      "properties": {
+        "domains": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/pbDomain"
+          }
         }
       }
     },
@@ -252,6 +363,15 @@
       "type": "object",
       "properties": {
         "message": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "commit": {
+          "type": "string"
+        },
+        "buildTime": {
           "type": "string"
         }
       }

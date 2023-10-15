@@ -9,7 +9,7 @@ import (
 	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
 	"github.com/zcubbs/tlz/cmd/server/worker"
 	mockwk "github.com/zcubbs/tlz/cmd/server/worker/mock"
-	"github.com/zcubbs/tlz/pb"
+	pb "github.com/zcubbs/tlz/pb"
 	"github.com/zcubbs/x/password"
 	"github.com/zcubbs/x/random"
 	"go.uber.org/mock/gomock"

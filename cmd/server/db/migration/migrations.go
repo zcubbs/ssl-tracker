@@ -5,7 +5,6 @@ import (
 	"embed"
 	"errors"
 	"fmt"
-	"github.com/charmbracelet/log"
 	mig "github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
@@ -13,7 +12,12 @@ import (
 	_ "github.com/mattes/migrate/source/file"
 	"github.com/zcubbs/tlz/cmd/server/config"
 	dbUtil "github.com/zcubbs/tlz/cmd/server/db/util"
+	"github.com/zcubbs/tlz/cmd/server/logger"
 	"net/http"
+)
+
+var (
+	log = logger.L()
 )
 
 //go:embed *.sql

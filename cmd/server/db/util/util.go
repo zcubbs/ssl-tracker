@@ -3,6 +3,11 @@ package util
 import (
 	"fmt"
 	"github.com/zcubbs/tlz/cmd/server/config"
+	"github.com/zcubbs/tlz/cmd/server/logger"
+)
+
+var (
+	log = logger.L()
 )
 
 func getPostgresConnectionString(dbCfg config.PostgresConfig) string {

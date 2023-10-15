@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
-	"github.com/zcubbs/tlz/pb"
+	pb "github.com/zcubbs/tlz/pb"
 	"github.com/zcubbs/x/password"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

@@ -298,8 +298,8 @@ github.com/yuin/goldmark v1.1.27/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9de
 github.com/yuin/goldmark v1.1.32/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.2.1/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.3.5/go.mod h1:mwnBkeHKe2W/ZEtQ+71ViKU8L12m81fl3OWwC1Zlc8k=
-github.com/zcubbs/logwrapper v0.1.0 h1:FWiH7OgKXAN95AIc5Mcfe31zlIMWX/K5YpeiU0NYlLs=
-github.com/zcubbs/logwrapper v0.1.0/go.mod h1:cbFyg2F3MWngFr3MItCahDRh9TTQYmMYp3xTOnGsSs8=
+github.com/zcubbs/logwrapper v0.1.4 h1:mHGoUpzViKAiqmMnxj9L7ksExNCxLU2Ctov2oXU3joo=
+github.com/zcubbs/logwrapper v0.1.4/go.mod h1:cbFyg2F3MWngFr3MItCahDRh9TTQYmMYp3xTOnGsSs8=
 github.com/zcubbs/x v0.1.14 h1:U5qzJftN8b+NFhgUaNTr+Soj1LyXQxZfGPhGgHyaR1E=
 github.com/zcubbs/x v0.1.14/go.mod h1:ttuoN3KOC2yivUct8lpCj+S3jopYg6Vgy/vnSV5aWsQ=
 go.opencensus.io v0.21.0/go.mod h1:mSImk1erAIZhrmZN+AvHh14ztQfjbGwt4TtuofqLduU=
