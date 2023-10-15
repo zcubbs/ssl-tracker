@@ -21,6 +21,7 @@ on:
       - '.editorconfig'
       - '.goreleaser.yaml'
       - 'examples/**'
+      - '*.http'
 
 jobs:
   scan:

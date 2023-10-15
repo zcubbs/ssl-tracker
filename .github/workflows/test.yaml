@@ -8,19 +8,20 @@ on:
     branches:
       - main
     paths-ignore:
-      - '*.http'
       - 'README.md'
       - 'docs/**'
-      - '.github/**'
-      - '.taskfiles/**'
+      - 'chart/**'
+      - 'charts/**'
       - 'scripts/**'
+      - '.github/**'
       - 'LICENSE'
-      - 'sqlc.yaml'
       - 'Taskfile.yaml'
       - '.gitignore'
-      - 'project.toml'
       - '.gosec.config.json'
       - '.editorconfig'
+      - '.goreleaser.yaml'
+      - 'examples/**'
+      - '*.http'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
