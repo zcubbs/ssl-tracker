@@ -7,7 +7,7 @@ import (
 	"github.com/charmbracelet/log"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/rs/cors"
-	db "github.com/zcubbs/tlz/db/sqlc"
+	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
 	"github.com/zcubbs/tlz/internal/util"
 	"github.com/zcubbs/tlz/pb"
 	"github.com/zcubbs/tlz/pkg/token"

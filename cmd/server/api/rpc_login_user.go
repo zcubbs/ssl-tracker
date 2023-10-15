@@ -3,7 +3,7 @@ package api
 import (
 	"context"
 	"errors"
-	db "github.com/zcubbs/tlz/db/sqlc"
+	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
 	"github.com/zcubbs/tlz/pb"
 	"github.com/zcubbs/x/password"
 	"google.golang.org/grpc/codes"

@@ -1,4 +1,4 @@
-package migrations
+package migration
 
 import (
 	"database/sql"
@@ -6,25 +6,32 @@ import (
 	"errors"
 	"fmt"
 	"github.com/charmbracelet/log"
-	"github.com/golang-migrate/migrate/v4"
+	mig "github.com/golang-migrate/migrate/v4"
 	"github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/golang-migrate/migrate/v4/source/httpfs"
 	_ "github.com/mattes/migrate/source/file"
-	"github.com/zcubbs/tlz/internal/util"
+	"github.com/zcubbs/tlz/cmd/server/config"
+	dbUtil "github.com/zcubbs/tlz/cmd/server/db/util"
 	"net/http"
 )
 
 //go:embed *.sql
 var migrations embed.FS
 
-func Run(dbCfg util.DatabaseConfig) error {
-	conn, err := connectToDb(dbCfg)
-	if err != nil {
-		return err
-	}
-
+func Run(dbCfg config.DatabaseConfig) error {
 	if dbCfg.Postgres.Enabled {
+		conn, err := dbUtil.ConnectPostgresStdLib(dbCfg.Postgres)
+		if err != nil {
+			return err
+		}
+		defer func(conn *sql.DB) {
+			err := conn.Close()
+			if err != nil {
+				log.Fatal("failed to close database connection", "error", err)
+			}
+		}(conn)
+
 		err = migratePostgres(conn, dbCfg.Postgres.DbName)
 		if err != nil {
 			return err
@@ -51,7 +58,7 @@ func migratePostgres(conn *sql.DB, dbname string) error {
 		return fmt.Errorf("failed to create migrations source: %w", err)
 	}
 
-	m, err := migrate.NewWithInstance(
+	m, err := mig.NewWithInstance(
 		"FS",
 		source,
 		dbname,
@@ -61,20 +68,10 @@ func migratePostgres(conn *sql.DB, dbname string) error {
 		return fmt.Errorf("failed to create migration instance: %w", err)
 	}
 	err = m.Up()
-	if err != nil && !errors.Is(err, migrate.ErrNoChange) {
+	if err != nil && !errors.Is(err, mig.ErrNoChange) {
 		return fmt.Errorf("failed to apply migrations: %w", err)
 	}
 
 	log.Info("✔️ applied database migrations")
 	return nil
-}
-
-func connectToDb(dbCfg util.DatabaseConfig) (*sql.DB, error) {
-	dsn := util.GetDbConnectionString(dbCfg)
-	db, err := sql.Open("postgres", dsn)
-	if err != nil {
-		return nil, err
-	}
-
-	return db, nil
 }

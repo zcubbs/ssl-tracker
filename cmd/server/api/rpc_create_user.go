@@ -3,7 +3,7 @@ package api
 import (
 	"context"
 	"github.com/hibiken/asynq"
-	db "github.com/zcubbs/tlz/db/sqlc"
+	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
 	"github.com/zcubbs/tlz/internal/validator"
 	"github.com/zcubbs/tlz/pb"
 	"github.com/zcubbs/tlz/worker"

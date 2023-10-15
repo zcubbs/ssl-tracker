@@ -3,7 +3,6 @@ package db
 import (
 	"context"
 	"github.com/charmbracelet/log"
-	"github.com/zcubbs/tlz/db/migrations"
 	"github.com/zcubbs/tlz/internal/logger"
 	"github.com/zcubbs/tlz/internal/util"
 	"os"
@@ -16,7 +15,7 @@ func TestMain(m *testing.M) {
 	config := util.Bootstrap()
 	ctx := context.Background()
 	// Migrate database
-	err := migrations.Run(config.Database)
+	err := migration.Run(config.Database)
 	if err != nil {
 		log.Fatal("failed perform database migrations", "error", err)
 	}

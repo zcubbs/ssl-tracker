@@ -1,6 +1,6 @@
 package task
 
-import db "github.com/zcubbs/tlz/db/sqlc"
+import db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
 
 type Task struct {
 	store db.Store

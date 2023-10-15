@@ -3,15 +3,20 @@ package main
 import (
 	"context"
 	"embed"
-	"github.com/zcubbs/tlz/api"
-	"github.com/zcubbs/tlz/db/migrations"
-	db "github.com/zcubbs/tlz/db/sqlc"
-	"github.com/zcubbs/tlz/internal/logger"
-	"github.com/zcubbs/tlz/internal/task"
-	"github.com/zcubbs/tlz/internal/util"
+	"github.com/zcubbs/tlz/cmd/server/api"
+	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
+	"github.com/zcubbs/tlz/cmd/server/internal/logger"
+	"github.com/zcubbs/tlz/cmd/server/internal/task"
+	"github.com/zcubbs/tlz/cmd/server/internal/util"
 	"github.com/zcubbs/tlz/worker"
 	"github.com/zcubbs/x/cron"
 	"github.com/zcubbs/x/mail"
+)
+
+var (
+	Version = "0.0.0"
+	Commit  = "none"
+	Date    = "unknown"
 )
 
 //go:embed web/dist/*
@@ -34,7 +39,7 @@ func main() {
 
 	ctx := context.Background()
 	// Migrate database
-	err := migrations.Run(cfg.Database)
+	err := migration.Run(cfg.Database)
 	if err != nil {
 		log.Fatal("failed perform database migrations", "error", err)
 	}

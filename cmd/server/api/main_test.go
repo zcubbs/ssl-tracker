@@ -2,7 +2,7 @@ package api
 
 import (
 	"github.com/stretchr/testify/require"
-	db "github.com/zcubbs/tlz/db/sqlc"
+	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
 	"github.com/zcubbs/tlz/internal/util"
 	"github.com/zcubbs/tlz/worker"
 	"github.com/zcubbs/x/random"

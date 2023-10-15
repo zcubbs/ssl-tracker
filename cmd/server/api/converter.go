@@ -1,7 +1,7 @@
 package api
 
 import (
-	db "github.com/zcubbs/tlz/db/sqlc"
+	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
 	"github.com/zcubbs/tlz/pb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )

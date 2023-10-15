@@ -1,12 +1,5 @@
 version: '3'
 
-includes:
-  bootstrap_tasks: .taskfiles/bootstrap.yaml
-  container_tasks: .taskfiles/containers.yaml
-  build_tasks: .taskfiles/build.yaml
-  test_tasks: .taskfiles/test.yaml
-  gen_tasks: .taskfiles/gen.yaml
-
 env:
   GOOS: "{{OS}}"
 
@@ -15,114 +8,67 @@ vars:
   LOCAL_HOST: 127.0.0.1
 
 tasks:
-
-  ################################################################
-  # Bootstrap tasks
-  ################################################################
-  bootstrap:
-    desc: Install all necessary tools and CLI dependencies
-    cmds:
-      - task: bootstrap_tasks:local
-
-  boostrap:gh:
-    desc: Install all necessary tools and CLI dependencies for GitHub Actions
-    cmds:
-      - task: bootstrap_tasks:gh
-
-
-  ################################################################
-  # Build tasks
-  ################################################################
-  build:
-    cmds:
-      - task: build_tasks:build
-
-  build:pack:
-    cmds:
-      - task: build_tasks:build:pack
-
-  build:pack:gh:
-    cmds:
-      - task: build_tasks:build:pack:gh
-
-  ################################################################
-  # Test tasks
-  ################################################################
-  lint:
-    cmds:
-      - task: test_tasks:lint
-
-  scan:
-    cmds:
-      - task: test_tasks:scan
-
   test:
     cmds:
-      - task: test_tasks:test
+      - go test ./...
+
+  build:
+    cmds:
+      - task: build:{{OS}}
+
+  build:windows:
+    cmds:
+      - go env -w GOOS=windows GOARCH=amd64
+      - go build -o bin/server.exe ./cmd/server/main.go
+
+  build:darwin:
+    cmds:
+      - go env -w GOOS=darwin GOARCH=amd64
+      - go build -o bin/server ./cmd/server/main.go
+
+  build:linux:
+    cmds:
+      - go env -w GOOS=linux GOARCH=amd64
+      - go build -o bin/server ./cmd/server/main.go
 
   run:
     cmds:
-      - task: test_tasks:run
+      - task: build:{{OS}}
+      - task: run:{{OS}}
+        vars:
+          ARGS: "{{.CLI_ARGS}}"
 
-  preview:
+  run:darwin:
     cmds:
-      - task: test_tasks:preview
-
-  evans:
+      - bin/server {{.ARGS}}
+  run:linux:
     cmds:
-      - task: test_tasks:evans
-
-  ################################################################
-  # Generate tasks
-  ################################################################
-  proto:
+      - bin/server {{.ARGS}}
+  run:windows:
     cmds:
-      - task: gen_tasks:proto
+      - bin/server.exe {{.ARGS}}
 
-  mock:
+  lint:
     cmds:
-      - task: gen_tasks:mock
+      - golangci-lint run ./... -v --timeout 5m
 
-  sqlc:
+  scan:
     cmds:
-      - task: gen_tasks:sqlc
+      - gosec -conf .gosec.config.json "./..."
 
-
-  ################################################################
-  # Container tasks
-  ################################################################
-  pg:
+  tools:install:
+    desc: Install tools
     cmds:
-      - task: container_tasks:pg
+      - task tools:install:golangci-lint
+      - task tools:install:gosec
 
-  pg:start:
+  tools:install:golangci-lint:
+    desc: Install golangci-lint
     cmds:
-      - task: container_tasks:pg:start
+      - go install github.com/golangci/golangci-lint/cmd/golangci-lint@latest
 
-  pg:down:
+  tools:install:gosec:
+    desc: Install gosec
     cmds:
-      - task: container_tasks:pg:down
+      - go install github.com/securego/gosec/v2/cmd/gosec@latest
 
-  redis:
-    cmds:
-      - task: container_tasks:redis
-
-  redis:start:
-    cmds:
-      - task: container_tasks:redis:start
-
-  redis:down:
-    cmds:
-      - task: container_tasks:redis:down
-
-  mailhog:
-    cmds:
-      - task: container_tasks:mailhog
-
-  mailhog:start:
-    cmds:
-      - task: container_tasks:mailhog:start
-
-  mailhog:down:
-    cmds:
-      - task: container_tasks:mailhog:down

@@ -5,7 +5,7 @@ import (
 	"context"
 	"github.com/charmbracelet/log"
 	"github.com/jackc/pgx/v5/pgtype"
-	db "github.com/zcubbs/tlz/db/sqlc"
+	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
 	"github.com/zcubbs/x/tls"
 	"text/template"
 	"time"

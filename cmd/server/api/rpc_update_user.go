@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/jackc/pgx/v5/pgtype"
-	db "github.com/zcubbs/tlz/db/sqlc"
+	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
 	"github.com/zcubbs/tlz/internal/validator"
 	"github.com/zcubbs/tlz/pb"
 	"github.com/zcubbs/x/password"
