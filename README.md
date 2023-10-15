@@ -4,7 +4,7 @@
 ![Go Version](https://img.shields.io/badge/Go-%3E%3D%201.21-%23007d9c)
 [![Lint](https://github.com/zcubbs/tlz/actions/workflows/lint.yaml/badge.svg)](https://github.com/zcubbs/tlz/actions/workflows/lint.yaml)
 [![Test](https://github.com/zcubbs/tlz/actions/workflows/test.yaml/badge.svg)](https://github.com/zcubbs/tlz/actions/workflows/test.yaml)
-[![release](https://github.com/zcubbs/tlz/actions/workflows/release.yml/badge.svg)](https://github.com/zcubbs/tlz/actions/workflows/release.yaml)
+[![release](https://github.com/zcubbs/tlz/actions/workflows/release.yaml/badge.svg)](https://github.com/zcubbs/tlz/actions/workflows/release.yaml)
 [![scan](https://github.com/zcubbs/tlz/actions/workflows/scan.yaml/badge.svg)](https://github.com/zcubbs/tlz/actions/workflows/scan.yaml)
 [![Contributors](https://img.shields.io/github/contributors/zcubbs/go-containers)](https://github.com/zcubbs/tlz/graphs/contributors)
 
