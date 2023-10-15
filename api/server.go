@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/charmbracelet/log"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
+	"github.com/rs/cors"
 	db "github.com/zcubbs/tlz/db/sqlc"
 	"github.com/zcubbs/tlz/internal/util"
 	"github.com/zcubbs/tlz/pb"
@@ -36,13 +37,8 @@ type EmbedAssetsOpts struct {
 	Prefix string
 }
 
-func NewServer(
-	store db.Store,
-	taskDistributor worker.TaskDistributor,
-	cfg util.Config,
-	embedOpts ...EmbedAssetsOpts,
-) (*Server, error) {
-
+func NewServer(store db.Store, taskDistributor worker.TaskDistributor,
+	cfg util.Config, embedOpts ...EmbedAssetsOpts) (*Server, error) {
 	tokenMaker, err := token.NewPasetoMaker(cfg.Auth.TokenSymmetricKey)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create new tokenMaker: %w", err)
@@ -115,8 +111,17 @@ func (s *Server) StartHttpGateway() {
 	log.Info("🟢 starting HTTP Gateway server", "port", s.cfg.HttpServer.Port)
 	handler := HttpLogger(mux)
 
+	withCors := cors.New(cors.Options{
+		AllowOriginFunc:  func(origin string) bool { return true },
+		AllowedMethods:   []string{"GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"ACCEPT", "Authorization", "Content-Type", "X-CSRF-Token"},
+		ExposedHeaders:   []string{"Link"},
+		AllowCredentials: true,
+		MaxAge:           300,
+	}).Handler(handler)
+
 	httpSrv := &http.Server{
-		Handler:     handler,
+		Handler:     withCors,
 		Addr:        fmt.Sprintf(":%d", s.cfg.HttpServer.Port),
 		ReadTimeout: s.cfg.HttpServer.ReadHeaderTimeout,
 	}

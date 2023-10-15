@@ -4,13 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"github.com/charmbracelet/log"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/zcubbs/logwrapper/logger"
 )
 
-func DbConnect(ctx context.Context, config DatabaseConfig) (*pgxpool.Pool, error) {
+func DbConnect(ctx context.Context, config DatabaseConfig, logger logger.Logger) (*pgxpool.Pool, error) {
 	if config.Postgres.Enabled {
-		dbConn, err := connectToPostgres(ctx, config.Postgres)
+		dbConn, err := connectToPostgres(ctx, config.Postgres, logger)
 		if err != nil {
 			return nil, fmt.Errorf("cannot connect to db: %w", err)
 		}
@@ -20,9 +20,9 @@ func DbConnect(ctx context.Context, config DatabaseConfig) (*pgxpool.Pool, error
 	return nil, errors.New("no supported database profile enabled, please enable one (ex: postgres)")
 }
 
-func connectToPostgres(ctx context.Context, dbCfg PostgresConfig) (*pgxpool.Pool, error) {
+func connectToPostgres(ctx context.Context, dbCfg PostgresConfig, logger logger.Logger) (*pgxpool.Pool, error) {
 	dsn := getPostgresConnectionString(dbCfg)
-	log.Info("connecting to Postgres",
+	logger.Info("connecting to Postgres",
 		"host", dbCfg.Host,
 		"port", dbCfg.Port,
 		"user", dbCfg.Username,

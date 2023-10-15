@@ -6,7 +6,7 @@ import (
 	"github.com/hibiken/asynq"
 	db "github.com/zcubbs/tlz/db/sqlc"
 	"github.com/zcubbs/tlz/internal/util"
-	"github.com/zcubbs/tlz/pkg/mail"
+	"github.com/zcubbs/x/mail"
 )
 
 type Worker struct {

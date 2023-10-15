@@ -5,9 +5,8 @@ import (
 	"context"
 	"github.com/charmbracelet/log"
 	"github.com/jackc/pgx/v5/pgtype"
-	"github.com/zcubbs/tlz/_archives/api"
 	db "github.com/zcubbs/tlz/db/sqlc"
-	"github.com/zcubbs/tlz/pkg/tls"
+	"github.com/zcubbs/x/tls"
 	"text/template"
 	"time"
 )
@@ -66,17 +65,17 @@ func (t *Task) CheckCertificateValidity(ctx context.Context) {
 	}
 }
 
-func (t *Task) getCertStatus(expiry time.Time) api.Status {
+func (t *Task) getCertStatus(expiry time.Time) Status {
 	if expiry.Before(time.Now()) {
-		return api.StatusExpired
+		return StatusExpired
 	}
 	if expiry.Before(time.Now().AddDate(0, 0, 30)) {
-		return api.StatusExpiring
+		return StatusExpiring
 	}
-	return api.StatusValid
+	return StatusValid
 }
 
-func (t *Task) checkNeedsNotification(ctx context.Context, domain db.Domain, newStatus api.Status) error {
+func (t *Task) checkNeedsNotification(ctx context.Context, domain db.Domain, newStatus Status) error {
 	if domain.Status.Valid && domain.Status.String != (string)(newStatus) {
 		log.Info("Status changed", "domain", domain.Name, "old", domain.Status.String, "new", newStatus)
 		body, err := t.buildNotificationMessage(domain, newStatus)
@@ -97,7 +96,7 @@ func (t *Task) checkNeedsNotification(ctx context.Context, domain db.Domain, new
 	return nil
 }
 
-func (t *Task) buildNotificationMessage(domain db.Domain, newStatus api.Status) (string, error) {
+func (t *Task) buildNotificationMessage(domain db.Domain, newStatus Status) (string, error) {
 	var body bytes.Buffer
 	tmpl, err := template.ParseFiles("templates/expiry_notification.html")
 	if err != nil {

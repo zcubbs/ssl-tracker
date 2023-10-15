@@ -4,21 +4,21 @@ import (
 	"context"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/stretchr/testify/require"
-	"github.com/zcubbs/tlz/pkg/password"
-	"github.com/zcubbs/tlz/pkg/random"
+	"github.com/zcubbs/x/password"
+	"github.com/zcubbs/x/random"
 	"testing"
 	"time"
 )
 
 func createRandomUser(t *testing.T) User {
-	pwd, err := password.Hash(random.RandomString(10))
+	pwd, err := password.Hash(random.String(10))
 	require.NoError(t, err)
 
 	arg := CreateUserParams{
-		Username:       random.RandomOwner(),
-		Email:          random.RandomEmail(),
+		Username:       random.String(10),
+		Email:          random.Email(),
 		HashedPassword: pwd,
-		FullName:       random.RandomOwner(),
+		FullName:       random.String(20),
 	}
 
 	user, err := testStore.CreateUser(context.Background(), arg)
@@ -57,11 +57,11 @@ func TestUpdateUser(t *testing.T) {
 	arg := UpdateUserParams{
 		ID: user1.ID,
 		Email: pgtype.Text{
-			String: random.RandomEmail(),
+			String: random.Email(),
 			Valid:  true,
 		},
 		FullName: pgtype.Text{
-			String: random.RandomOwner(),
+			String: random.String(20),
 			Valid:  true,
 		},
 	}
@@ -81,7 +81,7 @@ func TestUpdateUserOnlyFullname(t *testing.T) {
 	arg := UpdateUserParams{
 		ID: user1.ID,
 		FullName: pgtype.Text{
-			String: random.RandomOwner(),
+			String: random.String(20),
 			Valid:  true,
 		},
 	}

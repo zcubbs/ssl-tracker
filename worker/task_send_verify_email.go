@@ -10,8 +10,8 @@ import (
 	"github.com/google/uuid"
 	"github.com/hibiken/asynq"
 	db "github.com/zcubbs/tlz/db/sqlc"
-	"github.com/zcubbs/tlz/pkg/mail"
-	"github.com/zcubbs/tlz/pkg/random"
+	"github.com/zcubbs/x/mail"
+	"github.com/zcubbs/x/random"
 )
 
 const TaskSendVerifyEmail = "task:send_verify_email"
@@ -68,7 +68,7 @@ func (p *RedisTaskProcessor) ProcessTaskSendVerifyEmail(ctx context.Context, tas
 	verifyEmail, err := p.store.CreateVerifyEmail(ctx, db.CreateVerifyEmailParams{
 		UserID:     user.ID,
 		Email:      user.Email,
-		SecretCode: random.RandomString(32),
+		SecretCode: random.String(32),
 	})
 	if err != nil {
 		return fmt.Errorf("failed to create verify email: %w", err)

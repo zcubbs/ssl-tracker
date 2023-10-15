@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/charmbracelet/log"
 	db "github.com/zcubbs/tlz/db/sqlc"
-	"github.com/zcubbs/tlz/pkg/mail"
+	"github.com/zcubbs/x/mail"
 	"strings"
 )
 

@@ -8,10 +8,10 @@ import (
 	mockdb "github.com/zcubbs/tlz/db/mock"
 	db "github.com/zcubbs/tlz/db/sqlc"
 	"github.com/zcubbs/tlz/pb"
-	"github.com/zcubbs/tlz/pkg/password"
-	"github.com/zcubbs/tlz/pkg/random"
 	"github.com/zcubbs/tlz/worker"
 	mockwk "github.com/zcubbs/tlz/worker/mock"
+	"github.com/zcubbs/x/password"
+	"github.com/zcubbs/x/random"
 	"go.uber.org/mock/gomock"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -54,15 +54,15 @@ func EqCreateUserTxParams(arg db.CreateUserTxParams, password string, user db.Us
 }
 
 func randomUser(t *testing.T) (user db.User, pwd string) {
-	pwd = random.RandomString(15)
+	pwd = random.String(15)
 	hashedPassword, err := password.Hash(pwd)
 	require.NoError(t, err)
 
 	user = db.User{
-		Username:       random.RandomString(10),
+		Username:       random.String(10),
 		HashedPassword: hashedPassword,
-		FullName:       random.RandomString(20),
-		Email:          random.RandomEmail(),
+		FullName:       random.String(20),
+		Email:          random.Email(),
 	}
 	return
 }

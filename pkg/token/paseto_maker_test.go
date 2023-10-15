@@ -3,16 +3,16 @@ package token
 import (
 	"github.com/google/uuid"
 	"github.com/stretchr/testify/require"
-	"github.com/zcubbs/tlz/pkg/random"
+	"github.com/zcubbs/x/random"
 	"testing"
 	"time"
 )
 
 func TestPasetoMaker(t *testing.T) {
-	maker, err := NewPasetoMaker(random.RandomString(32))
+	maker, err := NewPasetoMaker(random.String(32))
 	require.NoError(t, err)
 
-	username := random.RandomString(32)
+	username := random.String(32)
 	duration := time.Minute
 
 	issuedAt := time.Now()
@@ -33,10 +33,10 @@ func TestPasetoMaker(t *testing.T) {
 }
 
 func TestExpiredPasetoToken(t *testing.T) {
-	maker, err := NewPasetoMaker(random.RandomString(32))
+	maker, err := NewPasetoMaker(random.String(32))
 	require.NoError(t, err)
 
-	token, payload, err := maker.CreateToken(random.RandomString(32), uuid.UUID{}, -time.Minute)
+	token, payload, err := maker.CreateToken(random.String(32), uuid.UUID{}, -time.Minute)
 	require.NoError(t, err)
 	require.NotEmpty(t, token)
 	require.NotEmpty(t, payload)

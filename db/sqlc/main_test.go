@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/charmbracelet/log"
 	"github.com/zcubbs/tlz/db/migrations"
+	"github.com/zcubbs/tlz/internal/logger"
 	"github.com/zcubbs/tlz/internal/util"
 	"os"
 	"testing"
@@ -19,7 +20,7 @@ func TestMain(m *testing.M) {
 	if err != nil {
 		log.Fatal("failed perform database migrations", "error", err)
 	}
-	conn, err := util.DbConnect(ctx, config.Database)
+	conn, err := util.DbConnect(ctx, config.Database, logger.GetLogger())
 	if err != nil {
 		log.Fatal("failed to connect to database", "error", err)
 	}

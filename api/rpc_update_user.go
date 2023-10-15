@@ -8,7 +8,7 @@ import (
 	db "github.com/zcubbs/tlz/db/sqlc"
 	"github.com/zcubbs/tlz/internal/validator"
 	"github.com/zcubbs/tlz/pb"
-	"github.com/zcubbs/tlz/pkg/password"
+	"github.com/zcubbs/x/password"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

@@ -8,36 +8,31 @@ on:
     branches:
       - main
     paths-ignore:
-      - '*.http'
       - 'README.md'
       - 'docs/**'
-      - '.github/**'
-      - '.taskfiles/**'
+      - 'chart/**'
+      - 'charts/**'
       - 'scripts/**'
+      - '.github/**'
       - 'LICENSE'
-      - 'sqlc.yaml'
       - 'Taskfile.yaml'
       - '.gitignore'
-      - 'project.toml'
       - '.gosec.config.json'
       - '.editorconfig'
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+      - '.goreleaser.yaml'
+      - 'examples/**'
 
 jobs:
   lint:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v3.5.3
+        uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4.1.0
 
       - name: Set up Go
-        uses: actions/setup-go@v4.1.0
+        uses: actions/setup-go@93397bea11091df50f3d7e59dc26a7711a8bcfbe # v4.1.0
         with:
-          go-version: '1.20'
+          go-version: '1.21'
 
       - name: Install Task
         uses: arduino/setup-task@v1.0.3
@@ -46,7 +41,7 @@ jobs:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Install Linter
-        run: task bootstrap_tasks:install:golangci-lint
+        run: task tools:install:golangci-lint
 
       - name: Lint
         run: task lint
