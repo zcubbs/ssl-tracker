@@ -90,7 +90,7 @@ signs:
     signature: ${artifact}.sig
     artifacts: none
 release:
-  gittlz:
+  github:
     owner: zcubbs
     name: tlz
   draft: false
