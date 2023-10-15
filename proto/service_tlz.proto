@@ -3,20 +3,22 @@ syntax = "proto3";
 package pb;
 
 import "google/api/annotations.proto";
+import "protoc-gen-openapiv2/options/annotations.proto";
 import "rpc_create_user.proto";
 import "rpc_update_user.proto";
 import "rpc_login_user.proto";
 import "rpc_verify_email.proto";
-import "rpc_ping.proto";
 import "rpc_create_domain.proto";
-import "protoc-gen-openapiv2/options/annotations.proto";
+import "rpc_get_domains.proto";
+import "rpc_ping.proto";
+import "empty.proto";
 
-option go_package = "github.com/zcubbs/tlz/pb";
+option go_package = "github.com/zcubbs/tlz";
 
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   info: {
     title: "TLZ API";
-    version: "1.0.1";
+    version: "0.1.0";
     contact: {
       name: "TLZ API";
       url: "https://github.com/zcubbs/tlz";
@@ -66,11 +68,12 @@ service Tlz {
     };
   }
 
-  rpc Ping(PingRequest) returns (PingResponse) {
+  rpc Ping (Empty) returns (PingResponse){
     option (google.api.http) = {
       get: "/v1/ping"
     };
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      tags: "Ops"
       summary: "Ping the server";
       description: "Ping the server";
     };
@@ -84,6 +87,16 @@ service Tlz {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       summary: "Create a new domain";
       description: "Create a new domain for a user";
+    };
+  }
+
+  rpc GetDomains(Empty) returns (GetDomainsResponse) {
+    option (google.api.http) = {
+      get: "/v1/get_domains"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Get domains";
+      description: "Get domains for a user";
     };
   }
 }

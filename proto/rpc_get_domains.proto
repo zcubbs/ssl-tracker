@@ -6,10 +6,6 @@ import "domain.proto";
 
 option go_package = "github.com/zcubbs/tlz";
 
-message CreateDomainRequest {
-  string name = 1;
-}
-
-message CreateDomainResponse {
-  Domain domain = 1;
+message GetDomainsResponse {
+  repeated Domain domains = 1;
 }

@@ -3,12 +3,15 @@ package config
 import "time"
 
 type Config struct {
-	Debug             bool             `mapstructure:"debug"`
-	HttpServer        HttpServerConfig `mapstructure:"http_server"`
-	GrpcServer        GrpcServerConfig `mapstructure:"grpc_server"`
-	Auth              AuthConfig       `mapstructure:"auth"`
-	Database          DatabaseConfig   `mapstructure:"database"`
-	InitAdminPassword string           `mapstructure:"init_admin_password"`
+	Debug             bool               `mapstructure:"debug"`
+	HttpServer        HttpServerConfig   `mapstructure:"http_server"`
+	GrpcServer        GrpcServerConfig   `mapstructure:"grpc_server"`
+	Auth              AuthConfig         `mapstructure:"auth"`
+	Database          DatabaseConfig     `mapstructure:"database"`
+	InitAdminPassword string             `mapstructure:"init_admin_password"`
+	Redis             RedisConfig        `mapstructure:"redis"`
+	Cron              CronConfig         `mapstructure:"cron"`
+	Notification      NotificationConfig `mapstructure:"notification"`
 }
 
 type HttpServerConfig struct {
@@ -71,4 +74,43 @@ type PostgresConfig struct {
 	MaxConns int32 `mapstructure:"max_conns" json:"max_conns"`
 	// MinConns is the minimum number of connections in the pool. Default value: 2
 	MinConns int32 `mapstructure:"min_conns" json:"min_conns"`
+}
+
+type RedisConfig struct {
+	Host string `mapstructure:"host"`
+	Port int    `mapstructure:"port"`
+}
+
+type CronConfig struct {
+	CheckCertificateValidity `mapstructure:"check_certificate_validity"`
+	SendMailNotification     `mapstructure:"send_mail_notification"`
+}
+
+type CheckCertificateValidity struct {
+	Enabled     bool   `mapstructure:"enabled"`
+	CronPattern string `mapstructure:"cron_pattern"`
+}
+
+type SendMailNotification struct {
+	Enabled     bool   `mapstructure:"enabled"`
+	CronPattern string `mapstructure:"cron_pattern"`
+}
+
+type NotificationConfig struct {
+	Mail          MailConfig `mapstructure:"mail"`
+	ApiDomainName string     `mapstructure:"api_domain_name"`
+}
+
+type MailConfig struct {
+	Smtp SmtpConfig `mapstructure:"smtp"`
+}
+
+type SmtpConfig struct {
+	Enabled     bool   `mapstructure:"enabled"`
+	Host        string `mapstructure:"host"`
+	Port        int    `mapstructure:"port"`
+	Username    string `mapstructure:"username"`
+	Password    string `mapstructure:"password"`
+	FromAddress string `mapstructure:"from_address"`
+	FromName    string `mapstructure:"from_name"`
 }

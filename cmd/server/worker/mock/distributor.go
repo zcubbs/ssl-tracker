@@ -9,7 +9,7 @@ import (
 	reflect "reflect"
 
 	asynq "github.com/hibiken/asynq"
-	worker "github.com/zcubbs/tlz/worker"
+	worker "github.com/zcubbs/tlz/cmd/server/worker"
 	gomock "go.uber.org/mock/gomock"
 )
 

@@ -9,7 +9,7 @@ import (
 	reflect "reflect"
 
 	uuid "github.com/google/uuid"
-	db "github.com/zcubbs/tlz/db/sqlc"
+	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
 	gomock "go.uber.org/mock/gomock"
 )
 

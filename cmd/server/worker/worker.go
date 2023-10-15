@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"github.com/charmbracelet/log"
 	"github.com/hibiken/asynq"
-	db "github.com/zcubbs/tlz/db/sqlc"
-	"github.com/zcubbs/tlz/internal/util"
+	"github.com/zcubbs/tlz/cmd/server/config"
+	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
 	"github.com/zcubbs/x/mail"
 )
 
@@ -21,7 +21,7 @@ type Attributes struct {
 	ApiDomainName string
 }
 
-func New(cfg util.Config, store db.Store, mailer mail.Mailer, attributes Attributes) *Worker {
+func New(cfg config.Config, store db.Store, mailer mail.Mailer, attributes Attributes) *Worker {
 	redisOpt := asynq.RedisClientOpt{
 		Addr: fmt.Sprintf("%s:%d", cfg.Redis.Host, cfg.Redis.Port),
 	}

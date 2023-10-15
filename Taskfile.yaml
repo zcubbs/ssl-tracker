@@ -7,46 +7,19 @@ vars:
   # sqlite connection string
   TEST_DB_URL: "file:./db.sqlite?cache=shared&mode=rwc"
   LOCAL_HOST: 127.0.0.1
-  GO_PACKAGE: github.com/zcubbs/linkup
-  GO_PACKAGE_SHORT: linkup
+  GO_PACKAGE: github.com/zcubbs/tlz
+  GO_PACKAGE_SHORT: tlz
 
 tasks:
   build:
     desc: Build Go Binaries
     cmds:
-      - go build -o ./bin/agent ./cmd/agent
       - go build -o ./bin/server ./cmd/server
-      - go build -o ./bin/cli ./cmd/cli
-
-  build:cli:
-    desc: Build the CLI
-    cmds:
-      - task: build:cli:{{OS}}
-
-  build:cli:windows:
-    desc: Build the CLI
-    cmds:
-      - go build -o ./bin/linkup.exe ./cmd/cli
-
-  build:docker:server:
-    desc: Build the Docker image for the server
-    cmds:
-      - docker build -t server:latest -f build/server/Dockerfile .
 
   run:server:
     desc: Run the server
     cmds:
       - cmd: go run .\cmd\server\main.go
-
-  run:registry:
-    desc: Run the registry
-    cmds:
-      - cmd: go run .\cmd\registry\main.go
-
-  run:docker:server:
-    desc: Run the server inside a Docker container
-    cmds:
-      - docker run -p 50051:50051 server:latest
 
   migrate:new:
     desc: "Generate migration. Usage: task migrate:new -- <migration_name>"
@@ -113,11 +86,6 @@ tasks:
     cmds:
       - cmd: sqlc generate
 
-  evans:
-    desc: Run Evans CLI
-    cmds:
-      - evans --host localhost --port 9000 -r repl
-
   lint:
     desc: Run linter
     cmds:
@@ -127,7 +95,6 @@ tasks:
     desc: Generate mocks
     cmds:
       - task: mock:server:db
-      - task: mock:cli:rpc
 
   mock:server:db:
     desc: Generate mocks for server db
@@ -217,6 +184,20 @@ tasks:
     cmds:
       - scoop install gcc
 
+  containers:up:
+    desc: Start all containers
+    cmds:
+      - task: pg
+      - task: redis
+      - task: mailpit
+
+  containers:down:
+    desc: Stop all containers
+    cmds:
+      - task: pg:stop
+      - task: redis:down
+      - task: mailpit:down
+
   pg:
     desc: Start Postgres
     cmds:
@@ -226,6 +207,25 @@ tasks:
     desc: Stop Postgres
     cmds:
       - docker stop linkup-postgres
+
+  redis:
+    desc: Start Redis
+    cmds:
+      - docker run --rm --name tlz-redis -p 6379:6379 -d redis:alpine
+
+  redis:down:
+    desc: Stop Redis
+    cmds:
+      - docker stop tlz-redis
+
+  mailpit:
+    desc: Start Mailpit
+    cmds:
+      - >-
+        docker run --rm -d --name tlz-mailpit
+        -p 1025:1025 -p 1080:1080
+        -e MP_SMTP_AUTH_ACCEPT_ANY=true -e MP_SMTP_AUTH_ALLOW_INSECURE=true
+        axllent/mailpit
 
   test-grpc:
     desc: Run grpcurl tests

@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/charmbracelet/log"
 	"github.com/hibiken/asynq"
-	db "github.com/zcubbs/tlz/db/sqlc"
+	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
 	"github.com/zcubbs/x/mail"
 )
 

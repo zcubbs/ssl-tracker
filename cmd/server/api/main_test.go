@@ -2,24 +2,24 @@ package api
 
 import (
 	"github.com/stretchr/testify/require"
+	"github.com/zcubbs/tlz/cmd/server/config"
 	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
-	"github.com/zcubbs/tlz/internal/util"
-	"github.com/zcubbs/tlz/worker"
+	"github.com/zcubbs/tlz/cmd/server/worker"
 	"github.com/zcubbs/x/random"
 	"testing"
 	"time"
 )
 
 func newTestServer(t *testing.T, store db.Store, taskDistributor worker.TaskDistributor) *Server {
-	config := util.Config{
-		Auth: util.AuthConfig{
+	cfg := config.Config{
+		Auth: config.AuthConfig{
 			TokenSymmetricKey:    random.String(32),
 			AccessTokenDuration:  time.Minute,
 			RefreshTokenDuration: 5 * time.Minute,
 		},
 	}
 
-	server, err := NewServer(store, taskDistributor, config)
+	server, err := NewServer(store, taskDistributor, cfg)
 	require.NoError(t, err)
 
 	return server

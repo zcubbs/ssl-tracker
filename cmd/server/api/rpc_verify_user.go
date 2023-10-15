@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/google/uuid"
 	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
-	"github.com/zcubbs/tlz/internal/validator"
+	"github.com/zcubbs/tlz/cmd/server/internal/validator"
 	"github.com/zcubbs/tlz/pb"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"

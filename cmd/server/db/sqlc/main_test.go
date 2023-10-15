@@ -3,8 +3,9 @@ package db
 import (
 	"context"
 	"github.com/charmbracelet/log"
-	"github.com/zcubbs/tlz/internal/logger"
-	"github.com/zcubbs/tlz/internal/util"
+	"github.com/zcubbs/tlz/cmd/server/config"
+	"github.com/zcubbs/tlz/cmd/server/db/migration"
+	"github.com/zcubbs/tlz/cmd/server/db/util"
 	"os"
 	"testing"
 )
@@ -12,14 +13,14 @@ import (
 var testStore Store
 
 func TestMain(m *testing.M) {
-	config := util.Bootstrap()
+	cfg := config.Bootstrap()
 	ctx := context.Background()
 	// Migrate database
-	err := migration.Run(config.Database)
+	err := migration.Run(cfg.Database)
 	if err != nil {
 		log.Fatal("failed perform database migrations", "error", err)
 	}
-	conn, err := util.DbConnect(ctx, config.Database, logger.GetLogger())
+	conn, err := util.Connect(ctx, cfg.Database)
 	if err != nil {
 		log.Fatal("failed to connect to database", "error", err)
 	}

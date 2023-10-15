@@ -7,11 +7,11 @@ import (
 	"github.com/charmbracelet/log"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"github.com/rs/cors"
+	"github.com/zcubbs/tlz/cmd/server/config"
 	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
-	"github.com/zcubbs/tlz/internal/util"
+	"github.com/zcubbs/tlz/cmd/server/worker"
 	"github.com/zcubbs/tlz/pb"
 	"github.com/zcubbs/tlz/pkg/token"
-	"github.com/zcubbs/tlz/worker"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -24,7 +24,7 @@ type Server struct {
 	pb.UnimplementedTlzServer
 	store           db.Store
 	tokenMaker      token.Maker
-	cfg             util.Config
+	cfg             config.Config
 	embedAssets     []EmbedAssetsOpts
 	taskDistributor worker.TaskDistributor
 }
@@ -38,7 +38,7 @@ type EmbedAssetsOpts struct {
 }
 
 func NewServer(store db.Store, taskDistributor worker.TaskDistributor,
-	cfg util.Config, embedOpts ...EmbedAssetsOpts) (*Server, error) {
+	cfg config.Config, embedOpts ...EmbedAssetsOpts) (*Server, error) {
 	tokenMaker, err := token.NewPasetoMaker(cfg.Auth.TokenSymmetricKey)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create new tokenMaker: %w", err)

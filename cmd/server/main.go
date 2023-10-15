@@ -4,11 +4,13 @@ import (
 	"context"
 	"embed"
 	"github.com/zcubbs/tlz/cmd/server/api"
+	"github.com/zcubbs/tlz/cmd/server/config"
+	"github.com/zcubbs/tlz/cmd/server/db/migration"
 	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
+	dbUtil "github.com/zcubbs/tlz/cmd/server/db/util"
 	"github.com/zcubbs/tlz/cmd/server/internal/logger"
 	"github.com/zcubbs/tlz/cmd/server/internal/task"
-	"github.com/zcubbs/tlz/cmd/server/internal/util"
-	"github.com/zcubbs/tlz/worker"
+	"github.com/zcubbs/tlz/cmd/server/worker"
 	"github.com/zcubbs/x/cron"
 	"github.com/zcubbs/x/mail"
 )
@@ -25,11 +27,15 @@ var webDist embed.FS
 //go:embed docs/swagger/*
 var swaggerDist embed.FS
 
-var cfg util.Config
+var cfg config.Config
 
 func init() {
-	// Bootstrap configuration
-	cfg = util.Bootstrap()
+	// Load configuration
+	cfg = config.Bootstrap()
+
+	config.Version = Version
+	config.Commit = Commit
+	config.Date = Date
 }
 
 func main() {
@@ -45,7 +51,7 @@ func main() {
 	}
 
 	// Connect to database with pgx pool
-	conn, err := util.DbConnect(ctx, cfg.Database, log)
+	conn, err := dbUtil.Connect(ctx, cfg.Database)
 	if err != nil {
 		log.Fatal("failed to connect to database", "error", err)
 	}
@@ -96,7 +102,7 @@ func main() {
 	gs.StartGrpcServer()
 }
 
-func startCronJobs(store db.Store, cfg util.CronConfig) {
+func startCronJobs(store db.Store, cfg config.CronConfig) {
 	t := task.New(store)
 	if cfg.CheckCertificateValidity.Enabled {
 		cj := cron.NewJob(

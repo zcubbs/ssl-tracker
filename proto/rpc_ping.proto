@@ -2,10 +2,12 @@ syntax = "proto3";
 
 package pb;
 
-option go_package = "github.com/zcubbs/tlz/pb";
-
-message PingRequest {}
+option go_package = "github.com/zcubbs/tlz";
 
 message PingResponse {
   string message = 1;
+  string version = 2;
+  string commit = 3;
+  string buildTime = 4;
 }
+

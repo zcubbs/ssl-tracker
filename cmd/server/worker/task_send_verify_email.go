@@ -9,7 +9,7 @@ import (
 	"github.com/charmbracelet/log"
 	"github.com/google/uuid"
 	"github.com/hibiken/asynq"
-	db "github.com/zcubbs/tlz/db/sqlc"
+	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
 	"github.com/zcubbs/x/mail"
 	"github.com/zcubbs/x/random"
 )
