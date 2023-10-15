@@ -6,25 +6,25 @@ before:
     - go mod tidy
 builds:
   - env: [CGO_ENABLED=0]
-    binary: tlz
+    binary: server
     goos:
       - linux
     goarch:
       - amd64
       - arm64
-    id: "cli"
+    id: "server"
     dir: .
     main: ./cmd/server/main.go
     ldflags:
       - -s -w -X main.Version={{.Version}} -X main.Commit={{.Commit}} -X main.Date={{.Date}}
 
 archives:
-  - id: cli-archive
+  - id: server-archive
     format: tar.gz
     files:
       - none*
     builds:
-      - cli
+      - server
     format_overrides:
       - goos: windows
         format: zip
