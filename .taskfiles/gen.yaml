@@ -10,26 +10,26 @@ tasks:
         --go_out=pb --go_opt=paths=source_relative
         --go-grpc_out=pb --go-grpc_opt=paths=source_relative
         --grpc-gateway_out=pb --grpc-gateway_opt=paths=source_relative
-        --openapiv2_out=docs/swagger --openapiv2_opt=allow_merge=true,merge_file_name=tlz
+        --openapiv2_out=cmd/server/docs/swagger --openapiv2_opt=allow_merge=true,merge_file_name=tlz
         "proto/*.proto"
 
   proto:windows:
     desc: Generate proto code for Windows
     cmds:
       - cmd: powershell rm "pb/*.go"
-      - cmd: powershell rm "docs/swagger/*.json"
+      - cmd: powershell rm "cmd/server/docs/swagger/*.json"
 
   proto:darwin:
     desc: Generate proto code for MacOS
     cmds:
       - cmd: rm -f pb/*.go
-      - cmd: rm -f docs/swagger/*.json
+      - cmd: rm -f cmd/server/docs/swagger/*.json
 
   mock:
     desc: Generate mocks
     cmds:
-      - cmd: mockgen -package mockdb -destination db/mock/store.go github.com/zcubbs/tlz/db/sqlc Store
-      - cmd: mockgen -package mockdb -destination worker/mock/distributor.go github.com/zcubbs/tlz/worker TaskDistributor
+      - cmd: mockgen -package mockdb -destination cmd/server/db/mock/store.go github.com/zcubbs/tlz/cmd/server/db/sqlc Store
+      - cmd: mockgen -package mockdb -destination cmd/server/worker/mock/distributor.go github.com/zcubbs/tlz/cmd/server/worker TaskDistributor
 
   sqlc:
     desc: Generate SQLC code
@@ -51,3 +51,25 @@ tasks:
     desc: Generate SQLC code for Linux
     cmds:
       - cmd: sqlc generate
+
+  tls:
+    desc: Generate TLS certificates
+    cmds:
+      - task: tls:gen:{{OS}}
+
+  tls:windows:
+    desc: Generate TLS certificates for Windows
+    vars:
+      GENERATED_DIR: generated
+      SERVER_DIR: cmd/server
+      SCRIPTS_DIR: scripts/tls
+    cmds:
+      - echo "Generating TLS certificate..." $SCRIPTS_DIR
+      - cmd: powershell New-Item -Path {{.SCRIPTS_DIR}}/{{.GENERATED_DIR}} -ItemType Directory -ErrorAction SilentlyContinue
+        ignore_error: true
+      - openssl genrsa -out {{.SCRIPTS_DIR}}/{{.GENERATED_DIR}}/ca.key 4096
+      - openssl req -new -x509 -key {{.SCRIPTS_DIR}}/{{.GENERATED_DIR}}/ca.key -sha256 -subj "/C=SE/ST=HL/O=Example, INC." -days 365 -out {{.SCRIPTS_DIR}}/{{.GENERATED_DIR}}/ca.cert
+      - openssl genrsa -out {{.SCRIPTS_DIR}}/{{.GENERATED_DIR}}/server.key 4096
+      - openssl req -new -key {{.SCRIPTS_DIR}}/{{.GENERATED_DIR}}/server.key -out {{.SCRIPTS_DIR}}/{{.GENERATED_DIR}}/server.csr -config {{.SCRIPTS_DIR}}/certificate.conf
+      - openssl x509 -req -in {{.SCRIPTS_DIR}}/{{.GENERATED_DIR}}/server.csr -CA {{.SCRIPTS_DIR}}/{{.GENERATED_DIR}}/ca.cert -CAkey {{.SCRIPTS_DIR}}/{{.GENERATED_DIR}}/ca.key -CAcreateserial -out {{.SCRIPTS_DIR}}/{{.GENERATED_DIR}}/server.crt -days 365 -sha256 -extfile {{.SCRIPTS_DIR}}/certificate.conf -extensions req_ext
+      - echo "TLS certificate generated."

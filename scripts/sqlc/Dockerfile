@@ -1,0 +1,1 @@
+FROM sqlc/sqlc
