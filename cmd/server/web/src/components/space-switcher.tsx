@@ -7,13 +7,13 @@ import {
   PlusCircledIcon,
 } from "@radix-ui/react-icons"
 
-import { cn } from "@/lib/utils"
+import { cn } from "../lib/utils"
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
 } from "./ui/avatar"
-import { Button } from "@/registry/new-york/ui/button"
+import { Button } from "./ui/button"
 import {
   Command,
   CommandEmpty,
@@ -22,7 +22,7 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-} from "@/registry/new-york/ui/command"
+} from "./ui/command"
 import {
   Dialog,
   DialogContent,
@@ -31,111 +31,111 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/registry/new-york/ui/dialog"
-import { Input } from "@/registry/new-york/ui/input"
-import { Label } from "@/registry/new-york/ui/label"
+} from "./ui/dialog"
+import { Input } from "./ui/input"
+import { Label } from "./ui/label"
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
-} from "@/registry/new-york/ui/popover"
+} from "./ui/popover"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/registry/new-york/ui/select"
+} from "./ui/select"
 
 const groups = [
   {
     label: "Personal Account",
-    teams: [
+    spaces: [
       {
-        label: "Alicia Koch",
+        label: "Default",
         value: "personal",
       },
     ],
   },
   {
-    label: "Teams",
-    teams: [
+    label: "Spaces",
+    spaces: [
       {
-        label: "Acme Inc.",
-        value: "acme-inc",
+        label: "Project X",
+        value: "project-x",
       },
       {
-        label: "Monsters Inc.",
-        value: "monsters",
+        label: "Space Y",
+        value: "space-y",
       },
     ],
   },
 ]
 
-type Team = (typeof groups)[number]["teams"][number]
+type Space = (typeof groups)[number]["spaces"][number]
 
 type PopoverTriggerProps = React.ComponentPropsWithoutRef<typeof PopoverTrigger>
 
-interface TeamSwitcherProps extends PopoverTriggerProps {}
+interface SpaceSwitcherProps extends PopoverTriggerProps {}
 
-export default function TeamSwitcher({ className }: TeamSwitcherProps) {
+export default function SpaceSwitcher({ className }: SpaceSwitcherProps) {
   const [open, setOpen] = React.useState(false)
-  const [showNewTeamDialog, setShowNewTeamDialog] = React.useState(false)
-  const [selectedTeam, setSelectedTeam] = React.useState<Team>(
-    groups[0].teams[0]
+  const [showNewSpaceDialog, setShowNewSpaceDialog] = React.useState(false)
+  const [selectedSpace, setSelectedSpace] = React.useState<Space>(
+    groups[0].spaces[0]
   )
 
   return (
-    <Dialog open={showNewTeamDialog} onOpenChange={setShowNewTeamDialog}>
+    <Dialog open={showNewSpaceDialog} onOpenChange={setShowNewSpaceDialog}>
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
             variant="outline"
             role="combobox"
             aria-expanded={open}
-            aria-label="Select a team"
+            aria-label="Select a space"
             className={cn("w-[200px] justify-between", className)}
           >
             <Avatar className="mr-2 h-5 w-5">
               <AvatarImage
-                src={`https://avatar.vercel.sh/${selectedTeam.value}.png`}
-                alt={selectedTeam.label}
+                src={`https://avatar.vercel.sh/${selectedSpace.value}.png`}
+                alt={selectedSpace.label}
               />
-              <AvatarFallback>SC</AvatarFallback>
+              <AvatarFallback>A</AvatarFallback>
             </Avatar>
-            {selectedTeam.label}
+            {selectedSpace.label}
             <CaretSortIcon className="ml-auto h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
         <PopoverContent className="w-[200px] p-0">
           <Command>
             <CommandList>
-              <CommandInput placeholder="Search team..." />
-              <CommandEmpty>No team found.</CommandEmpty>
+              <CommandInput placeholder="Search space..." />
+              <CommandEmpty>No space found.</CommandEmpty>
               {groups.map((group) => (
                 <CommandGroup key={group.label} heading={group.label}>
-                  {group.teams.map((team) => (
+                  {group.spaces.map((space) => (
                     <CommandItem
-                      key={team.value}
+                      key={space.value}
                       onSelect={() => {
-                        setSelectedTeam(team)
+                        setSelectedSpace(space)
                         setOpen(false)
                       }}
                       className="text-sm"
                     >
                       <Avatar className="mr-2 h-5 w-5">
                         <AvatarImage
-                          src={`https://avatar.vercel.sh/${team.value}.png`}
-                          alt={team.label}
+                          src={`https://avatar.vercel.sh/${space.value}.png`}
+                          alt={space.label}
                           className="grayscale"
                         />
-                        <AvatarFallback>SC</AvatarFallback>
+                        <AvatarFallback>A</AvatarFallback>
                       </Avatar>
-                      {team.label}
+                      {space.label}
                       <CheckIcon
                         className={cn(
                           "ml-auto h-4 w-4",
-                          selectedTeam.value === team.value
+                          selectedSpace.value === space.value
                             ? "opacity-100"
                             : "opacity-0"
                         )}
@@ -152,11 +152,11 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
                   <CommandItem
                     onSelect={() => {
                       setOpen(false)
-                      setShowNewTeamDialog(true)
+                      setShowNewSpaceDialog(true)
                     }}
                   >
                     <PlusCircledIcon className="mr-2 h-5 w-5" />
-                    Create Team
+                    Create Space
                   </CommandItem>
                 </DialogTrigger>
               </CommandGroup>
@@ -166,16 +166,16 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
       </Popover>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Create team</DialogTitle>
+          <DialogTitle>Create space</DialogTitle>
           <DialogDescription>
-            Add a new team to manage products and customers.
+            Add a new space to manage your tracked domains.
           </DialogDescription>
         </DialogHeader>
         <div>
           <div className="space-y-4 py-2 pb-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Team name</Label>
-              <Input id="name" placeholder="Acme Inc." />
+              <Label htmlFor="name">Space name</Label>
+              <Input id="name" placeholder="Cool name" />
             </div>
             <div className="space-y-2">
               <Label htmlFor="plan">Subscription plan</Label>
@@ -193,7 +193,7 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
                   <SelectItem value="pro">
                     <span className="font-medium">Pro</span> -{" "}
                     <span className="text-muted-foreground">
-                      $9/month per user
+                      $1/month per user
                     </span>
                   </SelectItem>
                 </SelectContent>
@@ -202,7 +202,7 @@ export default function TeamSwitcher({ className }: TeamSwitcherProps) {
           </div>
         </div>
         <DialogFooter>
-          <Button variant="outline" onClick={() => setShowNewTeamDialog(false)}>
+          <Button variant="outline" onClick={() => setShowNewSpaceDialog(false)}>
             Cancel
           </Button>
           <Button type="submit">Continue</Button>
