@@ -22,7 +22,7 @@ function App() {
                     headings: {
                         fontFamily: 'Roboto, sans-serif',
                         sizes: {
-                            h1: { fontSize: '2rem' },
+                            h1: {fontSize: '2rem'},
                         },
                     },
                 }}
@@ -31,9 +31,9 @@ function App() {
                 <Container size="md" px="xs">
                     <h1>TLZ;</h1>
                     <Text>TLS Certificate Checker</Text>
-                    <Space h="md" />
+                    <Space h="md"/>
                     <AddDomainForm/>
-                    <Space h="md" />
+                    <Space h="md"/>
                     <DomainsTable/>
                 </Container>
             </MantineProvider>

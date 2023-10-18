@@ -16,3 +16,6 @@ trim_trailing_whitespace = false
 
 [Taskfile.yaml]
 indent_style = tab
+
+[*.jsx]
+indent_size = 4
