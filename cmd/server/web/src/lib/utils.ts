@@ -35,16 +35,15 @@ export function timeLeftUntil(date: Date): string {
   return seconds === 1 ? `${seconds} second` : `${seconds} seconds`;
 }
 
-export function parseDate(dateString: string): Date | null {
-  const date = new Date(dateString);
-
+export function parseDate(inputDate: Date): Date | null {
+  console.log(inputDate);
   // Check if the date is valid
-  if (isNaN(date.getTime())) {
+  if (isNaN(inputDate.getTime())) {
     console.error('Invalid date string');
     return null;
   }
 
-  return date;
+  return inputDate;
 }
 
 export function addTwoHours(): Date {

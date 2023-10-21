@@ -1,5 +1,3 @@
-"use client"
-
 import {ColumnDef} from "@tanstack/react-table"
 import {
   DropdownMenu,
@@ -15,6 +13,9 @@ import {parseDate, timeLeftUntil} from "../../lib/utils";
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
+export type Domains = {
+  domains: Domain[]
+}
 export type Domain = {
   id: string
   name: string
@@ -48,10 +49,10 @@ export const columns: ColumnDef<Domain>[] = [
     header: "Issuer",
   },
   {
-    accessorKey: "expirationDate",
+    accessorKey: "certificate_expiry",
     header: () => <div className="text-right">Expires</div>,
     cell: ({row}) => {
-      const expirationDate = parseDate(row.getValue("expirationDate"))
+      const expirationDate = parseDate(row.getValue("certificate_expiry"))
       if (!expirationDate) return <div className="text-right">-</div>
 
       // format time until expiration

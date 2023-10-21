@@ -1,22 +1,16 @@
-"use client"
-
 import {
-  ColumnDef, ColumnFiltersState,
-  flexRender,
-  getCoreRowModel, getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel, SortingState,
-  useReactTable,
+    ColumnDef,
+    ColumnFiltersState,
+    flexRender,
+    getCoreRowModel,
+    getFilteredRowModel,
+    getPaginationRowModel,
+    getSortedRowModel,
+    SortingState,
+    useReactTable,
 } from "@tanstack/react-table"
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "../../components/ui/table"
+import {Table, TableBody, TableCell, TableHead, TableHeader, TableRow,} from "../../components/ui/table"
 import {Button} from "../../components/ui/button.tsx";
 import React from "react";
 import {Input} from "../../components/ui/input.tsx";

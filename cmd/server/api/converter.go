@@ -15,3 +15,14 @@ func convertUser(user db.User) *pb.User {
 		CreatedAt:         timestamppb.New(user.CreatedAt),
 	}
 }
+
+func convertDomain(domain db.Domain) *pb.Domain {
+	return &pb.Domain{
+		Name:              domain.Name,
+		Status:            domain.Status.String,
+		Issuer:            domain.Issuer.String,
+		Owner:             domain.Owner.String(),
+		CertificateExpiry: timestamppb.New(domain.CertificateExpiry.Time),
+		CreatedAt:         timestamppb.New(domain.CreatedAt),
+	}
+}
