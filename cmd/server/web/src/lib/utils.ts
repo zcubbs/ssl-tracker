@@ -1,53 +1,57 @@
-import { type ClassValue, clsx } from "clsx"
-import { twMerge } from "tailwind-merge"
+import {type ClassValue, clsx} from "clsx"
+import {twMerge} from "tailwind-merge"
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+    return twMerge(clsx(inputs))
 }
 
 export function timeLeftUntil(date: Date): string {
-  const now = new Date();
-  let diffInSeconds = Math.floor((date.getTime() - now.getTime()) / 1000);
+    const now = new Date();
+    let diffInSeconds = Math.floor((date.getTime() - now.getTime()) / 1000);
 
-  if (diffInSeconds < 0) {
-    return "The date has already passed!";
-  }
+    if (diffInSeconds < 0) {
+        return "The date has already passed!";
+    }
 
-  const months = Math.floor(diffInSeconds / 2592000);
-  diffInSeconds -= months * 2592000;
+    const months = Math.floor(diffInSeconds / 2592000);
+    diffInSeconds -= months * 2592000;
 
-  const days = Math.floor(diffInSeconds / 86400);
-  diffInSeconds -= days * 86400;
+    const days = Math.floor(diffInSeconds / 86400);
+    diffInSeconds -= days * 86400;
 
-  const hours = Math.floor(diffInSeconds / 3600);
-  diffInSeconds -= hours * 3600;
+    const hours = Math.floor(diffInSeconds / 3600);
+    diffInSeconds -= hours * 3600;
 
-  const minutes = Math.floor(diffInSeconds / 60);
-  diffInSeconds -= minutes * 60;
+    const minutes = Math.floor(diffInSeconds / 60);
+    diffInSeconds -= minutes * 60;
 
-  const seconds = diffInSeconds;
+    const seconds = diffInSeconds;
 
-  if (months > 0) return months === 1 ? `${months} month` : `${months} months`;
-  if (days > 0) return days === 1 ? `${days} day` : `${days} days`;
-  if (hours > 0) return hours === 1 ? `${hours} hour` : `${hours} hours`;
-  if (minutes > 0) return minutes === 1 ? `${minutes} minute` : `${minutes} minutes`;
+    if (months > 0) return months === 1 ? `${months} month` : `${months} months`;
+    if (days > 0) return days === 1 ? `${days} day` : `${days} days`;
+    if (hours > 0) return hours === 1 ? `${hours} hour` : `${hours} hours`;
+    if (minutes > 0) return minutes === 1 ? `${minutes} minute` : `${minutes} minutes`;
 
-  return seconds === 1 ? `${seconds} second` : `${seconds} seconds`;
+    return seconds === 1 ? `${seconds} second` : `${seconds} seconds`;
 }
 
-export function parseDate(inputDate: Date): Date | null {
-  console.log(inputDate);
-  // Check if the date is valid
-  if (isNaN(inputDate.getTime())) {
-    console.error('Invalid date string');
-    return null;
-  }
+export function parseDate(inputDate: string): Date | null {
+    // Check if the date is valid
+    const date = new Date(inputDate);
+    if (date.toString() === "Invalid Date") {
+        return null;
+    }
 
-  return inputDate;
+    // Check if the date is in the past
+    if (date.getTime() < Date.now()) {
+        return null;
+    }
+
+    return date;
 }
 
 export function addTwoHours(): Date {
-  const now = new Date();
-  now.setHours(now.getHours() + 2);
-  return now;
+    const now = new Date();
+    now.setHours(now.getHours() + 2);
+    return now;
 }
