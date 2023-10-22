@@ -37,7 +37,7 @@ export default function DomainsPage() {
         <h2 className="text-3xl font-bold tracking-tight">Tracked Domains</h2>
         <div className="flex items-center space-x-2">
           <AddDomain/>
-          <Button variant="outline">Export</Button>
+          <Button variant="outline" disabled>Export</Button>
         </div>
       </div>
       <Tabs defaultValue="all" className="space-y-4">
