@@ -13,11 +13,6 @@ import (
 
 // CreateUser handles the creation of a new user via gRPC.
 func (s *Server) CreateUser(ctx context.Context, req *pb.CreateUserRequest) (*pb.CreateUserResponse, error) {
-	_, err := s.requireAdmin(ctx)
-	if err != nil {
-		return nil, unauthorizedError(err)
-	}
-
 	violations := validateCreateUserRequest(req)
 	if len(violations) > 0 {
 		return nil, invalidArgumentError(violations)

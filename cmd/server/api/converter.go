@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/google/uuid"
 	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
 	pb "github.com/zcubbs/tlz/pb"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -8,6 +9,7 @@ import (
 
 func convertUserToPb(user db.User) *pb.User {
 	return &pb.User{
+		Id:                user.ID.String(),
 		Username:          user.Username,
 		FullName:          user.FullName,
 		Email:             user.Email,
@@ -18,7 +20,9 @@ func convertUserToPb(user db.User) *pb.User {
 }
 
 func convertPbToUser(user *pb.User) db.User {
+	id, _ := uuid.Parse(user.Id)
 	return db.User{
+		ID:                id,
 		Username:          user.Username,
 		FullName:          user.FullName,
 		Email:             user.Email,
@@ -42,6 +46,7 @@ func convertDomain(domain db.Domain) *pb.Domain {
 
 func convertNamespace(namespace db.Namespace) *pb.Namespace {
 	return &pb.Namespace{
+		Id:        namespace.ID.String(),
 		Name:      namespace.Name,
 		UserId:    namespace.UserID.String(),
 		CreatedAt: timestamppb.New(namespace.CreatedAt),

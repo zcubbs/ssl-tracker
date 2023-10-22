@@ -1,19 +1,19 @@
 import {cn} from "@/lib/utils.ts";
 import {buttonVariants} from "@/components/ui/button.tsx";
-import {UserLoginForm} from "@/pages/authentication/components/user-login-form.tsx";
+import {UserRegisterForm} from "@/pages/register/components/user-register-form.tsx";
 
-export default function LoginPage() {
+export default function RegisterPage() {
   return (
     <>
       <div className="container relative hidden h-[800px] flex-col items-center justify-center md:grid lg:max-w-none lg:grid-cols-2 lg:px-0">
         <a
-          href="/register"
+          href="/login"
           className={cn(
             buttonVariants({ variant: "ghost" }),
             "absolute right-4 top-4 md:right-8 md:top-8"
           )}
         >
-          Register
+          Login
         </a>
         <div className="relative hidden h-full flex-col bg-muted p-10 text-white dark:border-r lg:flex">
           <div className="absolute inset-0 bg-zinc-900" />
@@ -28,7 +28,7 @@ export default function LoginPage() {
         </div>
         <div className="lg:p-8">
           <div className="mx-auto flex w-full flex-col justify-center space-y-6 sm:w-[350px]">
-            <UserLoginForm />
+            <UserRegisterForm />
             <p className="px-8 text-center text-sm text-muted-foreground">
               By clicking continue, you agree to our{" "}
               <a
