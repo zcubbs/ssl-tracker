@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
+	dbUtil "github.com/zcubbs/tlz/cmd/server/db/util"
 	pb "github.com/zcubbs/tlz/pb"
 	"github.com/zcubbs/x/password"
 	"google.golang.org/grpc/codes"
@@ -14,15 +15,15 @@ import (
 func (s *Server) LoginUser(ctx context.Context, req *pb.LoginUserRequest) (*pb.LoginUserResponse, error) {
 	user, err := s.store.GetUserByUsername(ctx, req.GetUsername())
 	if err != nil {
-		if errors.Is(err, db.ErrRecordNotFound) {
-			return nil, status.Errorf(codes.NotFound, "invalid credentials: %v", err)
+		if errors.Is(err, dbUtil.ErrRecordNotFound) {
+			return nil, status.Errorf(codes.Unauthenticated, "invalid credentials")
 		}
 		return nil, status.Errorf(codes.Internal, "failed to login user")
 	}
 
 	err = password.Check(req.Password, user.HashedPassword)
 	if err != nil {
-		return nil, status.Errorf(codes.Unauthenticated, "invalid credentials: %v", err)
+		return nil, status.Errorf(codes.Unauthenticated, "invalid credentials")
 	}
 
 	accessToken, accessPayload, err := s.tokenMaker.CreateToken(
@@ -58,7 +59,7 @@ func (s *Server) LoginUser(ctx context.Context, req *pb.LoginUserRequest) (*pb.L
 	}
 
 	rsp := &pb.LoginUserResponse{
-		User:                  convertUser(user),
+		User:                  convertUserToPb(user),
 		SessionId:             session.ID.String(),
 		AccessToken:           accessToken,
 		RefreshToken:          refreshToken,

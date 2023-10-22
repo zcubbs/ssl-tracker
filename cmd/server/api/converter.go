@@ -6,14 +6,25 @@ import (
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
-func convertUser(user db.User) *pb.User {
+func convertUserToPb(user db.User) *pb.User {
 	return &pb.User{
-		Id:                user.ID.String(),
 		Username:          user.Username,
 		FullName:          user.FullName,
 		Email:             user.Email,
 		PasswordChangedAt: timestamppb.New(user.PasswordChangedAt),
 		CreatedAt:         timestamppb.New(user.CreatedAt),
+		Role:              pb.Role(pb.Role_value[user.Role]),
+	}
+}
+
+func convertPbToUser(user *pb.User) db.User {
+	return db.User{
+		Username:          user.Username,
+		FullName:          user.FullName,
+		Email:             user.Email,
+		PasswordChangedAt: user.PasswordChangedAt.AsTime(),
+		CreatedAt:         user.CreatedAt.AsTime(),
+		Role:              user.Role.String(),
 	}
 }
 

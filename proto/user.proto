@@ -6,11 +6,18 @@ import "google/protobuf/timestamp.proto";
 
 option go_package = "github.com/zcubbs/tlz";
 
+enum Role {
+  ROLE_UNSPECIFIED = 0;
+  ROLE_ADMIN = 1;
+  ROLE_USER = 2;
+}
+
 message User {
   string id = 1;
   string username = 2;
   string full_name = 3;
   string email = 4;
-  google.protobuf.Timestamp password_changed_at = 5;
-  google.protobuf.Timestamp created_at = 6;
+  Role role = 5;
+  google.protobuf.Timestamp password_changed_at = 6;
+  google.protobuf.Timestamp created_at = 7;
 }

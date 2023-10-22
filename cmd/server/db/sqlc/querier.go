@@ -11,6 +11,7 @@ import (
 )
 
 type Querier interface {
+	BlockSession(ctx context.Context, id uuid.UUID) (Session, error)
 	CreateSession(ctx context.Context, arg CreateSessionParams) (Session, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) (User, error)
 	CreateVerifyEmail(ctx context.Context, arg CreateVerifyEmailParams) (VerifyEmail, error)
@@ -19,6 +20,7 @@ type Querier interface {
 	GetAllDomains(ctx context.Context) ([]Domain, error)
 	GetAllDomainsByNamespace(ctx context.Context, namespace uuid.UUID) ([]Domain, error)
 	GetAllNamespaces(ctx context.Context, userID uuid.UUID) ([]Namespace, error)
+	GetAllUsers(ctx context.Context) ([]User, error)
 	GetDomain(ctx context.Context, name string) (Domain, error)
 	GetDomainByNamespace(ctx context.Context, arg GetDomainByNamespaceParams) (Domain, error)
 	GetNamespace(ctx context.Context, arg GetNamespaceParams) (Namespace, error)

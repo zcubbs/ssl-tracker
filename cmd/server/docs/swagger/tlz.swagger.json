@@ -334,6 +334,9 @@
         },
         "password": {
           "type": "string"
+        },
+        "role": {
+          "$ref": "#/definitions/pbRole"
         }
       }
     },
@@ -456,6 +459,15 @@
         }
       }
     },
+    "pbRole": {
+      "type": "string",
+      "enum": [
+        "ROLE_UNSPECIFIED",
+        "ROLE_ADMIN",
+        "ROLE_USER"
+      ],
+      "default": "ROLE_UNSPECIFIED"
+    },
     "pbUpdateUserRequest": {
       "type": "object",
       "properties": {
@@ -495,6 +507,9 @@
         },
         "email": {
           "type": "string"
+        },
+        "role": {
+          "$ref": "#/definitions/pbRole"
         },
         "passwordChangedAt": {
           "type": "string",
