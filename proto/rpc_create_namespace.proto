@@ -1,0 +1,17 @@
+syntax = "proto3";
+
+package pb;
+
+import "namespace.proto";
+
+option go_package = "github.com/zcubbs/tlz";
+
+message CreateNamespaceRequest {
+  string name = 1;
+  string user_id = 2;
+  string billing_enabled = 3;
+}
+
+message CreateNamespaceResponse {
+  Namespace namespace = 1;
+}

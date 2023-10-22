@@ -8,6 +8,7 @@ import (
 
 func convertUser(user db.User) *pb.User {
 	return &pb.User{
+		Id:                user.ID.String(),
 		Username:          user.Username,
 		FullName:          user.FullName,
 		Email:             user.Email,
@@ -18,11 +19,20 @@ func convertUser(user db.User) *pb.User {
 
 func convertDomain(domain db.Domain) *pb.Domain {
 	return &pb.Domain{
+		Id:                domain.ID.String(),
 		Name:              domain.Name,
 		Status:            domain.Status.String,
 		Issuer:            domain.Issuer.String,
-		Owner:             domain.Owner.String(),
+		Namespace:         domain.Namespace.String(),
 		CertificateExpiry: timestamppb.New(domain.CertificateExpiry.Time),
 		CreatedAt:         timestamppb.New(domain.CreatedAt),
+	}
+}
+
+func convertNamespace(namespace db.Namespace) *pb.Namespace {
+	return &pb.Namespace{
+		Name:      namespace.Name,
+		UserId:    namespace.UserID.String(),
+		CreatedAt: timestamppb.New(namespace.CreatedAt),
 	}
 }

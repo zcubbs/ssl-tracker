@@ -10,6 +10,7 @@ import "rpc_login_user.proto";
 import "rpc_verify_email.proto";
 import "rpc_create_domain.proto";
 import "rpc_get_domains.proto";
+import "rpc_create_namespace.proto";
 import "rpc_ping.proto";
 import "empty.proto";
 
@@ -97,6 +98,17 @@ service Tlz {
     option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
       summary: "Get domains";
       description: "Get domains for a user";
+    };
+  }
+
+  rpc CreateNamespace(CreateNamespaceRequest) returns (CreateNamespaceResponse) {
+    option (google.api.http) = {
+      post: "/v1/create_namespace"
+      body: "*"
+    };
+    option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_operation) = {
+      summary: "Create a new namespace";
+      description: "Create a new namespace for a user";
     };
   }
 }

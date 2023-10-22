@@ -7,10 +7,11 @@ import "google/protobuf/timestamp.proto";
 option go_package = "github.com/zcubbs/tlz";
 
 message Domain {
-  string name = 1;
-  string status = 2;
-  string issuer = 3;
-  string owner = 4;
-  google.protobuf.Timestamp certificate_expiry = 5;
-  google.protobuf.Timestamp created_at = 6;
+  string id = 1;
+  string name = 2;
+  string status = 3;
+  string issuer = 4;
+  string namespace = 5;
+  google.protobuf.Timestamp certificate_expiry = 6;
+  google.protobuf.Timestamp created_at = 7;
 }

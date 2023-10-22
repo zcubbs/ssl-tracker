@@ -59,7 +59,9 @@ tasks:
     desc: Generate proto code for Windows
     cmds:
       - cmd: powershell rm "pb/*.go"
+        ignore_error: true
       - cmd: powershell rm "cmd/server/docs/swagger/*.json"
+        ignore_error: true
 
   proto:darwin:
     desc: Generate proto code for MacOS
@@ -153,7 +155,7 @@ tasks:
   tools:install:grpcurl:
     desc: Install grpcurl
     cmds:
-      - task: install:grpcurl:{{OS}}
+      - task: tools:install:grpcurl:{{OS}}
 
   tools:install:grpcurl:windows:
     desc: Install grpcurl

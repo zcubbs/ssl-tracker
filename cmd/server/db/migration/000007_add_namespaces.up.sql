@@ -9,14 +9,14 @@ CREATE TABLE IF NOT EXISTS namespaces
   "billing_currency" TEXT NOT NULL DEFAULT 'usd',
   "billing_last_charge" TIMESTAMPTZ,
   "billing_next_charge" TIMESTAMPTZ,
-  "owner" UUID NOT NULL,
+  "user_id" UUID NOT NULL,
   "created_at" TIMESTAMPTZ  NOT NULL DEFAULT current_timestamp
 );
 
 ALTER TABLE "domains" ADD COLUMN "namespace" UUID NOT NULL DEFAULT '00000000-0000-0000-0000-000000000000';
 
-ALTER TABLE "namespaces" ADD FOREIGN KEY ("owner") REFERENCES "users" ("id");
-ALTER TABLE "namespaces" ADD CONSTRAINT "namespaces_name_owner" UNIQUE ("name", "owner");
+ALTER TABLE "namespaces" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
+ALTER TABLE "namespaces" ADD CONSTRAINT "namespaces_name_user" UNIQUE ("name", "user_id");
 ALTER TABLE "domains" ADD FOREIGN KEY ("namespace") REFERENCES "namespaces" ("id");
 ALTER TABLE "domains" ADD CONSTRAINT "domains_name_namespace" UNIQUE ("name", "namespace");
-CREATE INDEX idx_namespaces_owner ON "namespaces" ("owner");
+CREATE INDEX idx_namespaces_owner ON "namespaces" ("user_id");
