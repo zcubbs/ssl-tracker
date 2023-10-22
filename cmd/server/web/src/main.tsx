@@ -5,7 +5,7 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import App from './App.tsx'
-import './index.css'
+import './gloabals.css'
 
 const router = createBrowserRouter([
   {

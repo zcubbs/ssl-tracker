@@ -74,3 +74,27 @@ func ValidateEmailVerificationCode(s string) error {
 
 	return nil
 }
+
+func ValidateDomainName(domainName string) error {
+	// A regular expression pattern for a typical domain name
+	// Matches domains that start with alphanumeric characters, possibly containing dashes in the middle, and ending with alphanumeric characters
+	// The domain name must contain at least one dot, and each section (separated by dots) must be between 1 and 63 characters long
+	// The TLD (top-level domain) must be between 2 and 6 alphanumeric characters
+	const pattern = `^(?i)[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?(\.[a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?)*\.[a-z]{2,6}$`
+
+	// Compile the pattern
+	re, err := regexp.Compile(pattern)
+	if err != nil {
+		wErr := fmt.Errorf("error compiling regex: %s", err)
+		return fmt.Errorf("invalid domain name. example of valid domain name: example.com err=%w", wErr)
+	}
+
+	// Check if the domain matches the pattern
+	valid := re.MatchString(domainName)
+
+	if !valid {
+		return fmt.Errorf("invalid domain name. example of valid domain name: example.com")
+	}
+
+	return nil
+}

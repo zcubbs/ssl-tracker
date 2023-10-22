@@ -6,6 +6,7 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
 	pb "github.com/zcubbs/tlz/pb"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -28,4 +29,12 @@ func (s *Server) CreateDomain(ctx context.Context, req *pb.CreateDomainRequest) 
 	return &pb.CreateDomainResponse{
 		Domain: convertDomain(domain),
 	}, nil
+}
+
+func validateCreateDomainRequest(req *pb.CreateDomainRequest) (violations []*errdetails.BadRequest_FieldViolation) {
+	if err := ValidateDomainName(req.GetName()); err != nil {
+		violations = append(violations, fieldViolation("username", err))
+	}
+
+	return violations
 }
