@@ -1,18 +1,21 @@
 import * as React from "react"
+import {useState} from "react"
 
 import {cn} from "@/lib/utils"
 import {Button} from "@/components/ui/button"
 import {Input} from "@/components/ui/input"
 import {Label} from "@/components/ui/label"
 import {Icons} from "@/components/ui/icons.tsx";
-import {useState} from "react";
+import {useNavigate} from "react-router-dom";
+import {AlertTriangle} from "lucide-react";
 
 interface UserRegisterFormProps extends React.HTMLAttributes<HTMLDivElement> {
 }
 
 export function UserRegisterForm({className, ...props}: UserRegisterFormProps) {
     const [isLoading, setIsLoading] = useState<boolean>(false)
-
+    const navigate = useNavigate()
+    const [errors, setErrors] = useState<string[]>([])
     const [name, setName] = useState<string>("")
     const [email, setEmail] = useState<string>("")
     const [password, setPassword] = useState<string>("")
@@ -21,6 +24,12 @@ export function UserRegisterForm({className, ...props}: UserRegisterFormProps) {
         event.preventDefault()
         setIsLoading(true)
 
+        setErrors([])
+
+        setTimeout(() => {
+            setIsLoading(false)
+        }, 3000)
+
         let request = {
             full_name: name,
             username: email,
@@ -28,18 +37,30 @@ export function UserRegisterForm({className, ...props}: UserRegisterFormProps) {
             password: password
         }
 
-        const response = await fetch('http://localhost:8000/api/v1/create_user', {
+        await fetch('http://localhost:8000/api/v1/create_user', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(request),
+        }).then((response) => {
+            if (!response.ok) {
+                response.json().then((data) => {
+                    let responseErrors = []
+                    let details = data?.details
+                    for (let key in details) {
+                        for (let violation of details[key]?.field_violations) {
+                            responseErrors.push(violation?.field + ": " + violation?.description)
+                        }
+                    }
+                    setErrors(responseErrors)
+                })
+            }
+
+            if (response.ok) {
+                navigate('/login')
+            }
+        }).catch((error) => {
+            console.log(error)
         })
-
-        const data = await response.json()
-        console.log(data)
-
-        setTimeout(() => {
-            setIsLoading(false)
-        }, 3000)
     }
 
     return (
@@ -63,7 +84,7 @@ export function UserRegisterForm({className, ...props}: UserRegisterFormProps) {
                             placeholder="Amy Smith"
                             type="text"
                             autoCapitalize="on"
-                            autoComplete="name"
+                            autoComplete="off"
                             autoCorrect="off"
                             disabled={isLoading}
                             onChange={(e) => setName(e.target.value)}
@@ -76,7 +97,7 @@ export function UserRegisterForm({className, ...props}: UserRegisterFormProps) {
                             placeholder="name@example.com"
                             type="email"
                             autoCapitalize="none"
-                            autoComplete="email"
+                            autoComplete="off"
                             autoCorrect="off"
                             disabled={isLoading}
                             onChange={(e) => setEmail(e.target.value)}
@@ -89,10 +110,25 @@ export function UserRegisterForm({className, ...props}: UserRegisterFormProps) {
                             placeholder="**********"
                             type="password"
                             autoCapitalize="none"
+                            autoComplete="off"
                             autoCorrect="off"
                             disabled={isLoading}
                             onChange={(e) => setPassword(e.target.value)}
                         />
+                    </div>
+                    <div className="flex items-center justify-between">
+                        {errors.length > 0 && (
+                            <div className="flex items-center space-x-2">
+                                <div className="text-red-500">
+                                    <AlertTriangle/>
+                                </div>
+                                <div className="flex flex-col space-y-1">
+                                    {errors.map((error) => (
+                                        <span className="text-red-500">{error}</span>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
                     <Button disabled={isLoading}>
                         {isLoading && (
