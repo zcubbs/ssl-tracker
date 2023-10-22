@@ -41,3 +41,4 @@ go.work
 
 */dist/
 !/dist/noop
+/web/node_modules/

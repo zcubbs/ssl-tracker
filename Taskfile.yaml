@@ -16,6 +16,12 @@ tasks:
     cmds:
       - go build -o ./bin/server ./cmd/server
 
+  build:npm:
+    desc: Build NPM Binaries
+    dir: cmd/server/web
+    cmds:
+      - npm run build
+
   run:server:
     desc: Run the server
     cmds:
@@ -24,17 +30,17 @@ tasks:
   migrate:new:
     desc: "Generate migration. Usage: task migrate:new -- <migration_name>"
     cmds:
-      - cmd: migrate create -ext sql -dir db/migration -seq {{.CLI_ARGS}}
+      - cmd: migrate create -ext sql -dir cmd/server/db/migration -seq {{.CLI_ARGS}}
 
   migrate-up:
     desc: Run database migration
     cmds:
-      - migrate -source file://db/migration -database "{{.TEST_DB_URL}}" up
+      - migrate -source file://cmd/server/db/migration -database "{{.TEST_DB_URL}}" up
 
   migrate-down:
     desc: Rollback database migration
     cmds:
-      - migrate -source file://db/migration -database "{{.TEST_DB_URL}}" down
+      - migrate -source file://cmd/server/db/migration -database "{{.TEST_DB_URL}}" down
 
   proto:
     aliases: [ pb ]
@@ -42,7 +48,7 @@ tasks:
     cmds:
       - task: proto:{{OS}}
       - >-
-        protoc --proto_path=proto
+        protoc --proto_path=proto --proto_path=proto/google/api --proto_path=proto/protoc-gen-openapiv2/options
         --go_out=pb --go_opt=paths=source_relative
         --go-grpc_out=pb --go-grpc_opt=paths=source_relative
         --grpc-gateway_out=pb --grpc-gateway_opt=paths=source_relative
@@ -206,7 +212,7 @@ tasks:
   pg:stop:
     desc: Stop Postgres
     cmds:
-      - docker stop linkup-postgres
+      - docker stop tlz-postgres
 
   redis:
     desc: Start Redis
@@ -235,7 +241,7 @@ tasks:
   test-grpc:
     desc: Run grpcurl tests
     cmds:
-      - grpcurl -plaintext localhost:9000 pb.LinkupService/Ping
+      - grpcurl -plaintext localhost:9000 pb.TlzService/Ping
 
   tls:
     desc: Copy TLS certificates

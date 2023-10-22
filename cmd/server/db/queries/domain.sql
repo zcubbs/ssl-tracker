@@ -1,19 +1,19 @@
 -- name: InsertDomain :one
 INSERT INTO domains
-    (name,status,owner)
+    (name,status,namespace)
 VALUES ($1,$2,$3)
 RETURNING *;
 
 -- name: GetDomain :one
 SELECT * FROM domains WHERE name = $1;
 
--- name: GetDomainByOwner :one
+-- name: GetDomainByNamespace :one
 SELECT * FROM domains
-WHERE owner = $1 AND name = $2;
+WHERE namespace = $1 AND name = $2;
 
--- name: GetAllDomainsByOwner :many
+-- name: GetAllDomainsByNamespace :many
 SELECT * FROM domains
-WHERE owner = $1
+WHERE namespace = $1
 ORDER BY name;
 
 -- name: GetAllDomains :many

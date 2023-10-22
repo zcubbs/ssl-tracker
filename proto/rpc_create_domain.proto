@@ -8,6 +8,7 @@ option go_package = "github.com/zcubbs/tlz";
 
 message CreateDomainRequest {
   string name = 1;
+  string namespace = 2;
 }
 
 message CreateDomainResponse {
