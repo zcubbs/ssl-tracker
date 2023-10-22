@@ -117,14 +117,14 @@ export function UserRegisterForm({className, ...props}: UserRegisterFormProps) {
                         />
                     </div>
                     <div className="flex items-center justify-between">
-                        {errors.length > 0 && (
+                        {errors?.length > 0 && (
                             <div className="flex items-center space-x-2">
                                 <div className="text-red-500">
                                     <AlertTriangle/>
                                 </div>
                                 <div className="flex flex-col space-y-1">
-                                    {errors.map((error) => (
-                                        <span className="text-red-500">{error}</span>
+                                    {errors.map((error, i) => (
+                                        <span key={i} className="text-red-500">{error}</span>
                                     ))}
                                 </div>
                             </div>

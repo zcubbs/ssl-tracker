@@ -28,20 +28,30 @@ export function UserLoginForm({className, ...props}: UserLoginFormProps) {
             password: password
         }
 
-        const response = await fetch('http://localhost:8000/api/v1/login_user', {
+        await fetch('http://localhost:8000/api/v1/login_user', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(request),
+        }).then((response) => {
+            if (!response.ok) {
+                response.json().then((data) => {
+                    let responseErrors = []
+                    let details = data?.details
+                    for (let key in details) {
+                        for (let violation of details[key]?.field_violations) {
+                            responseErrors.push(violation?.field + ": " + violation?.description)
+                        }
+                    }
+                })
+            }
+
+            if (response.ok) {
+                navigate('/')
+            }
+
+        }).catch((error) => {
+            console.error(error)
         })
-
-        const data = await response.json()
-        console.log(data)
-
-        setTimeout(() => {
-            setIsLoading(false)
-        }, 1000)
-
-        navigate('/')
     }
 
     return (
