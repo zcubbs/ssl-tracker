@@ -1,6 +1,6 @@
 import {cn} from "@/lib/utils.ts";
 import {buttonVariants} from "@/components/ui/button.tsx";
-import {UserLoginForm} from "@/pages/authentication/components/user-login-form.tsx";
+import {UserLoginForm} from "@/pages/login/components/user-login-form.tsx";
 
 export default function LoginPage() {
   return (

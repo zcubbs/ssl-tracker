@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/zcubbs/tlz/cmd/server/config"
 	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
+	pb "github.com/zcubbs/tlz/pb"
 	"github.com/zcubbs/x/password"
 	"github.com/zcubbs/x/random"
 )
@@ -33,11 +34,12 @@ func InitAdminUser(store db.Store, cfg config.Config) error {
 	}
 
 	_, err = store.CreateUser(context.Background(), db.CreateUserParams{
-		Username:       "admin",
-		HashedPassword: hashedPass,
-		FullName:       "Administrator",
-		Email:          "",
-		//Role:           pb.Role_ROLE_ADMIN.String(),
+		Username:        "admin",
+		HashedPassword:  hashedPass,
+		FullName:        "Administrator",
+		Email:           "",
+		Role:            pb.Role_ROLE_ADMIN.String(),
+		IsEmailVerified: true,
 	})
 	if err != nil {
 		errCode := ErrorCode(err)

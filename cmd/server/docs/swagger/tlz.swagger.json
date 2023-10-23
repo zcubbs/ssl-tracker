@@ -147,6 +147,30 @@
         ]
       }
     },
+    "/v1/get_users": {
+      "get": {
+        "summary": "Get all users",
+        "description": "Get all users",
+        "operationId": "Tlz_GetUsers",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/pbGetUsersResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "tags": [
+          "User"
+        ]
+      }
+    },
     "/v1/login_user": {
       "post": {
         "summary": "Login a user",
@@ -177,7 +201,39 @@
           }
         ],
         "tags": [
-          "Tlz"
+          "User"
+        ]
+      }
+    },
+    "/v1/logout_user": {
+      "post": {
+        "summary": "Logout a user",
+        "description": "Logout a user",
+        "operationId": "Tlz_LogoutUser",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/pbEmpty"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "sessionId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "User"
         ]
       }
     },
@@ -202,6 +258,40 @@
         },
         "tags": [
           "Ops"
+        ]
+      }
+    },
+    "/v1/refresh_token": {
+      "post": {
+        "summary": "Refresh a user's access token",
+        "description": "Refresh a user's access token",
+        "operationId": "Tlz_RefreshToken",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/pbRefreshTokenResponse"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/pbRefreshTokenRequest"
+            }
+          }
+        ],
+        "tags": [
+          "User"
         ]
       }
     },
@@ -376,6 +466,9 @@
         }
       }
     },
+    "pbEmpty": {
+      "type": "object"
+    },
     "pbGetDomainsResponse": {
       "type": "object",
       "properties": {
@@ -384,6 +477,18 @@
           "items": {
             "type": "object",
             "$ref": "#/definitions/pbDomain"
+          }
+        }
+      }
+    },
+    "pbGetUsersResponse": {
+      "type": "object",
+      "properties": {
+        "users": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/pbUser"
           }
         }
       }
@@ -456,6 +561,26 @@
         },
         "buildTime": {
           "type": "string"
+        }
+      }
+    },
+    "pbRefreshTokenRequest": {
+      "type": "object",
+      "properties": {
+        "refreshToken": {
+          "type": "string"
+        }
+      }
+    },
+    "pbRefreshTokenResponse": {
+      "type": "object",
+      "properties": {
+        "accessToken": {
+          "type": "string"
+        },
+        "accessTokenExpiresAt": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },

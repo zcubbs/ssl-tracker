@@ -79,7 +79,6 @@ func loadConfig() {
 	}
 
 	viper.AutomaticEnv() // read in environment variables that match
-	viper.SetEnvPrefix(ViperConfigEnvPrefix)
 
 	for _, key := range allowedEnvVarKeys {
 		err := viper.BindEnv(key)

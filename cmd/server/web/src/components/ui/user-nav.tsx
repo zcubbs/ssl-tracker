@@ -9,8 +9,20 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "./dropdown-menu"
+import {useContext} from "react";
+import AuthContext from "@/context/auth-provider.tsx";
+import {useNavigate} from "react-router-dom";
 
 export function UserNav() {
+  const { setAuth } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const logout = async () => {
+    // if used in more components, this should be in context
+    // axios to /logout endpoint
+    setAuth({});
+    navigate('/');
+  }
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -44,7 +56,7 @@ export function UserNav() {
           <DropdownMenuItem>New Space</DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem onClick={logout}>
           Log out
         </DropdownMenuItem>
       </DropdownMenuContent>

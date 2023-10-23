@@ -10,6 +10,4 @@ CREATE TABLE IF NOT EXISTS "sessions"
   "created_at" timestamptz NOT NULL DEFAULT current_timestamp
 );
 
-CREATE UNIQUE INDEX idx_sessions_user_id ON "sessions" ("user_id");
-
 ALTER TABLE "sessions" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");

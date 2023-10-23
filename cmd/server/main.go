@@ -8,6 +8,7 @@ import (
 	dbConnect "github.com/zcubbs/tlz/cmd/server/db/connect"
 	"github.com/zcubbs/tlz/cmd/server/db/migration"
 	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
+	dbUtil "github.com/zcubbs/tlz/cmd/server/db/util"
 	"github.com/zcubbs/tlz/cmd/server/logger"
 	"github.com/zcubbs/tlz/cmd/server/task"
 	"github.com/zcubbs/tlz/cmd/server/worker"
@@ -58,6 +59,12 @@ func main() {
 
 	// Initialize store
 	store := db.NewSQLStore(conn)
+
+	// Initialize admin user
+	err = dbUtil.InitAdminUser(store, cfg)
+	if err != nil {
+		log.Fatal("failed to initialize admin user", "error", err)
+	}
 
 	// Start cron jobs
 	startCronJobs(store, cfg.Cron)
