@@ -14,8 +14,8 @@ import Unauthorized from "@/pages/unauthorized/page.tsx";
 const queryClient = new QueryClient();
 
 const ROLES = {
-  'User': 2001,
-  'Admin': 5150
+  'User': "ROLE_USER",
+  'Admin': "ROLE_ADMIN"
 }
 
 function App() {
@@ -31,11 +31,11 @@ function App() {
           <Route path="/login" element={<LoginPage/>}/>
           <Route path="/register" element={<RegisterPage/>}/>
           <Route path="unauthorized" element={<Unauthorized />} />
-          <Route element={<RequireAuth allowedRoles={[ROLES.User]}/>}>
+          <Route element={<RequireAuth allowedRole={ROLES.User}/>}>
             <Route path="/" element={<Content/>}/>
             <Route path="/domains" element={<Content/>}/>
           </Route>
-          <Route element={<RequireAuth allowedRoles={[ROLES.Admin]}/>}>
+          <Route element={<RequireAuth allowedRole={ROLES.Admin}/>}>
             <Route path="/users" element={<UsersPage/>}/>
           </Route>
           <Route path="/logout" element={<h1>Logout</h1>}/>

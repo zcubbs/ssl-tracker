@@ -1,5 +1,9 @@
-import {Avatar, AvatarFallback, AvatarImage,} from "./avatar"
-import {Button} from "./button"
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "./avatar";
+import {Button} from "./button";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -8,27 +12,47 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "./dropdown-menu"
+} from "./dropdown-menu";
 import {useContext} from "react";
 import AuthContext from "@/context/auth-provider.tsx";
 import {useNavigate} from "react-router-dom";
+import axios from "@/api/axios.ts";
 
 export function UserNav() {
-  const { setAuth } = useContext(AuthContext);
+  const {setAuth} = useContext(AuthContext);
   const navigate = useNavigate();
 
   const logout = async () => {
-    // if used in more components, this should be in context
-    // axios to /logout endpoint
-    setAuth({});
-    navigate('/');
-  }
+    try {
+      axios.post('/api/v1/logout', {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + localStorage.getItem('token')
+        },
+      }).then((response) => {
+        if (response.status >= 200 && response.status < 300) {
+          // Clearing the authentication context
+          if (setAuth) {
+            setAuth(undefined);
+          }
+        } else {
+          console.error(response)
+        }
+      });
+
+      navigate('/');
+    } catch (error) {
+      // TODO: Handle error, e.g., show a notification to the user
+      console.error("An error occurred during logout:", error);
+    }
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="ghost" className="relative h-8 w-8 rounded-full">
           <Avatar className="h-8 w-8">
-            <AvatarImage src={`https://avatar.vercel.sh/1.svg?size=30&text=A`} alt="anonymous" />
+            <AvatarImage src={`https://avatar.vercel.sh/1.svg?size=30&text=A`} alt="anonymous"/>
             <AvatarFallback>A</AvatarFallback>
           </Avatar>
         </Button>
@@ -42,7 +66,7 @@ export function UserNav() {
             </p>
           </div>
         </DropdownMenuLabel>
-        <DropdownMenuSeparator />
+        <DropdownMenuSeparator/>
         <DropdownMenuGroup>
           <DropdownMenuItem>
             Profile
@@ -55,8 +79,8 @@ export function UserNav() {
           </DropdownMenuItem>
           <DropdownMenuItem>New Space</DropdownMenuItem>
         </DropdownMenuGroup>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem onClick={logout}>
+        <DropdownMenuSeparator/>
+        <DropdownMenuItem onSelect={logout}>
           Log out
         </DropdownMenuItem>
       </DropdownMenuContent>
