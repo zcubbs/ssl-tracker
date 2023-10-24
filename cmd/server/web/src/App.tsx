@@ -31,11 +31,11 @@ function App() {
           <Route path="/login" element={<LoginPage/>}/>
           <Route path="/register" element={<RegisterPage/>}/>
           <Route path="unauthorized" element={<Unauthorized />} />
-          <Route element={<RequireAuth allowedRole={ROLES.User}/>}>
+          <Route element={<RequireAuth allowedRoles={[ROLES.User, ROLES.Admin]}/>}>
             <Route path="/" element={<Content/>}/>
             <Route path="/domains" element={<Content/>}/>
           </Route>
-          <Route element={<RequireAuth allowedRole={ROLES.Admin}/>}>
+          <Route element={<RequireAuth allowedRoles={[ROLES.Admin]}/>}>
             <Route path="/users" element={<UsersPage/>}/>
           </Route>
           <Route path="/logout" element={<h1>Logout</h1>}/>

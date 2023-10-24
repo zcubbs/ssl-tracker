@@ -1,8 +1,8 @@
-import { createContext, PropsWithChildren, useState, ReactNode } from "react";
+import {createContext, Dispatch, PropsWithChildren, SetStateAction, useMemo, useState} from "react";
 
 interface AuthContextProps {
   auth?: Auth;
-  setAuth?: React.Dispatch<React.SetStateAction<Auth | undefined>>;
+  setAuth?: Dispatch<SetStateAction<Auth | undefined>>;
 }
 
 const AuthContext = createContext<AuthContextProps>({});
@@ -24,11 +24,13 @@ type Auth = {
   refresh_token_expires_at: string;
 }
 
-export const AuthProvider = ({ children }: PropsWithChildren<{}>): ReactNode => {
+export const AuthProvider = ({ children }: PropsWithChildren<{}>) => {
   const [auth, setAuth] = useState<Auth>();
 
+  const value = useMemo(() => ({ auth, setAuth }), [auth, setAuth]);
+
   return (
-    <AuthContext.Provider value={{ auth, setAuth }}>
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );

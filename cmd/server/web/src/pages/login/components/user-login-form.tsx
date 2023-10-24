@@ -51,7 +51,9 @@ export function UserLoginForm({className, ...props}: UserLoginFormProps) {
 
       if (response.ok) {
         response.json().then((data) => {
-          setAuth(data)
+          if (setAuth) {
+            setAuth(data)
+          }
         });
         navigate(from, { replace: true });
       }
