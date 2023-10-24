@@ -1,8 +1,8 @@
 import {createContext, Dispatch, PropsWithChildren, SetStateAction, useMemo, useState} from "react";
 
 interface AuthContextProps {
-  auth?: Auth;
-  setAuth?: Dispatch<SetStateAction<Auth>>;
+  auth?: Auth | null;
+  setAuth?: Dispatch<SetStateAction<Auth | null>>;
 }
 
 const AuthContext = createContext<AuthContextProps>({});
@@ -28,9 +28,10 @@ export type Auth = {
 export const AuthProvider = ({ children }: PropsWithChildren<{}>) => {
   // Loading auth data from localStorage
   const savedAuthData = localStorage.getItem('authData');
-  const initialAuth: Auth = savedAuthData ? JSON.parse(savedAuthData) : undefined;
+  const initialAuth: Auth | null = savedAuthData ? JSON.parse(savedAuthData) : null;
 
-  const [auth, setAuth] = useState<Auth>(initialAuth);
+  // Allow the state to be Auth or null
+  const [auth, setAuth] = useState<Auth | null>(initialAuth);
 
   const value = useMemo(() => ({ auth, setAuth }), [auth, setAuth]);
 

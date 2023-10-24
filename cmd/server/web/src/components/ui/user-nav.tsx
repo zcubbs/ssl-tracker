@@ -1,8 +1,4 @@
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "./avatar";
+import {Avatar, AvatarFallback, AvatarImage,} from "./avatar";
 import {Button} from "./button";
 import {
   DropdownMenu,
@@ -15,17 +11,17 @@ import {
 } from "./dropdown-menu";
 import {useContext} from "react";
 import AuthContext, {Auth} from "@/context/auth-provider.tsx";
-import {useNavigate} from "react-router-dom";
 import axios from "@/api/axios.ts";
 
 export function UserNav() {
   const {setAuth} = useContext(AuthContext);
-  const navigate = useNavigate();
 
   const logout = async () => {
     try {
       const savedAuthData = localStorage.getItem('authData');
-      const authData: Auth = JSON.parse(savedAuthData);
+
+// Check if savedAuthData is not null before parsing
+      const authData: Auth = savedAuthData ? JSON.parse(savedAuthData) : null;
       const accessToken = authData ? authData.access_token : '';
 
       const response = await axios.post('/api/v1/logout_user',
@@ -41,6 +37,9 @@ export function UserNav() {
       if (response.status === 200) {
         // Clearing auth data from localStorage and context
         localStorage.removeItem('authData');
+        if (setAuth) {
+          setAuth(null);
+        }
 
         // Redirect to the login page or another page as per your application flow
         location.href = '/login';

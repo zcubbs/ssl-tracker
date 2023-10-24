@@ -22,7 +22,7 @@ export function UserRegisterForm({className, ...props}: UserRegisterFormProps) {
   const [name, setName] = useState<string>("")
   const [email, setEmail] = useState<string>("")
   const [password, setPassword] = useState<string>("")
-  const {auth, setAuth} = useAuth();
+  const {auth} = useAuth();
 
   async function onSubmit(event: React.SyntheticEvent) {
     event.preventDefault()
