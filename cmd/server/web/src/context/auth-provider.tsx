@@ -2,12 +2,12 @@ import {createContext, Dispatch, PropsWithChildren, SetStateAction, useMemo, use
 
 interface AuthContextProps {
   auth?: Auth;
-  setAuth?: Dispatch<SetStateAction<Auth | undefined>>;
+  setAuth?: Dispatch<SetStateAction<Auth>>;
 }
 
 const AuthContext = createContext<AuthContextProps>({});
 
-type User = {
+export type User = {
   id: string;
   username: string;
   full_name: string;
@@ -16,8 +16,9 @@ type User = {
   created_at: string;
 }
 
-type Auth = {
+export type Auth = {
   user: User;
+  session_id: string;
   access_token: string;
   refresh_token: string;
   access_token_expires_at: string;
@@ -25,7 +26,11 @@ type Auth = {
 }
 
 export const AuthProvider = ({ children }: PropsWithChildren<{}>) => {
-  const [auth, setAuth] = useState<Auth>();
+  // Loading auth data from localStorage
+  const savedAuthData = localStorage.getItem('authData');
+  const initialAuth: Auth = savedAuthData ? JSON.parse(savedAuthData) : undefined;
+
+  const [auth, setAuth] = useState<Auth>(initialAuth);
 
   const value = useMemo(() => ({ auth, setAuth }), [auth, setAuth]);
 

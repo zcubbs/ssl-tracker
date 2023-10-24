@@ -10,9 +10,6 @@ const RequireAuth = ({ allowedRoles }: RequireAuthProps): ReactElement | null =>
   const { auth } = useAuth();
   const location = useLocation();
 
-  console.log("RequireAuth: auth", auth);
-  console.log("RequireAuth: allowedRoles", allowedRoles);
-
   // If the user is not authenticated, redirect to login
   if (!auth?.user) {
     return <Navigate to="/login" state={{ from: location }} replace />;

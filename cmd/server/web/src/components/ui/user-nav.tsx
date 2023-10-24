@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger,
 } from "./dropdown-menu";
 import {useContext} from "react";
-import AuthContext from "@/context/auth-provider.tsx";
+import AuthContext, {Auth} from "@/context/auth-provider.tsx";
 import {useNavigate} from "react-router-dom";
 import axios from "@/api/axios.ts";
 
@@ -24,28 +24,35 @@ export function UserNav() {
 
   const logout = async () => {
     try {
-      axios.post('/api/v1/logout', {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + localStorage.getItem('token')
-        },
-      }).then((response) => {
-        if (response.status >= 200 && response.status < 300) {
-          // Clearing the authentication context
-          if (setAuth) {
-            setAuth(undefined);
-          }
-        } else {
-          console.error(response)
-        }
-      });
+      const savedAuthData = localStorage.getItem('authData');
+      const authData: Auth = JSON.parse(savedAuthData);
+      const accessToken = authData ? authData.access_token : '';
 
-      navigate('/');
+      const response = await axios.post('/api/v1/logout_user',
+        {
+          session_id: authData?.session_id
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${accessToken}`, // Authorization header
+          }
+        });
+
+      if (response.status === 200) {
+        // Clearing auth data from localStorage and context
+        localStorage.removeItem('authData');
+
+        // Redirect to the login page or another page as per your application flow
+        location.href = '/login';
+      } else {
+        // Handle unsuccessful logout attempt
+        localStorage.removeItem('authData');
+        console.error('Logout failed:', response);
+      }
     } catch (error) {
-      // TODO: Handle error, e.g., show a notification to the user
-      console.error("An error occurred during logout:", error);
+      console.error('An error occurred during logout:', error);
     }
-  };
+  }
 
   return (
     <DropdownMenu>

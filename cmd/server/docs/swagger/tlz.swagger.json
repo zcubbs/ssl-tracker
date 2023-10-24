@@ -226,10 +226,12 @@
         },
         "parameters": [
           {
-            "name": "sessionId",
-            "in": "query",
-            "required": false,
-            "type": "string"
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/pbLogoutUserRequest"
+            }
           }
         ],
         "tags": [
@@ -526,6 +528,14 @@
         "refreshTokenExpiresAt": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "pbLogoutUserRequest": {
+      "type": "object",
+      "properties": {
+        "sessionId": {
+          "type": "string"
         }
       }
     },

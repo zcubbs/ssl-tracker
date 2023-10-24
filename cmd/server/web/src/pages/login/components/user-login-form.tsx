@@ -5,9 +5,10 @@ import {Button} from "@/components/ui/button"
 import {Input} from "@/components/ui/input"
 import {Label} from "@/components/ui/label"
 import {Icons} from "@/components/ui/icons.tsx";
-import {SyntheticEvent, useState} from "react";
+import {SyntheticEvent, useEffect, useState} from "react";
 import {useLocation, useNavigate} from "react-router-dom";
 import useAuth from "@/hooks/use-auth.ts";
+import {Auth} from "@/context/auth-provider.tsx";
 
 interface UserLoginFormProps extends React.HTMLAttributes<HTMLDivElement> {
 }
@@ -21,7 +22,7 @@ export function UserLoginForm({className, ...props}: UserLoginFormProps) {
   const [username, setUsername] = useState<string>("")
   const [password, setPassword] = useState<string>("")
 
-  const {setAuth} = useAuth();
+  const {auth, setAuth} = useAuth();
 
   const onSubmit = async (event: SyntheticEvent) => {
     event.preventDefault()
@@ -51,8 +52,26 @@ export function UserLoginForm({className, ...props}: UserLoginFormProps) {
 
       if (response.ok) {
         response.json().then((data) => {
+          let auth: Auth = {
+            user: {
+              id: data?.user?.id,
+              username: data?.user?.username,
+              full_name: data?.user?.full_name,
+              role: data?.user?.role,
+              password_changed_at: data?.user?.password_changed_at,
+              created_at: data?.user?.created_at,
+            },
+            session_id: data?.session_id,
+            access_token: data?.access_token,
+            refresh_token: data?.refresh_token,
+            access_token_expires_at: data?.access_token_expires_at,
+            refresh_token_expires_at: data?.refresh_token_expires_at,
+          }
+
+          // Setting the authentication context
           if (setAuth) {
-            setAuth(data)
+            setAuth(auth);
+            localStorage.setItem('authData', JSON.stringify(auth));
           }
         });
         navigate(from, { replace: true });
@@ -60,10 +79,16 @@ export function UserLoginForm({className, ...props}: UserLoginFormProps) {
 
     }).catch((error) => {
       console.error(error)
+    }).finally(() => {
+      setIsLoading(false)
     })
-
-    setIsLoading(false)
   }
+
+  useEffect(() => {
+    if (auth?.user) {
+      navigate(from, { replace: true });
+    }
+  });
 
   return (
     <div className={cn("grid gap-6", className)} {...props}>

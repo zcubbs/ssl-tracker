@@ -25,6 +25,7 @@ func (s *Server) LogoutUser(ctx context.Context, req *pb.LogoutUserRequest) (*pb
 		return nil, status.Errorf(codes.Internal, "failed to get user: %v", err)
 	}
 
+	log.Info("logout user", "user", u.ID, "session", req.SessionId)
 	sessionId, err := uuid.Parse(req.SessionId)
 	if err != nil {
 		return nil, status.Errorf(codes.InvalidArgument, "invalid session id")
