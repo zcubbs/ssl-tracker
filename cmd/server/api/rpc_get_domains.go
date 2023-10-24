@@ -2,7 +2,7 @@ package api
 
 import (
 	"context"
-	pb "github.com/zcubbs/tlz/pb"
+	pb "github.com/zcubbs/ssl-tracker/pb"
 )
 
 func (s *Server) GetDomains(ctx context.Context, req *pb.Empty) (*pb.GetDomainsResponse, error) {

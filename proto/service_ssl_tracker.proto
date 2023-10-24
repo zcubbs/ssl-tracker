@@ -17,7 +17,7 @@ import "rpc_create_namespace.proto";
 import "rpc_ping.proto";
 import "empty.proto";
 
-option go_package = "github.com/zcubbs/tlz";
+option go_package = "github.com/zcubbs/ssl-tracker";
 
 option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
   info: {
@@ -25,7 +25,7 @@ option (grpc.gateway.protoc_gen_openapiv2.options.openapiv2_swagger) = {
     version: "0.1.0";
     contact: {
       name: "TLZ API";
-      url: "https://github.com/zcubbs/tlz";
+      url: "https://github.com/zcubbs/ssl-tracker";
       email: "zcubbs@pm.me";
     };
   };

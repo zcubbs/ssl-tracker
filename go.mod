@@ -1,4 +1,4 @@
-module github.com/zcubbs/tlz
+module github.com/zcubbs/ssl-tracker
 
 go 1.21
 

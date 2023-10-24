@@ -2,10 +2,10 @@ package db
 
 import (
 	"context"
-	"github.com/zcubbs/tlz/cmd/server/config"
-	dbConnect "github.com/zcubbs/tlz/cmd/server/db/connect"
-	mig "github.com/zcubbs/tlz/cmd/server/db/migration"
-	"github.com/zcubbs/tlz/cmd/server/logger"
+	"github.com/zcubbs/ssl-tracker/cmd/server/config"
+	dbConnect "github.com/zcubbs/ssl-tracker/cmd/server/db/connect"
+	mig "github.com/zcubbs/ssl-tracker/cmd/server/db/migration"
+	"github.com/zcubbs/ssl-tracker/cmd/server/logger"
 	"os"
 	"testing"
 )

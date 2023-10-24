@@ -2,9 +2,9 @@ package util
 
 import (
 	"context"
-	"github.com/zcubbs/tlz/cmd/server/config"
-	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
-	pb "github.com/zcubbs/tlz/pb"
+	"github.com/zcubbs/ssl-tracker/cmd/server/config"
+	db "github.com/zcubbs/ssl-tracker/cmd/server/db/sqlc"
+	pb "github.com/zcubbs/ssl-tracker/pb"
 	"github.com/zcubbs/x/password"
 	"github.com/zcubbs/x/random"
 )

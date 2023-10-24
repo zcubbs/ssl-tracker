@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/hibiken/asynq"
 	"github.com/zcubbs/logwrapper/logger"
-	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
+	db "github.com/zcubbs/ssl-tracker/cmd/server/db/sqlc"
 	"github.com/zcubbs/x/mail"
 )
 

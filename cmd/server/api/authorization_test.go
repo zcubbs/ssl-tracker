@@ -3,9 +3,9 @@ package api
 import (
 	"context"
 	"github.com/google/uuid"
-	mockdb "github.com/zcubbs/tlz/cmd/server/db/mock"
-	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
-	mockwk "github.com/zcubbs/tlz/cmd/server/worker/mock"
+	mockdb "github.com/zcubbs/ssl-tracker/cmd/server/db/mock"
+	db "github.com/zcubbs/ssl-tracker/cmd/server/db/sqlc"
+	mockwk "github.com/zcubbs/ssl-tracker/cmd/server/worker/mock"
 	"github.com/zcubbs/x/random"
 	"go.uber.org/mock/gomock"
 	"google.golang.org/grpc/metadata"

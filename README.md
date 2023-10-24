@@ -1,16 +1,16 @@
-# TLZ;
+# SSL Tracker
 
-[![tag](https://img.shields.io/github/tag/zcubbs/tlz)](https://github.com/zcubbs/tlz/releases)
+[![tag](https://img.shields.io/github/tag/zcubbs/tlz)](https://github.com/zcubbs/ssl-tracker/releases)
 ![Go Version](https://img.shields.io/badge/Go-%3E%3D%201.21-%23007d9c)
-[![Lint](https://github.com/zcubbs/tlz/actions/workflows/lint.yaml/badge.svg)](https://github.com/zcubbs/tlz/actions/workflows/lint.yaml)
-[![Test](https://github.com/zcubbs/tlz/actions/workflows/test.yaml/badge.svg)](https://github.com/zcubbs/tlz/actions/workflows/test.yaml)
-[![release](https://github.com/zcubbs/tlz/actions/workflows/release.yaml/badge.svg)](https://github.com/zcubbs/tlz/actions/workflows/release.yaml)
-[![scan](https://github.com/zcubbs/tlz/actions/workflows/scan.yaml/badge.svg)](https://github.com/zcubbs/tlz/actions/workflows/scan.yaml)
-[![Contributors](https://img.shields.io/github/contributors/zcubbs/go-containers)](https://github.com/zcubbs/tlz/graphs/contributors)
+[![Lint](https://github.com/zcubbs/ssl-tracker/actions/workflows/lint.yaml/badge.svg)](https://github.com/zcubbs/ssl-tracker/actions/workflows/lint.yaml)
+[![Test](https://github.com/zcubbs/ssl-tracker/actions/workflows/test.yaml/badge.svg)](https://github.com/zcubbs/ssl-tracker/actions/workflows/test.yaml)
+[![release](https://github.com/zcubbs/ssl-tracker/actions/workflows/release.yaml/badge.svg)](https://github.com/zcubbs/ssl-tracker/actions/workflows/release.yaml)
+[![scan](https://github.com/zcubbs/ssl-tracker/actions/workflows/scan.yaml/badge.svg)](https://github.com/zcubbs/ssl-tracker/actions/workflows/scan.yaml)
+[![Contributors](https://img.shields.io/github/contributors/zcubbs/go-containers)](https://github.com/zcubbs/ssl-tracker/graphs/contributors)
 
 This application is designed to monitor the status and health of SSL/TLS certificates. In today's digital world, ensuring the validity and security of your SSL/TLS certificates is crucial. With our application, you can streamline this process, keeping an eye on your certificates and their expiry dates.
 
-**TLZ;** does more than just monitor - it actively notifies you of any pending expiry dates, ensuring you have ample time to renew and prevent any potential downtime or security issues. By proactively managing your SSL/TLS certificates, our application helps maintain the integrity and reliability of your digital infrastructure.
+**SSL Tracker** does more than just monitor - it actively notifies you of any pending expiry dates, ensuring you have ample time to renew and prevent any potential downtime or security issues. By proactively managing your SSL/TLS certificates, our application helps maintain the integrity and reliability of your digital infrastructure.
 
 Whether you are managing a single website or a vast network, this application is designed to be your reliable companion in maintaining your SSL/TLS certificate health.
 
@@ -36,7 +36,7 @@ represents a set of times, normally as a schedule to execute some routine. The f
 ```
 
 > You can choose to run a job only once by passing "-" as the cron pattern.
-> Exemple: `TLZ_CRON_CHECK_CERTIFICATE_VALIDITY_CRON_PATTERN=-`
+> Exemple: `CRON_CHECK_CERTIFICATE_VALIDITY_CRON_PATTERN=-`
 
 ## Database Support
 
@@ -82,7 +82,7 @@ SQLite is a self-contained, serverless, zero-configuration SQL database engine, 
 | `NOTIFICATION_MAIL_SMTP_PORT`                  | SMTP port for mail notification             | `1025`                         |
 | `NOTIFICATION_MAIL_SMTP_USERNAME`              | SMTP username for mail notification         | `""`                           |
 | `NOTIFICATION_MAIL_SMTP_PASSWORD`              | SMTP password for mail notification         | `""`                           |
-| `NOTIFICATION_MAIL_SMTP_FROM`                  | SMTP from address for mail notification     | `"no-reply@tlz"`               |
+| `NOTIFICATION_MAIL_SMTP_FROM`                  | SMTP from address for mail notification     | `"no-reply@ssl-tracker"`       |
 
 ### YAML Configuration Documentation
 
@@ -113,7 +113,7 @@ SQLite is a self-contained, serverless, zero-configuration SQL database engine, 
 | `notification.mail.smtp.port`                  | SMTP port for mail notification             | `1025`                         |
 | `notification.mail.smtp.username`              | SMTP username for mail notification         | `""`                           |
 | `notification.mail.smtp.password`              | SMTP password for mail notification         | `""`                           |
-| `notification.mail.smtp.from`                  | SMTP from address for mail notification     | `"no-reply@tlz"`               |
+| `notification.mail.smtp.from`                  | SMTP from address for mail notification     | `"no-reply@ssl-tracker"`       |
 
 ## Development
 

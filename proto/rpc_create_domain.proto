@@ -4,7 +4,7 @@ package pb;
 
 import "domain.proto";
 
-option go_package = "github.com/zcubbs/tlz";
+option go_package = "github.com/zcubbs/ssl-tracker";
 
 message CreateDomainRequest {
   string name = 1;

@@ -4,7 +4,7 @@ package pb;
 
 import "google/protobuf/timestamp.proto";
 
-option go_package = "github.com/zcubbs/tlz";
+option go_package = "github.com/zcubbs/ssl-tracker";
 
 message Namespace {
   string id = 1;

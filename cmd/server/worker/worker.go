@@ -3,9 +3,9 @@ package worker
 import (
 	"fmt"
 	"github.com/hibiken/asynq"
-	"github.com/zcubbs/tlz/cmd/server/config"
-	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
-	"github.com/zcubbs/tlz/cmd/server/logger"
+	"github.com/zcubbs/ssl-tracker/cmd/server/config"
+	db "github.com/zcubbs/ssl-tracker/cmd/server/db/sqlc"
+	"github.com/zcubbs/ssl-tracker/cmd/server/logger"
 	"github.com/zcubbs/x/mail"
 )
 

@@ -3,8 +3,8 @@ package api
 import (
 	"context"
 	"fmt"
-	pb "github.com/zcubbs/tlz/pb"
-	"github.com/zcubbs/tlz/pkg/token"
+	pb "github.com/zcubbs/ssl-tracker/pb"
+	"github.com/zcubbs/ssl-tracker/pkg/token"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"

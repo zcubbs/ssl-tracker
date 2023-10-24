@@ -2,8 +2,8 @@ package api
 
 import (
 	"github.com/google/uuid"
-	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
-	pb "github.com/zcubbs/tlz/pb"
+	db "github.com/zcubbs/ssl-tracker/cmd/server/db/sqlc"
+	pb "github.com/zcubbs/ssl-tracker/pb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

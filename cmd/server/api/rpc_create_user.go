@@ -2,9 +2,9 @@ package api
 
 import (
 	"context"
-	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
-	dbUtil "github.com/zcubbs/tlz/cmd/server/db/util"
-	pb "github.com/zcubbs/tlz/pb"
+	db "github.com/zcubbs/ssl-tracker/cmd/server/db/sqlc"
+	dbUtil "github.com/zcubbs/ssl-tracker/cmd/server/db/util"
+	pb "github.com/zcubbs/ssl-tracker/pb"
 	"github.com/zcubbs/x/password"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"

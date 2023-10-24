@@ -10,9 +10,9 @@ import (
 	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/golang-migrate/migrate/v4/source/httpfs"
 	_ "github.com/mattes/migrate/source/file"
-	"github.com/zcubbs/tlz/cmd/server/config"
-	dbConnect "github.com/zcubbs/tlz/cmd/server/db/connect"
-	"github.com/zcubbs/tlz/cmd/server/logger"
+	"github.com/zcubbs/ssl-tracker/cmd/server/config"
+	dbConnect "github.com/zcubbs/ssl-tracker/cmd/server/db/connect"
+	"github.com/zcubbs/ssl-tracker/cmd/server/logger"
 	"net/http"
 )
 

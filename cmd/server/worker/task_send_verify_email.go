@@ -8,7 +8,7 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/hibiken/asynq"
-	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
+	db "github.com/zcubbs/ssl-tracker/cmd/server/db/sqlc"
 	"github.com/zcubbs/x/mail"
 	"github.com/zcubbs/x/random"
 )

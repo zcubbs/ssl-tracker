@@ -28,8 +28,8 @@ tasks:
   mock:
     desc: Generate mocks
     cmds:
-      - cmd: mockgen -package mockdb -destination cmd/server/db/mock/store.go github.com/zcubbs/tlz/cmd/server/db/sqlc Store
-      - cmd: mockgen -package mockdb -destination cmd/server/worker/mock/distributor.go github.com/zcubbs/tlz/cmd/server/worker TaskDistributor
+      - cmd: mockgen -package mockdb -destination cmd/server/db/mock/store.go github.com/zcubbs/ssl-tracker/cmd/server/db/sqlc Store
+      - cmd: mockgen -package mockdb -destination cmd/server/worker/mock/distributor.go github.com/zcubbs/ssl-tracker/cmd/server/worker TaskDistributor
 
   sqlc:
     desc: Generate SQLC code

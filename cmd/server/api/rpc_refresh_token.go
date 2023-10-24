@@ -2,7 +2,7 @@ package api
 
 import (
 	"context"
-	pb "github.com/zcubbs/tlz/pb"
+	pb "github.com/zcubbs/ssl-tracker/pb"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"

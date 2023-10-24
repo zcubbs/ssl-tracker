@@ -1,6 +1,6 @@
 ---
 
-project_name: tlz
+project_name: ssl-tracker
 before:
   hooks:
     - go mod tidy
@@ -92,7 +92,7 @@ signs:
 release:
   github:
     owner: zcubbs
-    name: tlz
+    name: ssl-tracker
   draft: false
   prerelease: auto
   header: |

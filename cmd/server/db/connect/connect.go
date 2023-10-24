@@ -6,7 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/zcubbs/tlz/cmd/server/config"
+	"github.com/zcubbs/ssl-tracker/cmd/server/config"
 )
 
 func Connect(ctx context.Context, config config.DatabaseConfig) (*pgxpool.Pool, error) {

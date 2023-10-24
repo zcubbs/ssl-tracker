@@ -6,7 +6,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/spf13/viper"
 	lwl "github.com/zcubbs/logwrapper/logger"
-	"github.com/zcubbs/tlz/cmd/server/logger"
+	"github.com/zcubbs/ssl-tracker/cmd/server/logger"
 
 	"os"
 	"strings"

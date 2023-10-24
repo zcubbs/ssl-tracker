@@ -3,9 +3,9 @@ package api
 import (
 	"context"
 	"github.com/stretchr/testify/require"
-	mockdb "github.com/zcubbs/tlz/cmd/server/db/mock"
-	mockwk "github.com/zcubbs/tlz/cmd/server/worker/mock"
-	pb "github.com/zcubbs/tlz/pb"
+	mockdb "github.com/zcubbs/ssl-tracker/cmd/server/db/mock"
+	mockwk "github.com/zcubbs/ssl-tracker/cmd/server/worker/mock"
+	pb "github.com/zcubbs/ssl-tracker/pb"
 	"go.uber.org/mock/gomock"
 	"testing"
 )

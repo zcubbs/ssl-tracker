@@ -7,8 +7,8 @@ vars:
   # sqlite connection string
   TEST_DB_URL: "file:./db.sqlite?cache=shared&mode=rwc"
   LOCAL_HOST: 127.0.0.1
-  GO_PACKAGE: github.com/zcubbs/tlz
-  GO_PACKAGE_SHORT: tlz
+  GO_PACKAGE: github.com/zcubbs/ssl-tracker
+  GO_PACKAGE_SHORT: ssl-tracker
 
 tasks:
   build:
@@ -209,28 +209,28 @@ tasks:
   pg:
     desc: Start Postgres
     cmds:
-      - docker run --rm --name tlz-postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=tlz -p 5432:5432 -d postgres:14-alpine
+      - docker run --rm --name ssl-tracker-postgres -e POSTGRES_USER=postgres -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=ssl-tracker -p 5432:5432 -d postgres:14-alpine
 
   pg:stop:
     desc: Stop Postgres
     cmds:
-      - docker stop tlz-postgres
+      - docker stop ssl-tracker-postgres
 
   redis:
     desc: Start Redis
     cmds:
-      - docker run --rm --name tlz-redis -p 6379:6379 -d redis:alpine
+      - docker run --rm --name ssl-tracker-redis -p 6379:6379 -d redis:alpine
 
   redis:down:
     desc: Stop Redis
     cmds:
-      - docker stop tlz-redis
+      - docker stop ssl-tracker-redis
 
   mailpit:
     desc: Start Mailpit
     cmds:
       - >-
-        docker run --rm -d --name tlz-mailpit
+        docker run --rm -d --name ssl-tracker-mailpit
         -p 1025:1025 -p 1080:1080
         -e MP_SMTP_AUTH_ACCEPT_ANY=true -e MP_SMTP_AUTH_ALLOW_INSECURE=true
         axllent/mailpit
@@ -238,12 +238,12 @@ tasks:
   mailpit:down:
     desc: Stop Mailpit
     cmds:
-      - docker stop tlz-mailpit
+      - docker stop ssl-tracker-mailpit
 
   test-grpc:
     desc: Run grpcurl tests
     cmds:
-      - grpcurl -plaintext localhost:9000 pb.TlzService/Ping
+      - grpcurl -plaintext localhost:9000 pb.SslTrackerService/Ping
 
   tls:
     desc: Copy TLS certificates

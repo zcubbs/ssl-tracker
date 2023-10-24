@@ -3,13 +3,12 @@ package config
 import "fmt"
 
 const (
-	ViperConfigName      = "config"
-	ViperConfigType      = "yaml"
-	ViperConfigEnvPrefix = "LU"
-	DefaultDbName        = "tlz"
-	Localhost            = "127.0.0.1"
-	HttpPort             = 8000
-	GrpcPort             = 9000
+	ViperConfigName = "config"
+	ViperConfigType = "yaml"
+	DefaultDbName   = "ssl-tracker"
+	Localhost       = "127.0.0.1"
+	HttpPort        = 8000
+	GrpcPort        = 9000
 )
 
 var (
@@ -57,7 +56,7 @@ var (
 		"notification.mail.smtp.username":              "",
 		"notification.mail.smtp.password":              "",
 		"notification.mail.smtp.from_address":          "no-reply@localhost",
-		"notification.mail.smtp.from_name":             "TLZ",
+		"notification.mail.smtp.from_name":             "ssl-tracker",
 	}
 
 	allowedEnvVarKeys = []string{

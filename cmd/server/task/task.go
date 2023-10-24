@@ -1,8 +1,8 @@
 package task
 
 import (
-	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
-	"github.com/zcubbs/tlz/cmd/server/logger"
+	db "github.com/zcubbs/ssl-tracker/cmd/server/db/sqlc"
+	"github.com/zcubbs/ssl-tracker/cmd/server/logger"
 )
 
 var (

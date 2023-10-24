@@ -2,8 +2,8 @@ package connect
 
 import (
 	"fmt"
-	"github.com/zcubbs/tlz/cmd/server/config"
-	"github.com/zcubbs/tlz/cmd/server/logger"
+	"github.com/zcubbs/ssl-tracker/cmd/server/config"
+	"github.com/zcubbs/ssl-tracker/cmd/server/logger"
 )
 
 var (

@@ -2,9 +2,9 @@ package api
 
 import (
 	"github.com/stretchr/testify/require"
-	"github.com/zcubbs/tlz/cmd/server/config"
-	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
-	"github.com/zcubbs/tlz/cmd/server/worker"
+	"github.com/zcubbs/ssl-tracker/cmd/server/config"
+	db "github.com/zcubbs/ssl-tracker/cmd/server/db/sqlc"
+	"github.com/zcubbs/ssl-tracker/cmd/server/worker"
 	"github.com/zcubbs/x/random"
 	"testing"
 	"time"

@@ -2,7 +2,7 @@ package task
 
 import (
 	"context"
-	db "github.com/zcubbs/tlz/cmd/server/db/sqlc"
+	db "github.com/zcubbs/ssl-tracker/cmd/server/db/sqlc"
 	"github.com/zcubbs/x/mail"
 	"strings"
 )
